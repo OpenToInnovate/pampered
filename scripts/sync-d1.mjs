@@ -14,15 +14,13 @@
  * `content/places/`, not a side effect of a refresh.
  */
 import { spawn } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { readFile, unlink, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { ROOT, isoNow } from "./lib/content.mjs";
 
 const LOCAL = process.argv.includes("--local");
 const log = (...args) => console.log(...args);
-
-/** D1 rejects a statement over ~100 kB, so rows go in batches of fifty. */
-const BATCH = 50;
 
 const COLUMNS = [
   "id",
@@ -69,22 +67,16 @@ function wrangler(args) {
   });
 }
 
-/** A JSON blob that is one complete batch: wrangler's --json takes commands, so
-    one batch is one --command with many statements joined by semicolons. */
-function batchSql(rows) {
-  return rows
-    .map((p) => {
-      const values = COLUMNS.map((c) => sqlValue(columnOf(p, c))).join(", ");
-      return (
-        `INSERT INTO places (${COLUMNS.join(", ")}) VALUES (${values}) ` +
-        `ON CONFLICT (id) DO UPDATE SET ` +
-        COLUMNS.filter((c) => c !== "id" && c !== "created_at")
-          .map((c) => `${c} = excluded.${c}`)
-          .join(", ") +
-        `, created_at = CASE WHEN places.created_at = '' THEN excluded.created_at ELSE places.created_at END;`
-      );
-    })
-    .join("\n");
+function upsertSql(p) {
+  const values = COLUMNS.map((c) => sqlValue(columnOf(p, c))).join(", ");
+  return (
+    `INSERT INTO places (${COLUMNS.join(", ")}) VALUES (${values}) ` +
+    `ON CONFLICT (id) DO UPDATE SET ` +
+    COLUMNS.filter((c) => c !== "id" && c !== "created_at")
+      .map((c) => `${c} = excluded.${c}`)
+      .join(", ") +
+    `, created_at = CASE WHEN places.created_at = '' THEN excluded.created_at ELSE places.created_at END;`
+  );
 }
 
 function columnOf(place, column) {
@@ -116,15 +108,11 @@ async function main() {
   const mode = LOCAL ? "--local" : "--remote";
   log(`\nSyncing ${places.length.toLocaleString("en-GB")} places to D1 (${LOCAL ? "local" : "remote"})\n`);
 
-  let written = 0;
-  for (let i = 0; i < places.length; i += BATCH) {
-    const batch = places.slice(i, i + BATCH);
-    await wrangler([mode, "--command", batchSql(batch)]);
-    written += batch.length;
-    if (written % 500 === 0 || written === places.length) {
-      log(`  ${written.toLocaleString("en-GB")} / ${places.length.toLocaleString("en-GB")}`);
-    }
-  }
+  // Everything goes through one --file execution rather than one wrangler
+  // process per batch. Spawning wrangler eighty times for four thousand rows
+  // took sixteen minutes; the file takes one connection and wrangler splits it
+  // into batches itself.
+  const statements = places.map(upsertSql);
 
   // Remove OSM rows that the new index no longer contains. A venue gets deleted
   // from OSM or loses its dog tag; either way it should leave the map rather
@@ -133,25 +121,28 @@ async function main() {
   const existingRaw = await wrangler([mode, "--json", "--command", "SELECT id FROM places WHERE source = 'osm'"]);
   const existing = JSON.parse(existingRaw)[0]?.results?.map((r) => r.id) ?? [];
   const stale = existing.filter((id) => !wantedOsm.has(id));
-
-  let deleted = 0;
-  for (let i = 0; i < stale.length; i += BATCH) {
-    const chunk = stale.slice(i, i + BATCH);
-    const sql = chunk.map((id) => `DELETE FROM places WHERE id = '${id.replace(/'/g, "''")}';`).join("\n");
-    await wrangler([mode, "--command", sql]);
-    deleted += chunk.length;
+  for (const id of stale) {
+    statements.push(`DELETE FROM places WHERE id = '${id.replace(/'/g, "''")}';`);
   }
 
-  await wrangler([
-    mode,
-    "--command",
+  statements.push(
     `INSERT INTO sync_log (ran_at, command, rows_written, rows_deleted, source, detail) VALUES ` +
-      `('${isoNow()}', 'sync', ${written}, ${deleted}, 'index.json @ ${index.builtAt}', ` +
+      `('${isoNow()}', 'sync', ${places.length}, ${stale.length}, 'index.json @ ${index.builtAt}', ` +
       `'${sqlValue(JSON.stringify(index.stats ?? {})).slice(1, -1)}');`,
-  ]);
-  await wrangler([mode, "--command", "PRAGMA optimize;"]);
+  );
 
-  log(`\nDone. ${written.toLocaleString("en-GB")} written, ${deleted.toLocaleString("en-GB")} stale removed.\n`);
+  const file = join(tmpdir(), `pampered-sync-${Date.now()}.sql`);
+  const sql = statements.join("\n");
+  await writeFile(file, sql);
+  log(`  ${statements.length.toLocaleString("en-GB")} statements (${(sql.length / 1_048_576).toFixed(1)} MB) -> ${mode}`);
+  await wrangler([mode, "--file", file]);
+  await wrangler([mode, "--command", "PRAGMA optimize;"]);
+  await unlink(file);
+
+  log(
+    `\nDone. ${places.length.toLocaleString("en-GB")} written, ` +
+      `${stale.length.toLocaleString("en-GB")} stale removed.\n`,
+  );
 }
 
 main().catch((error) => {

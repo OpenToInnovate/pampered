@@ -18,5 +18,8 @@ playwright-report/
 .DS_Store
 *.log
 .env
+# Regenerate with `npm run cf-typegen`. 626kb of workerd types that only
+# change when the bindings do; CI regenerates via the precheck hook.
+worker-configuration.d.ts
 .env.*
 !.env.example
