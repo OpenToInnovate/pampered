@@ -17,6 +17,12 @@
  */
 import type { Bbox, LonLat } from "~/lib/geo";
 import { iconSvg, isIconName } from "./icons";
+// The worker is a separate 500kb bundle that MapLibre loads at runtime. Vite
+// emits it as an asset and hands back its URL; without this MapLibre guesses a
+// URL relative to the main chunk, gets a 404, and the map fails with "Worker
+// failed to load" — which is exactly what the fallback is for, but not what a
+// working device should see.
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import type {
   CircleLayerSpecification,
   ExpressionSpecification,
@@ -152,6 +158,7 @@ export async function createMap(
   let ml: Maplibre;
   try {
     ml = await import("maplibre-gl");
+    ml.setWorkerUrl(workerUrl);
     await import("maplibre-gl/dist/maplibre-gl.css");
   } catch {
     events.onFailed("maplibre failed to load");
