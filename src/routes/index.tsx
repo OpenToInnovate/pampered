@@ -1,10 +1,17 @@
 /**
  * The finder. One page: a map behind, a sheet in front, and a URL holding it all.
  *
- * The data flow is a loop with exactly one fetch in it:
+ * The data flow has no server in it:
  *
- *   map settles -> onViewport -> bbox signal -> resource -> /api/places
- *       -> places signal -> MapView pins + result list
+ *   selection chips -> loadSelections() -> records in memory
+ *   map settles     -> bbox signal      -> searchPlaces() in the browser
+ *       -> result -> MapView pins + result list
+ *
+ * Nothing here reads a database. That is not a micro-optimisation: an earlier
+ * version asked D1 for every viewport and its footer asked D1 for two
+ * full-table row counts on every page view, which exhausted the account's daily
+ * D1 row-read quota and took korg-e.com/mir down with it. The quota is per
+ * account, so a hobby directory could take down an unrelated site.
  *
  * The URL carries q, sel, place, near and the camera. The map owns the live
  * camera; the URL owns everything else. Pans update the URL debounced and
@@ -12,7 +19,18 @@
  * selection push (Back should undo those).
  */
 import { useLocation, useNavigate } from "@solidjs/router";
-import { createEffect, createMemo, createResource, createSignal, For, on, onCleanup, Show } from "solid-js";
+import {
+  createEffect,
+  createMemo,
+  createResource,
+  createSignal,
+  For,
+  on,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
+import { NoHydration } from "solid-js/web";
 import BottomSheet from "~/components/BottomSheet";
 import MiniCard from "~/components/MiniCard";
 import PlaceCard, { EmptyList } from "~/components/PlaceCard";
@@ -20,81 +38,18 @@ import SearchBar from "~/components/SearchBar";
 import SelectionChips from "~/components/SelectionChips";
 import type { ChipSelection } from "~/components/SelectionChips";
 import { selections } from "~/content/selections";
+import { loadSelections, seedFromDocument, serialiseSeed, SEED_ELEMENT_ID } from "~/lib/dataset";
 import type { Bbox } from "~/lib/geo";
+import { searchPlaces } from "~/lib/search";
+import type { PlaceRecord } from "~/lib/search";
 import { bboxForCamera, parseView, serialiseView, FALLBACK_CENTRE, FALLBACK_ZOOM } from "~/lib/url-state";
 import type { ViewState } from "~/lib/url-state";
 import MapView from "~/map/MapView";
 import type { Camera, MapPlace, SelectionStyle } from "~/map/MapView";
 import SvgFallback from "~/map/SvgFallback";
-import type { SearchResult, SlimPlace } from "~/server/places";
 
 const KNOWN_IDS = new Set(selections.map((s) => s.id));
 const STYLES: SelectionStyle[] = selections.map((s) => ({ id: s.id, colour: s.colour, icon: s.icon }));
-
-import type { FetchKey } from "~/server/search-query";
-import { searchPlacesQuery } from "~/server/search-query";
-
-async function fetchPlaces(key: FetchKey): Promise<SearchResult> {
-  // Server render: D1 directly, because a relative fetch() has no host here.
-  // Client: plain REST, so Cloudflare's edge cache sits in front of hot viewports.
-  if (typeof window === "undefined") return searchPlacesQuery(key);
-  const params = new URLSearchParams({ bbox: key.bbox, limit: "200" });
-  if (key.sel) params.set("sel", key.sel);
-  if (key.q) params.set("q", key.q);
-  if (key.near) params.set("near", key.near);
-  if (key.radius) params.set("radius", key.radius);
-  const res = await fetch(`/api/places?${params.toString()}`);
-  if (!res.ok) throw new Error(`search failed (${res.status})`);
-  return (await res.json()) as SearchResult;
-}
-
-interface PlaceApiRecord {
-  id: string;
-  name: string | null;
-  lat: number;
-  lon: number;
-  selections: string[];
-  primary: string | null;
-  dogPolicy?: string | null;
-  dog_policy?: string | null;
-  street: string | null;
-  city: string | null;
-  postcode: string | null;
-  website?: string | null;
-  openingHours?: string | null;
-  opening_hours?: string | null;
-  source: string;
-  verified: boolean;
-}
-
-async function fetchPlace(id: string): Promise<SlimPlace | null> {
-  try {
-    const res = await fetch(`/api/places/${encodeURIComponent(id)}`);
-    if (!res.ok) return null;
-    // The detail endpoint returns the full record; the card only needs the slim shape.
-    const full = (await res.json()) as PlaceApiRecord;
-    if (!full || typeof full.id !== "string") return null;
-    return {
-      id: full.id,
-      name: full.name,
-      lat: full.lat,
-      lon: full.lon,
-      selections: Array.isArray(full.selections) ? full.selections : [],
-      primary: full.primary,
-      dogPolicy: full.dogPolicy ?? full.dog_policy ?? null,
-      street: full.street,
-      city: full.city,
-      postcode: full.postcode,
-      website: full.website ?? null,
-      openingHours: full.openingHours ?? full.opening_hours ?? null,
-      source: full.source,
-      verified: !!full.verified,
-      distance: null,
-    };
-  } catch {
-    return null;
-  }
-}
 
 export default function Home() {
   const location = useLocation();
@@ -133,21 +88,56 @@ export default function Home() {
     }),
   );
 
-  const fetchKey = createMemo<FetchKey>(() => {
+  // The dataset, fetched per selection and then held in memory for the life of
+  // the tab. Only the active selections are loaded, so a visitor who never taps
+  // "Vets" never downloads the 146 kB of vets.
+  const activeSelections = createMemo(() => [...view().sel].sort());
+
+  // The server reads the published files off disk and renders a full list. This
+  // is that same list, read back off the page, so both sides of hydration draw
+  // the same tree and the browser does not fetch what it was just sent.
+  const seeded = seedFromDocument();
+  const [records, { refetch }] = createResource(
+    activeSelections,
+    loadSelections,
+    seeded ? { initialValue: seeded } : {},
+  );
+
+  /**
+   * Whether hydration has finished, and therefore whether it is safe for the
+   * page to change shape.
+   *
+   * Even seeded, a browser that cannot reach a data file ends up with nothing
+   * while the server had everything. Letting Solid reconcile a branch that
+   * appeared mid-hydration throws "Cannot read properties of null (reading
+   * 'nextSibling')" and drops the page into the error boundary — which is
+   * precisely the case the error message exists for. The gate is what makes the
+   * graceful path actually graceful.
+   */
+  const [hydrated, setHydrated] = createSignal(false);
+  onMount(() => setHydrated(true));
+
+  /** True only when we are past hydration and the data genuinely did not load. */
+  const loadFailed = () => hydrated() && !!records.error;
+
+  // The whole search, recomputed on every settled camera change. Synchronous,
+  // so panning has no loading state and no request — the filter runs over data
+  // that is already here.
+  const result = createMemo(() => {
     const v = view();
     const b = settledBbox() ?? bbox() ?? bboxForCamera(v.at ?? FALLBACK_CENTRE, v.zoom);
-    return {
-      bbox: b.map((n) => n.toFixed(5)).join(","),
-      sel: [...v.sel].sort().join(","),
+    return searchPlaces(records() ?? [], {
+      bbox: b,
+      selections: v.sel,
       q: v.q,
-      near: v.near ? v.near.map((n) => n.toFixed(5)).join(",") : "",
-      radius: v.radius ? String(v.radius) : "",
-    };
+      near: v.near,
+      radius: v.radius,
+      limit: 200,
+    });
   });
 
-  const [result] = createResource(fetchKey, fetchPlaces);
-  const places = createMemo<SlimPlace[]>(() => result()?.places ?? []);
-  const counts = createMemo<Record<string, number>>(() => result()?.counts ?? {});
+  const places = createMemo<PlaceRecord[]>(() => result().places);
+  const counts = createMemo<Record<string, number>>(() => result().counts);
 
   const mapPlaces = createMemo<MapPlace[]>(() =>
     places().map((p) => ({
@@ -183,15 +173,13 @@ export default function Home() {
     }));
   });
 
-  // Selection: prefer the row already in hand, fetch only when the pin's place
-  // is not in the current list (a shared link straight to a venue).
+  // Selection: the row is already in memory, because the list it came from is.
+  // A shared link straight to a venue whose selection is switched off has
+  // nothing loaded, so the detail route server-renders it instead.
   const selectedId = createMemo(() => view().place);
-  const selectedInList = createMemo(() => places().find((p) => p.id === selectedId()) ?? null);
-  const [fetchedSelected] = createResource(selectedId, async (id) => {
-    if (!id || selectedInList()) return null;
-    return fetchPlace(id);
-  });
-  const selectedPlace = createMemo(() => selectedInList() ?? fetchedSelected() ?? null);
+  const selectedPlace = createMemo<PlaceRecord | null>(
+    () => places().find((p) => p.id === selectedId()) ?? null,
+  );
 
   const detailHref = createMemo(() => {
     const id = selectedId();
@@ -265,10 +253,14 @@ export default function Home() {
   });
 
   const countText = createMemo(() => {
-    if (result.loading) return "Searching…";
-    if (result.error) return "Search failed";
-    const total = result()?.total ?? 0;
-    const extra = result()?.truncated ? "+" : "";
+    // `hydrated() &&` so the pre-render and the first client render agree.
+    if (hydrated() && records.loading) return "Loading the directory…";
+    // A failed load is never allowed to read as "there is nothing here". That
+    // mistake is what made an eight-hour outage look like an empty site: the
+    // page returned 200, the list rendered zero rows, and nothing said why.
+    if (loadFailed()) return "Could not load the directory";
+    const total = result().total;
+    const extra = result().truncated ? "+" : "";
     return `${total.toLocaleString("en-GB")}${extra} ${total === 1 ? "place" : "places"} in view`;
   });
 
@@ -322,18 +314,28 @@ export default function Home() {
 
       <BottomSheet title={title()} count={countText()}>
         <Show
-          when={!result.error}
+          when={!loadFailed()}
           fallback={
-            <div class="empty-list">
+            <div class="empty-list" role="alert">
               <p>
-                <strong>Search failed.</strong>
+                <strong>The directory could not be loaded.</strong>
               </p>
-              <p class="muted tiny">Check your connection and try again. The map still works.</p>
+              <p class="muted tiny">
+                This is a problem on our side, not yours. The map below still works, and the
+                listing is on{" "}
+                <a href="https://www.openstreetmap.org/copyright" rel="noopener">
+                  OpenStreetMap
+                </a>
+                .
+              </p>
+              <button type="button" class="btn" onClick={() => refetch()}>
+                Try again
+              </button>
             </div>
           }
         >
           <Show
-            when={places().length > 0 || result.loading}
+            when={places().length > 0 || (hydrated() && records.loading)}
             fallback={<EmptyList q={view().q} selectionCount={view().sel.length} />}
           >
             <ul id="results" class="result-list" aria-label={title()}>
@@ -348,6 +350,20 @@ export default function Home() {
                 )}
               </For>
             </ul>
+
+            {/* The server's answer, for the browser to hydrate from. NoHydration
+                because the browser reads it out of the DOM rather than
+                re-rendering it — rendering it on both sides would be a second
+                copy of the directory in the document. */}
+            <NoHydration>
+              <Show when={records()}>
+                <script
+                  type="application/json"
+                  id={SEED_ELEMENT_ID}
+                  innerHTML={serialiseSeed(activeSelections(), records()!)}
+                />
+              </Show>
+            </NoHydration>
           </Show>
         </Show>
       </BottomSheet>

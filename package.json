@@ -10,7 +10,9 @@
   },
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "vite build && node scripts/guard-no-request-db.mjs",
+    "build:data": "node scripts/build-data.mjs",
+    "prebuild": "npm run build:data",
     "preview": "vite preview",
     "deploy": "vite build && wrangler deploy",
     "check": "tsc --noEmit && node scripts/validate.mjs",
@@ -22,9 +24,7 @@
     "build:index": "node scripts/build-index.mjs",
     "sync": "node scripts/sync-d1.mjs",
     "db:schema:local": "wrangler d1 execute pampered --local --file schema.sql",
-    "db:schema:remote": "wrangler d1 execute pampered --remote --file schema.sql",
-    "precheck": "npm run cf-typegen",
-    "prebuild": "npm run cf-typegen"
+    "db:schema:remote": "wrangler d1 execute pampered --remote --file schema.sql"
   },
   "dependencies": {
     "@kobalte/core": "^0.13.14",

@@ -68,49 +68,31 @@ CREATE TABLE IF NOT EXISTS places (
   updated_at    TEXT NOT NULL DEFAULT ''
 ) STRICT;
 
--- The one query that matters is "everything in this box", and this index is the
--- only reason that stays fast as the table grows past a hundred thousand rows.
-CREATE INDEX IF NOT EXISTS idx_places_bbox ON places (lat, lon);
-CREATE INDEX IF NOT EXISTS idx_places_source ON places (source);
-CREATE INDEX IF NOT EXISTS idx_places_primary ON places (primary_sel);
-
--- A standalone FTS5 table rather than an external-content one.
+-- Nothing reads this table at request time any more. The directory is published
+-- as static assets by scripts/build-data.mjs and the browser filters it, because
+-- an earlier version asked D1 for every viewport and for two full-table row
+-- counts on every page view, which exhausted the account-wide daily row-read
+-- quota and took korg-e.com/mir down with it.
 --
--- The obvious alternative links places_fts to places(rowid), which breaks under
--- VACUUM and makes `rebuild` the only way to recover. Duplicating four short
--- strings across twenty thousand rows costs a few hundred kilobytes and removes
--- every one of those failure modes, including the sync script having to care
--- about rowid identity.
-CREATE VIRTUAL TABLE IF NOT EXISTS places_fts USING fts5 (
-  place_id UNINDEXED,
-  name,
-  street,
-  city,
-  postcode,
-  tokenize = 'unicode61 remove_diacritics 2'
-);
+-- This table is now a published record and an audit log, not a serving tier.
+--
+-- That is also why there is no full-text index and only one index on it. D1
+-- charges a row write per index entry per write, so the three indexes and the
+-- FTS5 triggers that used to sit here cost six row-writes per place; a full sync
+-- of 7,262 rows used 43,572 of the 100,000 free daily writes. One index makes
+-- it two, and a full sync costs 14,524.
+--
+-- Add a second index only with a query that needs it and a measurement showing
+-- the read saving is worth the write cost. See AGENTS.md.
 
-CREATE TRIGGER IF NOT EXISTS places_ai AFTER INSERT ON places BEGIN
-  INSERT INTO places_fts (place_id, name, street, city, postcode)
-  VALUES (new.id, new.name, new.street, new.city, new.postcode);
-END;
-
-CREATE TRIGGER IF NOT EXISTS places_ad AFTER DELETE ON places BEGIN
-  DELETE FROM places_fts WHERE place_id = old.id;
-END;
-
-CREATE TRIGGER IF NOT EXISTS places_au AFTER UPDATE ON places BEGIN
-  DELETE FROM places_fts WHERE place_id = old.id;
-  INSERT INTO places_fts (place_id, name, street, city, postcode)
-  VALUES (new.id, new.name, new.street, new.city, new.postcode);
-END;
+CREATE INDEX IF NOT EXISTS idx_places_bbox ON places (lat, lon);
 
 -- Where the curated layer lives on the server, so a visitor can be told the
 -- difference between "we know this" and "somebody told us this".
 CREATE TABLE IF NOT EXISTS sync_log (
   id           INTEGER PRIMARY KEY AUTOINCREMENT,
   ran_at       TEXT NOT NULL,
-  -- Which command wrote this: 'refresh' | 'sync' | 'schema'.
+  -- Which command wrote this: 'sync' | 'schema'.
   command      TEXT NOT NULL,
   rows_written INTEGER NOT NULL DEFAULT 0,
   rows_deleted INTEGER NOT NULL DEFAULT 0,

@@ -11,13 +11,13 @@
 import { A } from "@solidjs/router";
 import { dogPolicyLabel, dogPolicyTone, selection } from "~/content/selections";
 import { formatDistance, openState } from "~/lib/format";
-import type { SlimPlace } from "~/server/places";
+import type { PlaceRecord as SlimPlace } from "~/lib/search";
 
 function toneClass(tone: string): string {
   return tone === "good" ? "pill-good" : tone === "warn" ? "pill-warn" : tone === "bad" ? "pill-bad" : "pill-unknown";
 }
 
-export function SourceBadge(props: { source: string; verified: boolean }) {
+export function SourceBadge(props: { source: string; verified: boolean | number }) {
   if (props.source === "curated" && props.verified) {
     return <span class="pill pill-good">Checked by us</span>;
   }

@@ -24,8 +24,15 @@ maintenance contract. In short:
 ```bash
 npm run refresh              # OpenStreetMap -> data/osm/
 npm run build:index          # data/osm + content/places -> data/index.json
-npm run sync                 # data/index.json -> D1 (add --local for local)
+npm run build                # publishes static data + pre-renders. This is
+                              # what goes live.
+npm run sync                 # optional: a D1 audit record of what is published
 ```
+
+**No page load touches a database.** The directory is precomputed into static
+JSON that the browser filters itself. That is not only faster — an earlier
+version read D1 on every request and exhausted the account-wide daily row-read
+quota, which took [korg-e.com/mir](https://korg-e.com/mir) down with it.
 
 ## Deploy
 

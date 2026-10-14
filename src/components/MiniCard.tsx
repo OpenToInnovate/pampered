@@ -10,7 +10,7 @@ import { A } from "@solidjs/router";
 import { onCleanup, onMount } from "solid-js";
 import { dogPolicyLabel, dogPolicyTone } from "~/content/selections";
 import { formatAddress } from "~/lib/format";
-import type { SlimPlace } from "~/server/places";
+import type { PlaceRecord as SlimPlace } from "~/lib/search";
 import { SourceBadge } from "./PlaceCard";
 
 export default function MiniCard(props: {

@@ -2,38 +2,30 @@
  * The footer. Small, honest, and legally necessary: the OpenStreetMap data
  * this site runs on is under the ODbL, which requires attribution, so the
  * credit to OpenStreetMap contributors is not decorative and is not removable.
+ *
+ * The count comes from `data/manifest.json`, a build artefact, rather than from
+ * asking the database. That is not a style choice. This footer used to call an
+ * endpoint that ran two full-table row counts on every single page view — about
+ * 14,500 rows per visitor on a 7,000-row table — which exhausted the account's
+ * daily D1 row-read quota and took an unrelated site down with it. The count in
+ * the manifest is written once at build time and costs nothing to read.
  */
 import { A } from "@solidjs/router";
 import { createResource } from "solid-js";
-
-interface Health {
-  ok: boolean;
-  total: number;
-  sources: Record<string, number>;
-}
-
-async function fetchHealth(): Promise<Health | null> {
-  try {
-    const res = await fetch("/api/health");
-    if (!res.ok) return null;
-    return (await res.json()) as Health;
-  } catch {
-    return null;
-  }
-}
+import { loadManifest } from "~/lib/dataset";
 
 export default function SiteFooter() {
-  const [health] = createResource(fetchHealth);
+  const [manifest] = createResource(loadManifest);
+  const total = () => {
+    const value = manifest()?.total;
+    return typeof value === "number" ? value.toLocaleString("en-GB") : null;
+  };
+
   return (
     <footer class="site-footer">
       <p>
         <strong>Pampered</strong>
-        {health()?.total != null && (
-          <>
-            {" — "}
-            {health()!.total.toLocaleString("en-GB")} dog-friendly places
-          </>
-        )}
+        {total() && <> — {total()} dog-friendly places</>}
       </p>
       <p class="tiny muted">
         Map data ©{" "}

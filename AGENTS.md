@@ -72,20 +72,59 @@ OSM rows refresh weekly by the same command after `npm run refresh`.
    `build:index` and `sync` as above. Nothing else. The chip, legend, layer,
    filter and query generate themselves.
 
+## Why there is no API
+
+**Nothing reads a database while serving a page. Do not add a route that does.**
+
+In August 2026 this site asked D1 for every viewport query, and its footer asked
+D1 for two full-table row counts on every page view. That is about 14,500 rows
+read per visitor on a 7,000-row table. It exhausted the account's daily D1
+row-read quota within hours, every D1 query started failing, and — because the
+quota is **per account rather than per database** — it took
+[mir-os](https://korg-e.com/mir) down at the same time. Two unrelated sites,
+one hobby project, one shared limit.
+
+The directory is now precomputed:
+
+```
+data/index.json  ->  public/data/<selection>.json   served as a static asset
+                 ->  data/published.json           bundled into the Worker
+```
+
+The browser fetches the selections it is showing and filters them itself; a
+venue page is server-rendered from the bundled copy. Neither touches D1, so the
+quota cannot be spent by browsing at all. A first-time visitor downloads 47 kB
+of default data, and the whole directory is 187 kB, loaded only on demand.
+
+`npm run build` fails if a database reference, an `/api/` route or `node:fs`
+appears in browser code — see `scripts/guard-no-request-db.mjs`. If you find
+yourself wanting to add one back, that script is the argument against it.
+
+**Corollary:** the second failure was not the query, it was the silence. The
+site returned HTTP 200 with an empty page and nothing said why, so nobody
+noticed for hours. Any new failure path has to say what went wrong; an empty
+list is never an acceptable error state.
+
 ## The pipeline, in order
 
 ```
 npm run refresh        # Overpass -> data/osm/. Sequential, polite, resumable.
 npm run build:index    # data/osm + content/places -> data/index.json
-npm run sync           # data/index.json -> remote D1 (add --local for local)
+npm run build          # runs build:data, then vite build, then the guard
+npm run sync           # data/index.json -> remote D1. An audit log, not a
+                       # serving tier. Nothing reads it. Optional.
 ```
 
 `refresh` subdivides an area Overpass refuses and resumes tile by tile; killing
-it loses nothing. `sync` is idempotent — running it twice changes nothing the
-second time — and it **deletes** OSM rows the new index no longer contains (a
-venue deleted or un-tagged upstream should leave the map). It never deletes
-curated or manual rows. Removing a curated venue is an edit in
-`content/places/`, not a side effect.
+it loses nothing. `build` is what goes live: it publishes the static dataset and
+pre-renders `/about` and every curated venue page. `sync` writes D1 and is
+idempotent; run it when you want a durable record of what is published, not
+because the site needs it.
+
+`data/osm/` and `data/index.json` are gitignored. `public/data/` and
+`data/published.json` are build outputs of `npm run build:data` and are also
+gitignored — CI regenerates them from the OSM cache, so a fresh clone needs
+`npm run refresh && npm run build:index` before it can build.
 
 ## Non-negotiables
 
@@ -104,13 +143,21 @@ curated or manual rows. Removing a curated venue is an edit in
   there or vice versa.
 - **Mobile first.** Every UI change is reviewed at 390×844 before desktop. No
   hover-only affordance, no target under 44px, no layout that needs a mouse.
+- **Say what went wrong.** Never return an empty list, an empty map or a bare
+  200 to mean "something broke". The reader cannot tell the difference between
+  "there is nothing here" and "we are down", and guessing wrong is worse than
+  an honest error.
+- **Nothing at request time touches a database.** See above. This is the rule
+  that keeps the other sites on this account alive.
 
 ## Verification
 
 ```
 npm run check     # tsc + content validation. Must pass before anything else.
 npm run test      # vitest unit tests.
-npm run test:e2e  # playwright, needs a preview server with local D1.
+npm run build     # also runs the no-request-database guard.
+npm run test:e2e  # playwright, needs a preview server. No database required,
+                  # which is the point.
 ```
 
 CI runs check, test and a build on every push to `main`, then deploys. Content
