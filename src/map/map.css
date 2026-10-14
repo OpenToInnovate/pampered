@@ -15,7 +15,12 @@
   min-height: 140px;
 }
 
-.map-container {
+/* Specificity 0-2-0, deliberately above MapLibre's own `.maplibregl-map`
+   (0-1-0). Their stylesheet is injected at runtime, after ours, so equal
+   specificity would lose and the container would collapse to height zero —
+   a blank map with no error. Their font, overflow and touch rules still apply;
+   only the positioning is ours. */
+.finder-map > .map-container {
   position: absolute;
   inset: 0;
 }
