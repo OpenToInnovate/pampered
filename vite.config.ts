@@ -67,7 +67,10 @@ function curatedVenueRoutes(): string[] {
 export default defineConfig({
   plugins: [solidStart({ middleware: "./src/middleware/index.ts" }), nitro(), contentYaml()],
   nitro: {
-    // Pre-rendering puts the homepage, the about page and every curated venue
+    // The Cloudflare Workers output format. Without it the build produces no
+    // wrangler.json for `wrangler deploy` to read.
+    preset: "cloudflare_module",
+    // Pre-rendering puts the about page and every curated venue
     // into .output/public, where Workers Assets serves them from the edge
     // without invoking the Worker at all. The homepage is the most-requested URL
     // on the site, so this is the single largest saving available.
@@ -83,7 +86,6 @@ export default defineConfig({
     },
     // Nitro reads wrangler.jsonc in dev to provide bindings through Miniflare.
     cloudflare: { deployConfig: true },
-
   },
   test: {
     environment: "node",

@@ -19,6 +19,7 @@
  * regression cannot reach production without failing here first.
  */
 import { readFile, readdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { ROOT } from "./lib/content.mjs";
 
@@ -132,6 +133,24 @@ async function checkPrerendered() {
     }
   } catch {
     fail("/about was not pre-rendered — enable nitro.prerender in vite.config.ts");
+  }
+
+  // A build that cannot be deployed is not a passing build. The deploy preset
+  // went missing once already, and every other check still passed: vite built,
+  // the preview server ran, the browser bundle was clean. `wrangler deploy` was
+  // the first thing that noticed, which is one step too late.
+  const deployConfig = join(ROOT, ".output", "server", "wrangler.json");
+  if (existsSync(deployConfig)) {
+    const config = JSON.parse(await readFile(deployConfig, "utf8"));
+    const named = Object.values(config.bindings ?? {}).filter((b) => b.type === "d1_databases");
+    if (named.length) {
+      notes.push(
+        `deploy config keeps ${named.length} D1 binding(s) for the CLI; runtime code must not use them`,
+      );
+    }
+    notes.push("build produced .output/server/wrangler.json, so `wrangler deploy` can read it");
+  } else {
+    fail("no .output/server/wrangler.json — set nitro.preset to cloudflare_module in vite.config.ts");
   }
 }
 
