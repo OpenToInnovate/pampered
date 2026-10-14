@@ -1,0 +1,67 @@
+# This file is documentation, not data.
+#
+# Files whose name begins with an underscore are skipped by `npm run build:index`,
+# so nothing here reaches the site, D1 or the map. Copy it, rename it without the
+# underscore, and fill it in.
+
+version: 1
+
+places:
+  # ------------------------------------------------------------------ curated
+  # Somebody told us about it, or somebody on the team went and looked. The page
+  # shows a "checked by us" badge because this row is allowed to claim one.
+  - id: the-example-pub
+    name: The Example
+    source: curated
+    verified: true
+
+    selections: [pubs]
+
+    lat: 51.5074
+    lon: -0.1278
+    region: london
+
+    street: 1 Example Street
+    city: London
+    postcode: SW1A 1AA
+
+    phone: "+442079460000"
+    website: https://example.co.uk
+    instagram: example
+
+    opening_hours: "Mo-Fr 09:00-17:00; Sa 10:00-18:00"
+    dog_policy: outside
+
+    # What we actually know, in a sentence a dog owner would want to read. This
+    # is the single most valuable field in the file and the one mappers never
+    # have. Write it or do not claim `verified`.
+    notes: >-
+      Dogs welcome at the tables on the pavement. There are two bowls by the door
+      and the staff will bring water if you ask, but there is no dog menu.
+
+    # Where a booking actually happens. We never take a booking and never hold a
+    # payment — this is a link out to whoever the venue already uses.
+    booking:
+      url: https://example.co.uk/book
+      label: Book a table
+
+    # A short vertical image for the card. Hotlink it or leave it out; do not
+    # invent a path that does not exist.
+    image: https://example.co.uk/pavement.jpg
+
+  # ------------------------------------------------------------------- manual
+  # Somebody told us about it and nobody has been yet. It appears on the map and
+  # in results, marked "not checked yet". It cannot claim `verified`.
+  - id: the-other-example
+    name: The Other Example
+    source: manual
+    selections: [cafes, ice-cream]
+
+    lat: 51.5155
+    lon: -0.0922
+
+    city: London
+    postcode: E1 6AN
+
+    dog_policy: unknown
+    notes: Reported by a visitor. Needs a phone call before we say anything more.

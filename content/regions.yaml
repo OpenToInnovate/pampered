@@ -1,0 +1,58 @@
+# The jump list. This is a convenience, not a limit: the map has no region baked
+# into it and the API answers any bbox you give it. These exist because coverage
+# is uneven and a person should not have to hunt for the city that has data.
+#
+# Order here is the order shown. Add a city when you have actually put places in
+# it, not when you hope somebody will.
+
+version: 1
+
+regions:
+  - id: london
+    label: London
+    centre: [-0.1276, 51.5074]
+    zoom: 10.6
+  - id: manchester
+    label: Manchester
+    centre: [-2.2426, 53.4808]
+    zoom: 11.2
+  - id: bristol
+    label: Bristol
+    centre: [-2.5879, 51.4545]
+    zoom: 11.4
+  - id: edinburgh
+    label: Edinburgh
+    centre: [-3.1883, 55.9533]
+    zoom: 11.2
+  - id: cardiff
+    label: Cardiff
+    centre: [-3.1791, 51.4816]
+    zoom: 11.4
+  - id: belfast
+    label: Belfast
+    centre: [-5.9301, 54.5973]
+    zoom: 11.2
+  - id: brighton
+    label: Brighton
+    centre: [-0.1372, 50.8225]
+    zoom: 11.8
+  - id: oxford
+    label: Oxford
+    centre: [-1.2576, 51.7520]
+    zoom: 12
+  - id: cambridge
+    label: Cambridge
+    centre: [0.1218, 52.2053]
+    zoom: 12
+  - id: york
+    label: York
+    centre: [-1.0786, 53.9600]
+    zoom: 12
+  - id: bath
+    label: Bath
+    centre: [-2.3590, 51.3811]
+    zoom: 12.2
+  - id: glasgow
+    label: Glasgow
+    centre: [-4.2518, 55.8642]
+    zoom: 11.4

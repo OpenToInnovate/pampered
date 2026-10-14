@@ -1,0 +1,205 @@
+# Every visible thing on the map is a selection declared here.
+#
+# One entry produces seven things: a filter chip, a map layer with its colour,
+# a legend row, the D1 filter, the Overpass query `npm run refresh` runs, the
+# "shown as" links on a venue page, and the sitemap entry. Adding a selection is
+# a file edit. There is deliberately no code path for adding one.
+#
+# Before you edit:
+#   npm run check     validates the schema, the ids, and the colour contrast
+#   npm run refresh   re-pulls OpenStreetMap for every selection that has data
+#   npm run sync      pushes the merged result into D1
+#
+# The full worked example, including what a curated venue file looks like, is in
+# AGENTS.md.
+
+version: 1
+
+# The extent `npm run refresh` pulls. The map itself is viewport-driven and has
+# no region baked in; this only bounds the Overpass request. Widen it and the
+# refresh gets slower and Overpass starts refusing, so grow it deliberately.
+area:
+  name: Great Britain
+  bbox: [49.85, -8.65, 60.9, 1.85] # south, west, north, east
+
+groups:
+  - id: eat-drink
+    label: Eat & drink
+  - id: care
+    label: Care & supplies
+  - id: outside
+    label: Out & about
+
+# The values OpenStreetMap uses for `dog=*`, and the English we show for each.
+# Anything we do not recognise becomes "unknown" rather than being dropped, so a
+# venue someone tagged `dog=our_side` still appears with an honest label.
+dog_policy:
+  yes: Dogs welcome inside
+  designated: Designated for dogs
+  permitted: Dogs permitted
+  inside: Dogs allowed inside
+  outside: Outside seating only
+  leashed: Dogs must be kept on a lead
+  off_leash: Dogs allowed off the lead
+  unleashed: Dogs allowed off the lead
+  no: No dogs
+
+selections:
+  # ---------------------------------------------------------------- eat & drink
+  - id: restaurants
+    label: Restaurants that welcome dogs
+    short: Restaurants
+    group: eat-drink
+    icon: fork
+    colour: "#CB3030"
+    default: true
+    minzoom: 11
+    blurb: Tagged in OpenStreetMap as allowing dogs inside.
+    osm:
+      tags:
+        amenity: [restaurant]
+        dog: [yes, permitted, designated, inside, outside]
+
+  - id: cafes
+    label: Cafés that welcome dogs
+    short: Cafés
+    group: eat-drink
+    icon: cup
+    colour: "#876820"
+    default: true
+    minzoom: 11
+    blurb: Tagged in OpenStreetMap as allowing dogs inside.
+    osm:
+      tags:
+        amenity: [cafe]
+        dog: [yes, permitted, designated, inside, outside]
+
+  - id: pubs
+    label: Pubs that welcome dogs
+    short: Pubs
+    group: eat-drink
+    icon: pint
+    colour: "#62741B"
+    minzoom: 11
+    blurb: Tagged in OpenStreetMap as allowing dogs inside.
+    osm:
+      tags:
+        amenity: [pub, biergarten]
+        dog: [yes, permitted, designated, inside, outside]
+
+  - id: bars
+    label: Bars that welcome dogs
+    short: Bars
+    group: eat-drink
+    icon: glass
+    colour: "#B12DC0"
+    minzoom: 12
+    blurb: Tagged in OpenStreetMap as allowing dogs inside.
+    osm:
+      tags:
+        amenity: [bar]
+        dog: [yes, permitted, designated, inside, outside]
+
+  - id: ice-cream
+    label: Ice cream and gelato
+    short: Ice cream
+    group: eat-drink
+    icon: cone
+    colour: "#C22D86"
+    minzoom: 13
+    blurb: Tagged in OpenStreetMap as allowing dogs inside.
+    osm:
+      tags:
+        amenity: [ice_cream]
+        dog: [yes, permitted, designated, inside, outside]
+
+  # -------------------------------------------------------------- care supplies
+  - id: groomers
+    label: Groomers
+    short: Groomers
+    group: care
+    icon: scissors
+    colour: "#8E48D4"
+    default: true
+    minzoom: 12
+    blurb: Dog grooming, from OpenStreetMap and from places we have checked.
+    osm:
+      # There is no single OSM tag for "groomer". This deliberately catches both
+      # conventions people actually use, and it is the selection most worth
+      # filling in by hand — see AGENTS.md.
+      any:
+        - tags:
+            shop: [pet]
+            dog: [yes, permitted, designated]
+        - tags:
+            shop: [beauty]
+            dog: [yes, permitted, designated]
+
+  - id: vets
+    label: Vets
+    short: Vets
+    group: care
+    icon: cross
+    colour: "#21768B"
+    minzoom: 11
+    blurb: Veterinary practices, from OpenStreetMap.
+    osm:
+      tags:
+        amenity: [vet]
+
+  - id: pet-shops
+    label: Pet shops
+    short: Pet shops
+    group: care
+    icon: bag
+    colour: "#5D5DD9"
+    minzoom: 12
+    blurb: Food, toys and equipment, from OpenStreetMap.
+    osm:
+      tags:
+        shop: [pet]
+
+  # ------------------------------------------------------------------- outside
+  - id: dog-parks
+    label: Dog parks
+    short: Dog parks
+    group: outside
+    icon: paw
+    colour: "#1D7A5E"
+    default: true
+    minzoom: 10
+    blurb: Fenced or unfenced areas set aside for dogs.
+    osm:
+      tags:
+        leisure: [dog_park]
+
+  - id: off-lead
+    label: Off-lead areas
+    short: Off-lead
+    group: outside
+    icon: paw-off
+    colour: "#1D7D1D"
+    minzoom: 13
+    blurb: Parks, commons and fields where dogs may run free.
+    osm:
+      any:
+        - tags:
+            dog: [off_leash, unleashed]
+        - tags:
+            off_leash: ["yes"]
+
+  - id: water-bowls
+    label: Water bowls and drinking spots
+    short: Water
+    group: outside
+    icon: drop
+    colour: "#2E6BC5"
+    minzoom: 14
+    # A drinking-water tap rarely has a name. Unnamed taps are still worth a dot
+    # on the map, so this selection keeps them and the UI falls back to "Water".
+    allowUnnamed: true
+    blurb: Drinking water that someone has marked as safe for dogs.
+    osm:
+      tags:
+        amenity: [drinking_water]
+        dog: ["yes"]

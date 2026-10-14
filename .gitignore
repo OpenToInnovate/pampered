@@ -1,0 +1,22 @@
+node_modules/
+.wrangler/
+.output/
+dist/
+.vinxi/
+
+# Raw OpenStreetMap responses. They are large, regenerate with `npm run refresh`,
+# and are not the source of truth for anything a reader sees.
+data/osm/
+data/index.json
+
+# Playwright writes here. See .gitignore in ../korg-e for why the screenshots
+# are not worth a history: they are 200kb a shot and every one is reproducible.
+shots/
+test-results/
+playwright-report/
+
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example

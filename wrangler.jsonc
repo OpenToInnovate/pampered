@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "pampered",
+  "compatibility_date": "2026-10-14",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  // Nitro's cloudflare_module preset writes the Worker here on `vite build`.
+  // These paths do not exist until the first build, which is fine: wrangler
+  // only reads them at deploy/preview time, never at config parse time.
+  "main": ".output/server/index.mjs",
+  "assets": {
+    "directory": ".output/public"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "pampered",
+      "database_id": "be9e51da-8013-4bf8-a20d-ac3d0b6917df",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // A custom domain on a subdomain of the already-proxied korg-e.com zone.
+  // Wrangler creates the DNS record itself, so there is nothing to add by hand.
+  "routes": [
+    {
+      "pattern": "pampered.korg-e.com",
+      "custom_domain": true
+    }
+  ]
+}

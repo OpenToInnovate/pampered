@@ -1,0 +1,13 @@
+{
+  "printWidth": 110,
+  "singleQuote": false,
+  "semi": true,
+  "trailingComma": "all",
+  "plugins": [],
+  "overrides": [
+    {
+      "files": ["*.yaml", "*.yml", "*.md"],
+      "options": { "printWidth": 100 }
+    }
+  ]
+}
