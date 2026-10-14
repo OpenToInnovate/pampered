@@ -17,7 +17,11 @@ const OUT = new URL("../shots/", import.meta.url).pathname;
 async function main() {
   await mkdir(OUT, { recursive: true });
   const browser = await chromium.launch({
-    args: ["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"],
+    // No --disable-gpu: SwiftShader provides WebGL2 in headless Chromium, which
+    // is exactly what these screenshots are for — proving the real map renders.
+    // If WebGL2 is ever unavailable the SVG fallback appears instead, and that
+    // is also a shippable state worth seeing.
+    args: ["--no-sandbox", "--disable-dev-shm-usage"],
   });
 
   const mobile = await browser.newPage({

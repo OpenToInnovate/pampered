@@ -144,8 +144,10 @@ selections:
     minzoom: 11
     blurb: Veterinary practices, from OpenStreetMap.
     osm:
+      # Both tags are in use. `vet` is the documented value; `veterinary` is
+      # what most UK mappers actually write.
       tags:
-        amenity: [vet]
+        amenity: [vet, veterinary]
 
   - id: pet-shops
     label: Pet shops
