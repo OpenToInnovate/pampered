@@ -34,7 +34,7 @@ async function main() {
   // for the list instead. The map gets its own pause after.
   await mobile.goto(`${BASE}/`, { waitUntil: "domcontentloaded", timeout: 45_000 });
   await mobile.waitForSelector("#results > li", { timeout: 20_000 }).catch(() => {});
-  await mobile.waitForTimeout(4000);
+  await mobile.waitForTimeout(10000);
   await mobile.screenshot({ path: join(OUT, "home-mobile.png") });
   console.log("home-mobile.png");
 
@@ -47,7 +47,7 @@ async function main() {
   const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await desktop.goto(`${BASE}/`, { waitUntil: "domcontentloaded", timeout: 45_000 });
   await desktop.waitForSelector("#results > li", { timeout: 20_000 }).catch(() => {});
-  await desktop.waitForTimeout(4000);
+  await desktop.waitForTimeout(12000);
   await desktop.screenshot({ path: join(OUT, "home-desktop.png") });
   console.log("home-desktop.png");
 
