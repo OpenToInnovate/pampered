@@ -9,6 +9,7 @@
  * nothing, because an unnamed pin that opens an unnamed card is a dead end.
  */
 import { A } from "@solidjs/router";
+import { SelectionIcon } from "~/map/icons";
 import { dogPolicyLabel, dogPolicyTone, selection } from "~/content/selections";
 import { formatDistance, openState } from "~/lib/format";
 import type { PlaceRecord as SlimPlace } from "~/lib/search";
@@ -44,6 +45,7 @@ export default function PlaceCard(props: {
   };
   const open = () => openState(p().openingHours);
   const policy = () => p().dogPolicy ?? "unknown";
+  const icon = (): string => selection(p().primary ?? p().selections[0] ?? "")?.icon ?? "paw";
 
   return (
     <li>
@@ -56,6 +58,7 @@ export default function PlaceCard(props: {
       >
         <span class="place-card-main">
           <span class="row place-card-top">
+            <SelectionIcon name={icon()} size={18} class="place-card-icon" />
             <strong class="place-card-name">{displayName()}</strong>
             <span class="spacer" />
             {p().distance != null && (
@@ -85,7 +88,7 @@ export default function PlaceCard(props: {
 }
 
 /** The empty list. Says what is empty and what would fill it, not just "nothing found". */
-export function EmptyList(props: { q: string; selectionCount: number }) {
+export function EmptyList(props: { q: string; selectionCount: number; openNow: boolean }) {
   return (
     <div class="empty-list">
       <p>
@@ -94,7 +97,9 @@ export function EmptyList(props: { q: string; selectionCount: number }) {
       <p class="muted tiny">
         {props.selectionCount === 0
           ? "Every selection is switched off. Switch one back on to see its places."
-          : "Try zooming out, clearing the search, or switching on another selection."}
+          : props.openNow
+            ? "Nothing provably open right now is in view. Switch Open now off, or zoom out."
+            : "Try zooming out, clearing the search, or switching on another selection."}
       </p>
     </div>
   );

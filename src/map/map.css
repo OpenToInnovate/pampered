@@ -1,5 +1,4 @@
-/* The map and everything docked to it. The map itself is rendered by MapLibre;
-   this file positions its container, the floating controls, and the mini-card. */
+/* The map and everything docked to it. */
 
 .finder {
   display: flex;
@@ -9,17 +8,21 @@
   overflow: hidden;
 }
 
+.finder-body {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+
+/* ------------------------------------------------------------------ map */
+
 .finder-map {
   position: relative;
   flex: 1 1 auto;
-  min-height: 140px;
+  min-height: 0;
 }
 
-/* Specificity 0-2-0, deliberately above MapLibre's own `.maplibregl-map`
-   (0-1-0). Their stylesheet is injected at runtime, after ours, so equal
-   specificity would lose and the container would collapse to height zero —
-   a blank map with no error. Their font, overflow and touch rules still apply;
-   only the positioning is ours. */
 .finder-map > .map-container {
   position: absolute;
   inset: 0;
@@ -37,16 +40,22 @@
 }
 
 .map-container .maplibregl-ctrl-group button {
-  width: 34px;
-  height: 34px;
+  width: var(--tap-sm);
+  height: var(--tap-sm);
 }
 
 .map-container .maplibregl-ctrl-attrib {
   font-size: 10px;
+  white-space: nowrap;
+  max-width: calc(100% - 64px);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .map-container .maplibregl-ctrl-attrib a {
   color: var(--ink-2);
+  padding-block: 18px;
+  margin-block: -18px;
 }
 
 /* ------------------------------------------------------------------ overlay */
@@ -56,8 +65,8 @@
   top: 0;
   left: 0;
   right: 0;
-  padding: calc(var(--safe-top) + 10px) calc(var(--safe-right) + 12px) 0
-    calc(var(--safe-left) + 12px);
+  padding: calc(var(--safe-top) + 10px) calc(var(--safe-right) + 12px)
+    calc(var(--safe-bottom) + 8px) calc(var(--safe-left) + 12px);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -74,12 +83,12 @@
 .search-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-2);
-  padding: 6px 6px 6px 12px;
+  padding: 8px 10px 8px 12px;
 }
 
 .search-icon {
@@ -91,10 +100,15 @@
   flex: 1;
   min-width: 0;
   border: 0;
-  background: none;
-  padding: 8px 4px;
+  background: transparent;
+  padding: 10px 4px;
   font-size: 16px;
+  color: var(--ink);
   outline: none;
+}
+
+.search-bar input::placeholder {
+  color: var(--ink-3);
 }
 
 /* type=search ships its own clear button in WebKit; ours is the real one. */
@@ -103,17 +117,32 @@
 }
 
 .search-clear {
+  flex: none;
   width: var(--tap-sm);
   min-width: var(--tap-sm);
   min-height: var(--tap-sm);
   font-size: 20px;
   line-height: 1;
+  color: var(--ink-3);
+}
+
+.search-clear:hover {
+  color: var(--ink);
 }
 
 .search-go {
+  flex: none;
   min-height: var(--tap-sm);
-  padding: 0 14px;
-  font-size: 14px;
+  padding: 0 18px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  border-color: transparent;
+  background: var(--accent-soft);
+}
+
+.search-go:hover {
+  background: var(--accent-soft-2);
 }
 
 /* --------------------------------------------------------------------- chips */
@@ -122,7 +151,7 @@
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding: 2px 2px 6px;
+  padding: 2px 2px 8px;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
@@ -135,16 +164,16 @@
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   min-height: var(--tap-sm);
   padding: 0 12px 0 9px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius-pill);
   background: var(--surface);
   box-shadow: var(--shadow-1);
   font-size: 13.5px;
-  font-weight: 600;
-  color: var(--ink-2);
+  font-weight: 700;
+  color: var(--ink);
   white-space: nowrap;
 }
 
@@ -161,29 +190,93 @@
 
 .chip-active {
   border-color: var(--chip-colour, var(--line-strong));
-  background: color-mix(in oklab, var(--chip-colour, var(--surface-2)) 12%, var(--surface));
+  background: color-mix(in srgb, var(--chip-colour, var(--surface-2)) 12%, var(--surface));
   color: var(--ink);
 }
 
 .chip-active .chip-count {
-  color: var(--ink-2);
+  color: var(--ink);
 }
 
 /* --------------------------------------------------------------------- tools */
 
 .finder-tools {
-  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .near-me {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--tap-sm);
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
   background: var(--surface);
   box-shadow: var(--shadow-1);
-  font-size: 18px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
 }
 
 .near-me[aria-pressed="true"] {
   border-color: var(--accent);
   color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* An "Open now" toggle that reads as a switch, not a chip. */
+.open-toggle {
+  min-height: var(--tap-sm);
+  font-size: 14px;
+}
+
+.open-toggle[aria-pressed="true"] {
+  border-color: var(--good);
+  color: var(--good);
+  background: color-mix(in srgb, var(--good) 12%, var(--surface));
+}
+
+/* The sort control: two quiet buttons that behave as one switch. */
+.order-switch {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+}
+
+.order-btn {
+  min-height: var(--tap-sm);
+  padding: 0 14px;
+  font-size: 14px;
+  border: 0;
+  min-width: 76px;
+}
+
+.order-btn[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.share-btn {
+  min-width: var(--tap-sm);
+  font-size: 17px;
+}
+
+/* A geolocation failure explains itself in the overlay, not in a toast. */
+.finder-error {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--bad) 12%, var(--surface));
+  color: var(--bad);
+  font-weight: 600;
+  box-shadow: var(--shadow-1);
 }
 
 /* ----------------------------------------------------------------- mini card */
@@ -195,7 +288,7 @@
   bottom: 12px;
   z-index: 20;
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   box-shadow: var(--shadow-2);
   padding: 12px 14px;
@@ -267,7 +360,7 @@
   flex-direction: column;
   min-height: 0;
   background: var(--bg);
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--line-strong);
   box-shadow: var(--shadow-3);
   z-index: 30;
 }
@@ -286,6 +379,7 @@
 }
 
 .sheet-handle {
+  min-height: var(--tap);
   flex: none;
   display: flex;
   flex-direction: column;
@@ -337,7 +431,7 @@
   padding: 4px 0 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .result-list > li {
@@ -351,11 +445,24 @@
   gap: 10px;
   padding: 12px 12px 12px 14px;
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
   color: var(--ink);
   text-decoration: none;
   box-shadow: var(--shadow-1);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.place-card:hover {
+  border-color: var(--ink-3);
+  box-shadow: var(--shadow-2);
+}
+
+.place-card:active {
+  transform: scale(0.995);
 }
 
 .place-card-selected {
@@ -376,16 +483,32 @@
 }
 
 .place-card-name {
-  font-size: 15.5px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.place-card-icon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft-2);
+  color: var(--accent);
+}
+
 .place-card-distance {
   flex: none;
   font-variant-numeric: tabular-nums;
-  font-size: 13px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  font-weight: 600;
 }
 
 .place-card-pills {
@@ -397,11 +520,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--ink-2);
 }
 
 .place-card-go {
   flex: none;
-  font-size: 24px;
+  font-size: 26px;
   line-height: 1;
   color: var(--ink-3);
 }
@@ -409,6 +533,9 @@
 .empty-list {
   padding: 24px 16px;
   text-align: center;
+  background: var(--surface-2);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-sm);
 }
 
 .empty-list p {
@@ -421,13 +548,12 @@
   flex: none;
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 57px;
-  padding: calc(var(--safe-top)) calc(var(--safe-right) + 12px) 0 calc(var(--safe-left) + 12px);
-  padding-bottom: 0;
+  gap: 12px;
+  min-height: 56px;
+  padding: calc(var(--safe-top) + 6px) calc(var(--safe-right) + 12px)
+    calc(6px + var(--safe-bottom)) calc(var(--safe-left) + 12px);
   background: var(--bg);
-  border-bottom: 1px solid var(--line);
-  z-index: 40;
+  border-bottom: 1px solid var(--line-strong);
 }
 
 .brand {
@@ -437,69 +563,63 @@
   color: var(--ink);
   text-decoration: none;
   font-weight: 800;
-  font-size: 19px;
+  font-size: 20px;
   letter-spacing: -0.01em;
   min-height: var(--tap);
+}
+
+.brand svg {
+  flex: none;
 }
 
 .brand-word {
   line-height: 1;
 }
 
-.region-jump select {
-  min-height: var(--tap-sm);
-  max-width: 130px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-pill);
-  background: var(--surface);
-  padding: 0 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink-2);
-}
 
 .about-link {
-  font-weight: 800;
-  font-size: 17px;
-  text-decoration: none;
+  font-weight: 700;
+  font-size: 18px;
 }
 
-/* -------------------------------------------------------------------- footer */
+/* ------------------------------------------------------------------- footer */
 
 .site-footer {
   flex: none;
-  padding: 10px calc(var(--safe-right) + 16px) calc(10px + var(--safe-bottom))
-    calc(var(--safe-left) + 16px);
-  border-top: 1px solid var(--line);
+  padding: 14px var(--safe-right) calc(14px + var(--safe-bottom)) var(--safe-left);
+  border-top: 1px solid var(--line-strong);
   background: var(--bg);
 }
 
 .site-footer p {
   margin: 4px 0;
-  font-size: 13.5px;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 /* --------------------------------------------------------------------- pages */
 
 .page {
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
   padding: 20px 16px calc(32px + var(--safe-bottom));
 }
 
 .page h1 {
-  font-size: clamp(26px, 6vw, 34px);
+  font-size: clamp(26px, 6vw, 36px);
   letter-spacing: -0.02em;
-  margin: 12px 0;
+  margin: 6px 0 16px;
 }
 
 .page h2 {
   font-size: 19px;
   margin: 28px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line-strong);
 }
 
 .page p {
-  max-width: 62ch;
+  max-width: 64ch;
 }
 
 .page-fatal {
@@ -519,14 +639,11 @@
 .facts dt {
   color: var(--ink-2);
   font-size: 14px;
+  font-weight: 600;
 }
 
 .facts dd {
   margin: 0;
-}
-
-.place-page header h1 {
-  margin-bottom: 4px;
 }
 
 /* ------------------------------------------------------------------- desktop */
@@ -536,16 +653,51 @@
     flex-direction: row;
   }
 
+  .finder-body {
+    flex-direction: row;
+  }
+
   .finder-map {
     flex: 1 1 auto;
+  }
+
+  /* The discovery bar stays attached to the map on large screens. */
+  .finder-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    flex: none;
+    padding: 16px 20px 12px;
+    box-shadow: none;
+  }
+
+  .search-bar {
+    max-width: 560px;
+  }
+
+  .chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .chip {
+    min-width: 0;
+  }
+
+  .finder-tools {
+    flex: none;
   }
 
   .sheet {
     flex: none;
     width: 400px;
     border-top: 0;
-    border-left: 1px solid var(--line);
-    box-shadow: none;
+    border-left: 1px solid var(--line-strong);
+    box-shadow: var(--shadow-2);
+    min-height: 0;
   }
 
   .sheet[data-detent],
@@ -565,15 +717,16 @@
     display: none;
   }
 
-  .sheet-body {
-    overflow-y: auto;
-  }
-
   .mini-card {
+    position: absolute;
     left: auto;
-    right: calc(var(--safe-right) + 16px);
+    right: 16px;
     bottom: 16px;
     width: 340px;
+  }
+
+  .sheet-body {
+    overflow-y: auto;
   }
 
   .site-footer {

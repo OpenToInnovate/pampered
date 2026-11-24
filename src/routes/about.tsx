@@ -11,10 +11,9 @@ export default function About() {
       <h1>About Pampered</h1>
       <p>
         Pampered is a map of places that welcome dogs: cafés, pubs and restaurants that allow them
-        inside, groomers, vets and pet shops, dog parks, off-lead areas and water bowls. It exists
-        because the existing directories list a handful of venues with no real data — no opening
-        hours, no dog policy, no map worth using — and then put the browsing behind sign-in walls
-        and cookie banners.
+        inside, groomers and pet shops that allow dogs, dog parks, off-lead areas and water bowls.
+        A place only appears if someone has recorded that dogs are welcome there. Places with no
+        dog information are left off rather than shown with a shrug.
       </p>
 
       <h2>Where the data comes from</h2>
@@ -24,8 +23,10 @@ export default function About() {
           OpenStreetMap
         </a>
         , the free map of the world, under the Open Database Licence. Mappers record a{" "}
-        <code>dog=yes</code> tag on venues that allow dogs, and we pull those tags weekly. Every
-        venue page says where its data came from and when.
+        <code>dog=yes</code> tag on venues that allow dogs, and we pull those tags when we rebuild
+        the map. Every venue page shows the date its dog information was last checked, and
+        whether anyone has checked it since. We do not guess: a venue with no dog tag is not on the
+        map.
       </p>
       <p>
         The rest is checked by hand. A venue marked <strong>Checked by us</strong> is somewhere a
@@ -36,9 +37,8 @@ export default function About() {
       <h2>Add a place</h2>
       <p>
         Know somewhere dogs are welcome that is not on the map? The fastest way it gets listed is
-        to add it to OpenStreetMap yourself — tag the venue with <code>dog=yes</code> (or{" "}
-        <code>dog=outside</code> for outside seating only) and it will appear here on the next
-        refresh. If that sounds like work, email the name, address and what you know to{" "}
+        to add it to OpenStreetMap yourself — tag the venue with <code>dog=yes</code> and it will
+        appear here on the next refresh. If that sounds like work, email the name, address and what you know to{" "}
         <a href="mailto:hello@korg-e.com">hello@korg-e.com</a> and we will check it and add it by
         hand.
       </p>

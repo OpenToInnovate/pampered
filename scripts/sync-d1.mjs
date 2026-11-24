@@ -49,6 +49,7 @@ const COLUMNS = [
   "notes",
   "provenance",
   "osm_updated",
+  "checked_on",
   "created_at",
   "updated_at",
 ];

@@ -60,6 +60,10 @@ CREATE TABLE IF NOT EXISTS places (
   provenance    TEXT NOT NULL,
   -- OSM's own timestamp for the element, so stale rows are visible as stale.
   osm_updated   TEXT,
+  -- The newest 'last checked' date OpenStreetMap records (check_date or
+  -- survey:date), as YYYY-MM-DD. Null when nobody recorded one. Existing
+  -- databases need: ALTER TABLE places ADD COLUMN checked_on TEXT;
+  checked_on    TEXT,
 
   -- Set by scripts/sync-d1.mjs rather than by a column default, because a
   -- STRICT table may not carry an expression default and because an upsert

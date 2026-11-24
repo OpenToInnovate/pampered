@@ -77,6 +77,7 @@ function publish(place) {
     wheelchair: place.wheelchair,
     provenance: place.provenance,
     osmUpdated: place.osm_updated,
+    checkedOn: place.checked_on,
   };
   for (const [key, value] of Object.entries(optional)) {
     if (value !== null && value !== undefined && value !== "") rec[key] = value;
@@ -200,7 +201,7 @@ async function main() {
       "id", "name", "lat", "lon", "primary", "selections", "dogPolicy", "source", "verified",
       "city", "street", "postcode", "openingHours", "phone", "website", "instagram",
       "notes", "bookingUrl", "bookingLabel", "image", "cuisine", "outdoorSeating",
-      "wheelchair", "provenance", "osmUpdated",
+      "wheelchair", "provenance", "osmUpdated", "checkedOn",
     ],
   };
   await writeFile(join(OUT_DIR, "manifest.json"), JSON.stringify(manifest, null, 2));

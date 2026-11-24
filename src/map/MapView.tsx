@@ -18,6 +18,8 @@ import { primarySelectionId } from "~/content/selections";
 import type { Bbox } from "~/lib/geo";
 import { createMap, toPinFeatures } from "./controller";
 import type { Camera, MapHandle, PinFeature, SelectionStyle } from "./controller";
+import { sameCamera } from "./camera";
+import type { CameraLike } from "./camera";
 
 const primarySelectionFallback = (ids: readonly string[]): string | null =>
   primarySelectionId(ids);
@@ -45,19 +47,9 @@ interface Props {
 export default function MapView(props: Props) {
   let container: HTMLDivElement | undefined;
   let handle: MapHandle | null = null;
-  let appliedCamera: Camera | null = null;
-  let lastEmitted: Camera | null = null;
+  /** The last camera the URL was told about, from the map or from a URL change we applied. */
+  let lastEmitted: CameraLike | null = null;
   let ro: ResizeObserver | undefined;
-
-  const sameCamera = (a: Camera | null, b: Camera): boolean => {
-    if (!a) return false;
-    return (
-      Math.abs(a.centre[0] - b.centre[0]) < 1e-7 &&
-      Math.abs(a.centre[1] - b.centre[1]) < 1e-7 &&
-      Math.abs(a.zoom - b.zoom) < 1e-6 &&
-      Math.abs(a.bearing - b.bearing) < 1e-6
-    );
-  };
 
   onMount(() => {
     if (!container) {
@@ -71,7 +63,7 @@ export default function MapView(props: Props) {
     // cannot run it, and none to ship it for the server render either.
     void createMap(container, props.camera, props.styles, {
       onMoveEnd: (bbox, camera) => {
-        lastEmitted = camera;
+        lastEmitted = { centre: camera.centre, zoom: camera.zoom, bearing: 0, pitch: 0 };
         props.onViewport(bbox, camera);
       },
       onSelect: (id) => props.onSelect(id),
@@ -83,7 +75,7 @@ export default function MapView(props: Props) {
         const bbox = handle.getBbox();
         const camera = handle.getCamera();
         if (bbox && camera) {
-          lastEmitted = camera;
+          lastEmitted = { centre: camera.centre, zoom: camera.zoom, bearing: 0, pitch: 0 };
           props.onViewport(bbox, camera);
         }
       },
@@ -94,7 +86,7 @@ export default function MapView(props: Props) {
       }
       handle = h;
       if (!h) return; // onFailed already fired
-      appliedCamera = { ...props.camera };
+      lastEmitted = { centre: props.camera.centre, zoom: props.camera.zoom, bearing: 0, pitch: 0 };
       h.setAllFeatures(toPinFeatures(props.places, primarySelectionFallback));
       h.setActiveSelections(props.activeSelections);
       h.setSelected(props.selectedId);
@@ -143,20 +135,17 @@ export default function MapView(props: Props) {
     }
   });
 
-  // The URL is the source of truth for the camera, but the map is the source of
-  // truth for where it actually is. When they disagree and the disagreement did
-  // not come from the map itself — a region jump, back/forward, a shared link —
-  // the map moves. `lastEmitted` is how we know the change was ours.
+  // The URL is the source of truth for the camera *when something other than the
+  // map changed it* — a region jump, back/forward, a shared link. A URL value
+  // that is just the echo of the map's own last move is ignored, because
+  // flying the map to its own echo is the snap loop. `lastEmitted` holds the
+  // map's last reported position, and `sameCamera` compares it in the URL's own
+  // precision, so an echo always matches and the map is never flown to itself.
   createEffect(() => {
     const wanted = props.camera;
     if (!handle) return;
-    if (sameCamera(appliedCamera, wanted)) return;
-    if (sameCamera(lastEmitted, wanted)) {
-      appliedCamera = { ...wanted };
-      return;
-    }
-    appliedCamera = { ...wanted };
-    lastEmitted = { ...wanted };
+    if (sameCamera(lastEmitted, wanted)) return;
+    lastEmitted = wanted;
     handle.flyToCamera(wanted);
   });
 

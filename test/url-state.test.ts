@@ -55,6 +55,41 @@ describe("parseView", () => {
     const v = parseView("?at=0,51,10,-45", IDS);
     expect(v.bearing).toBe(315);
   });
+
+  it("reads the open-now and order flags", () => {
+    const v = parseView("?at=-0.12,51.5,14&open=1&order=near", IDS);
+    expect(v.order).toBe("near");
+    expect(v.openNow).toBe(true);
+    const v2 = parseView("?at=-0.12,51.5,14", IDS);
+    expect(v2.openNow).toBe(false);
+  });
+});
+
+describe("serialiseView", () => {
+  it("round-trips", () => {
+    const original = "?q=pub&at=-0.12,51.5,14&sel=pubs,cafes&p=abc";
+    const v = parseView(original, IDS);
+    const back = parseView(serialiseView(v).slice(1), IDS);
+    expect(back.q).toBe("pub");
+    expect(back.at?.[0]).toBeCloseTo(-0.12, 4);
+    expect(back.sel).toEqual(["pubs", "cafes"]);
+    expect(back.place).toBe("abc");
+  });
+
+  it("writes open-now and order when set", () => {
+    const original =
+      "?at=" + encodeURIComponent("-0.12,51.5,14") + "&open=1&order=near";
+    const v = parseView(original, IDS);
+    expect(serialiseView(v)).toBe(original);
+  });
+
+  it("omits open-now and order until they differ from defaults", () => {
+    const v = parseView("", IDS);
+    // Defaults round to 5 dp lon/lat and 2 dp zoom; open/order are left out.
+    expect(serialiseView(v)).toBe(
+      "?at=" + encodeURIComponent("-0.1276,51.5074,10.6"),
+    );
+  });
 });
 
 describe("serialiseView", () => {

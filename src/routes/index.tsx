@@ -39,10 +39,18 @@ import SelectionChips from "~/components/SelectionChips";
 import type { ChipSelection } from "~/components/SelectionChips";
 import { selections } from "~/content/selections";
 import { loadSelections, seedFromDocument, serialiseSeed, SEED_ELEMENT_ID } from "~/lib/dataset";
-import type { Bbox } from "~/lib/geo";
+import type { Bbox, LonLat } from "~/lib/geo";
 import { searchPlaces } from "~/lib/search";
 import type { PlaceRecord } from "~/lib/search";
-import { bboxForCamera, parseView, serialiseView, FALLBACK_CENTRE, FALLBACK_ZOOM } from "~/lib/url-state";
+import {
+  bboxForCamera,
+  cameraForCommit,
+  parseView,
+  serialiseView,
+  toggleSelection,
+  FALLBACK_CENTRE,
+  FALLBACK_ZOOM,
+} from "~/lib/url-state";
 import type { ViewState } from "~/lib/url-state";
 import MapView from "~/map/MapView";
 import type { Camera, MapPlace, SelectionStyle } from "~/map/MapView";
@@ -61,16 +69,25 @@ export default function Home() {
   const [bbox, setBbox] = createSignal<Bbox | null>(null);
   const [mapFailed, setMapFailed] = createSignal<string | null>(null);
   const [locating, setLocating] = createSignal(false);
+  /** Geolocation explains itself when it fails, instead of a button that does nothing. */
+  const [locateError, setLocateError] = createSignal<string | null>(null);
 
   const commit = (v: ViewState, replace: boolean) => {
     navigate(`/${serialiseView(v)}`, { replace, scroll: false });
   };
+
+  // The map's live camera, kept outside reactivity. It changes on every pan frame,
+  // and only controls read it, so it must not trigger renders or refetches.
+  let live: { centre: LonLat; zoom: number; bearing: number } | null = null;
 
   let camTimer: ReturnType<typeof setTimeout> | undefined;
   const commitCamera = (v: ViewState) => {
     clearTimeout(camTimer);
     camTimer = setTimeout(() => commit(v, true), 700);
   };
+
+  /** The view as it is right now, with the map's live camera rather than the URL's. */
+  const currentView = () => cameraForCommit(view(), live);
 
   // The map's bounds, debounced so a fling across the city fetches once at the
   // end instead of once per tile. 300ms is long enough to settle, short enough
@@ -90,8 +107,14 @@ export default function Home() {
 
   // The dataset, fetched per selection and then held in memory for the life of
   // the tab. Only the active selections are loaded, so a visitor who never taps
-  // "Vets" never downloads the 146 kB of vets.
-  const activeSelections = createMemo(() => [...view().sel].sort());
+  // A large selection never downloads the whole directory for a small one.
+  // Keyed on the joined string, not the array. A new array on every URL change
+  // (including every pan's debounced write) re-ran the fetch on each one.
+  const activeSelections = createMemo<string[]>(
+    () => [...view().sel].sort(),
+    [],
+    { equals: (a, b) => a.length === b.length && a.every((id, i) => id === b[i]) },
+  );
 
   // The server reads the published files off disk and renders a full list. This
   // is that same list, read back off the page, so both sides of hydration draw
@@ -132,6 +155,8 @@ export default function Home() {
       q: v.q,
       near: v.near,
       radius: v.radius,
+      openNow: v.openNow,
+      order: v.order,
       limit: 200,
     });
   });
@@ -189,29 +214,27 @@ export default function Home() {
 
   const onViewport = (b: Bbox, cam: Camera) => {
     setBbox(b);
-    const v = view();
-    commitCamera({ ...v, at: cam.centre, zoom: cam.zoom, bearing: cam.bearing });
+    live = { centre: cam.centre, zoom: cam.zoom, bearing: cam.bearing };
+    commitCamera(currentView());
   };
 
   const onSelect = (id: string | null) => {
-    const v = view();
-    commit({ ...v, place: id }, false);
+    commit({ ...currentView(), place: id }, false);
   };
 
   const onToggle = (id: string) => {
-    const v = view();
-    const sel = v.sel.includes(id) ? v.sel.filter((s) => s !== id) : [...v.sel, id];
     // Switching the last chip off is allowed — the map goes quiet and the list
     // says why — but the URL keeps every id so toggling back restores exactly.
-    commit({ ...v, sel: sel.length ? sel : [], place: null }, false);
+    const sel = toggleSelection(view().sel, id, KNOWN_IDS);
+    commit({ ...currentView(), sel, place: null }, false);
   };
 
   const onSearch = (q: string) => {
-    commit({ ...view(), q, place: null }, false);
+    commit({ ...currentView(), q, place: null }, false);
   };
 
   const onJump = (lon: number, lat: number, zoom: number) => {
-    commit({ ...view(), at: [lon, lat], zoom, place: null, near: null, radius: null }, false);
+    commit({ ...currentView(), at: [lon, lat], zoom, place: null, near: null, radius: null }, false);
   };
 
   createEffect(() => {
@@ -224,26 +247,95 @@ export default function Home() {
   });
 
   const onNearMe = () => {
-    if (!("geolocation" in navigator)) return;
+    if (!("geolocation" in navigator)) {
+      setLocateError("This browser does not offer location.");
+      return;
+    }
     setLocating(true);
+    setLocateError(null);
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocating(false);
         const lon = pos.coords.longitude;
         const lat = pos.coords.latitude;
         commit(
-          { ...view(), at: [lon, lat], zoom: 13, near: [lon, lat], radius: 10_000, place: null },
+          {
+            ...currentView(),
+            at: [lon, lat],
+            zoom: 13,
+            near: [lon, lat],
+            radius: 10_000,
+            // A near-me list ordered by name buries the closest pub at the
+            // bottom. Nearest-first is the only order that earns the GPS prompt.
+            order: "near",
+            place: null,
+          },
           false,
         );
       },
-      () => setLocating(false),
+      (err) => {
+        setLocating(false);
+        // Geolocation failing silently is how "near me" buttons die quietly in
+        // production. Permission denied reads differently from a dead GPS.
+        setLocateError(
+          err.code === err.PERMISSION_DENIED
+            ? "Location is blocked. Allow it in the browser and try again."
+            : "Could not find you. Try again in a moment.",
+        );
+      },
       { enableHighAccuracy: true, timeout: 10_000, maximumAge: 300_000 },
     );
   };
 
   const clearNear = () => {
-    commit({ ...view(), near: null, radius: null }, false);
+    setLocateError(null);
+    commit({ ...currentView(), near: null, radius: null }, false);
   };
+
+  const onToggleOpen = () => {
+    commit({ ...currentView(), openNow: !view().openNow, place: null }, false);
+  };
+
+  const onOrder = (order: "near" | "name") => {
+    commit({ ...currentView(), order, place: null }, false);
+  };
+
+  const [shared, setShared] = createSignal(false);
+  let sharedTimer: ReturnType<typeof setTimeout> | undefined;
+  const onShare = async () => {
+    clearTimeout(sharedTimer);
+    const url = `${window.location.origin}${window.location.pathname}${location.search}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setShared(true);
+    } catch {
+      // Clipboard needs a secure context and a permission grant; the prompt
+      // fallback works everywhere the button does.
+      const answer = window.prompt("Copy this link to share this view:", url);
+      if (answer != null) setShared(true);
+      else return;
+    }
+    sharedTimer = setTimeout(() => setShared(false), 2000);
+  };
+
+  // "/" focuses search from the keyboard, the one shortcut a directory earns.
+  // Ignored while typing, and Escape always blurs back out.
+  onMount(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      const typing = el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
+      if (e.key === "/" && !typing) {
+        e.preventDefault();
+        document.getElementById("site-search")?.focus();
+      }
+      if (e.key === "Escape" && document.activeElement instanceof HTMLElement) {
+        if (typing) document.activeElement.blur();
+        else if (selectedId()) onSelect(null);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    onCleanup(() => window.removeEventListener("keydown", onKey));
+  });
 
   const title = createMemo(() => {
     const v = view();
@@ -266,44 +358,96 @@ export default function Home() {
 
   return (
     <main class="finder">
-      <div class="finder-map">
-        <Show
-          when={!mapFailed()}
-          fallback={
-            <SvgFallback
+      <div class="finder-body">
+        <div class="finder-map">
+          <Show
+            when={!mapFailed()}
+            fallback={
+              <SvgFallback
+                places={mapPlaces()}
+                selectedId={selectedId()}
+                onSelect={onSelect}
+              />
+            }
+          >
+            <MapView
+              camera={camera()}
               places={mapPlaces()}
+              activeSelections={activeSelections()}
               selectedId={selectedId()}
+              styles={STYLES}
+              onViewport={onViewport}
               onSelect={onSelect}
+              onFailed={setMapFailed}
             />
-          }
-        >
-          <MapView
-            camera={camera()}
-            places={mapPlaces()}
-            activeSelections={view().sel}
-            selectedId={selectedId()}
-            styles={STYLES}
-            onViewport={onViewport}
-            onSelect={onSelect}
-            onFailed={setMapFailed}
-          />
-        </Show>
+          </Show>
+        </div>
         <div class="finder-overlay">
           <SearchBar value={view().q} onSearch={onSearch} />
           <SelectionChips chips={chips()} onToggle={onToggle} />
           <div class="row finder-tools">
             <button
               type="button"
-              class="btn btn-icon near-me"
+              class="btn near-me"
               aria-label={view().near ? "Clear nearby search" : "Search near me"}
               aria-pressed={!!view().near}
               disabled={locating()}
               onClick={() => (view().near ? clearNear() : onNearMe())}
             >
-              {locating() ? "…" : view().near ? "✕" : "◎"}
+              {locating() ? "…" : view().near ? "✕ Nearby" : "◎ Nearby"}
             </button>
-            {view().near && <span class="tiny muted">within 10 km of you</span>}
+            <button
+              type="button"
+              class="btn open-toggle"
+              aria-pressed={view().openNow}
+              onClick={onToggleOpen}
+              title="Only places we can prove are open right now"
+            >
+              {view().openNow ? "● Open now" : "○ Open now"}
+            </button>
+            <div class="order-switch" role="group" aria-label="Sort the list">
+              <button
+                type="button"
+                class="btn btn-quiet order-btn"
+                aria-pressed={view().order === "name"}
+                onClick={() => onOrder("name")}
+              >
+                A–Z
+              </button>
+              <button
+                type="button"
+                class="btn btn-quiet order-btn"
+                aria-pressed={view().order === "near"}
+                onClick={() => onOrder("near")}
+              >
+                Nearest
+              </button>
+            </div>
+            <span class="spacer" />
+            <button
+              type="button"
+              class="btn btn-icon share-btn"
+              aria-label="Copy a link to this view"
+              title="Copy a link to this view"
+              onClick={onShare}
+            >
+              <Show
+                when={shared()}
+                fallback={
+                  <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+                }
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+              </Show>
+            </button>
           </div>
+          <Show when={locateError()}>
+            {(msg) => (
+              <p class="tiny finder-error" role="alert">
+                {msg()}
+              </p>
+            )}
+          </Show>
         </div>
         <Show when={selectedPlace()}>
           {(place) => (
@@ -336,7 +480,7 @@ export default function Home() {
         >
           <Show
             when={places().length > 0 || (hydrated() && records.loading)}
-            fallback={<EmptyList q={view().q} selectionCount={view().sel.length} />}
+            fallback={<EmptyList q={view().q} selectionCount={view().sel.length} openNow={view().openNow} />}
           >
             <ul id="results" class="result-list" aria-label={title()}>
               <For each={places()}>

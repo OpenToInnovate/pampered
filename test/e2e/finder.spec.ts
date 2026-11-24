@@ -20,9 +20,9 @@ test("home loads with a list, chips and a map or fallback", async ({ page }) => 
   await expect(page.getByRole("search")).toBeVisible();
   await expect(page.getByPlaceholder(/Search pubs/)).toBeVisible();
 
-  // Eleven chips, one per selection.
+  // Ten chips, one per selection.
   const chips = page.getByRole("group", { name: /Show on the map/ }).getByRole("button");
-  await expect(chips).toHaveCount(11);
+  await expect(chips).toHaveCount(10);
 
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
 
@@ -38,7 +38,7 @@ test("the published dataset is static and edge-cached", async ({ request, baseUR
   const body = await manifest.json();
   expect(body.total).toBeGreaterThan(1000);
   expect(body.builtAt).toBeTruthy();
-  expect(Object.keys(body.counts).length).toBe(11);
+  expect(Object.keys(body.counts).length).toBe(10);
 
   // Static assets are served by Workers Assets rather than the Worker, which is
   // what makes browsing free of database reads and free of request cost. The
@@ -138,7 +138,7 @@ test("a selection that fails to load says so, and never crashes", async ({ page 
   await page.route("**/data/**", (route) => route.abort());
   await page
     .getByRole("group", { name: /Show on the map/ })
-    .getByRole("button", { name: /Vets/ })
+    .getByRole("button", { name: /Pet shops/ })
     .click();
   await page.waitForTimeout(1500);
 

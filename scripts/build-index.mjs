@@ -102,10 +102,27 @@ function selectionsFor(tags, selections, fetchedBy) {
     );
     if (hit) matched.push(sel.id);
   }
-  // The query that fetched it matched by construction; if local re-evaluation
-  // disagrees, trust the query rather than silently dropping the row.
-  if (fetchedBy && !matched.includes(fetchedBy)) matched.push(fetchedBy);
+  // The selection list is re-checked against the tags as they are now, and no
+  // longer trusted to be what the cached query fetched. A cache written before a
+  // selection was narrowed (say, dropping dog=outside) must not keep its rows.
   return matched;
+}
+
+/**
+ * The newest "last checked" date OpenStreetMap itself records for this element,
+ * as YYYY-MM-DD, or null. Only `check_date` and `survey:date` count, both of
+ * which mappers set by hand. A date in the future or before 2000 is a typo, and
+ * a typo is not allowed to make a venue look fresh.
+ */
+function lastCheckedOn(tags, todayIso) {
+  const dates = [tags.check_date, tags["survey:date"]]
+    .flatMap((v) => String(v ?? "").split(";"))
+    .map((v) => v.trim())
+    .filter((v) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return false;
+      return v >= "2000-01-01" && v <= todayIso && !Number.isNaN(Date.parse(`${v}T00:00:00Z`));
+    });
+  return dates.sort().at(-1) ?? null;
 }
 
 function osmRow(el, selectionId, selections, osmTimestamp) {
@@ -140,6 +157,11 @@ function osmRow(el, selectionId, selections, osmTimestamp) {
     else if (ids.includes("water-bowls")) policy = "yes";
   }
 
+  // This site is a list of places that welcome dogs. A row that still has no
+  // dog answer after the rules above is not one of them, so it is dropped here
+  // and the reason is counted, rather than shown with a shrug.
+  if (policy === "unknown") return { skip: `no dog tag (${el.type}/${el.id})` };
+
   return {
     row: {
       id: `osm:${el.type}/${el.id}`,
@@ -168,6 +190,7 @@ function osmRow(el, selectionId, selections, osmTimestamp) {
       notes: null,
       provenance: `osm:${el.type}/${el.id} @ ${osmTimestamp ?? el.timestamp ?? "unknown"}`,
       osm_updated: el.timestamp ?? null,
+      checked_on: lastCheckedOn(tags, isoNow().slice(0, 10)),
       created_at: "",
       updated_at: isoNow(),
     },
@@ -191,6 +214,9 @@ function curatedRow(place, knownSelectionIds, knownRegionIds) {
   }
   if (typeof place.lat !== "number" || typeof place.lon !== "number") {
     problems.push("lat and lon must both be numbers");
+  }
+  if (place.checked_on != null && !/^\d{4}-\d{2}-\d{2}$/.test(String(place.checked_on))) {
+    problems.push(`checked_on must be YYYY-MM-DD, got ${JSON.stringify(place.checked_on)}`);
   }
   if (!place.name || typeof place.name !== "string") problems.push("name is required");
   if (problems.length) return { problems: { id, file: place.__file, problems } };
@@ -223,6 +249,7 @@ function curatedRow(place, knownSelectionIds, knownRegionIds) {
       notes: place.notes ?? null,
       provenance: `${place.__file} @ ${isoNow()}`,
       osm_updated: null,
+      checked_on: place.checked_on ?? null,
       created_at: "",
       updated_at: isoNow(),
     },

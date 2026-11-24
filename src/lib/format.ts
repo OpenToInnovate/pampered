@@ -28,6 +28,22 @@ export function formatWalkTime(metres: number | null | undefined): string {
 
 const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] as const;
 
+/** Every venue this site lists is in Great Britain, so "open now" is British time. */
+const BRITISH_CLOCK = new Intl.DateTimeFormat("en-GB", {
+  timeZone: "Europe/London",
+  weekday: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+/** The day (0 = Monday) and minute of the day in Britain at this instant, whatever the visitor's clock says. */
+function britishDayAndMinute(at: Date): { dayIdx: number; minutes: number } {
+  const parts = Object.fromEntries(BRITISH_CLOCK.formatToParts(at).map((p) => [p.type, p.value]));
+  const dayIdx = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].indexOf(parts.weekday ?? "");
+  return { dayIdx, minutes: Number(parts.hour) * 60 + Number(parts.minute) };
+}
+
 /**
  * The single most useful line on the whole site: is it open, and until when.
  *
@@ -45,9 +61,10 @@ export function openState(
   if (/^24\/7$/i.test(text)) return { label: "Open 24 hours", tone: "good" };
   if (/^closed\b/i.test(text)) return { label: "Closed", tone: "bad" };
 
-  // 0 = Monday, matching OSM's Mo-Su order rather than JavaScript's Su-Sa.
-  const dayIdx = at.getDay() === 0 ? 6 : at.getDay() - 1;
-  const minutesNow = at.getHours() * 60 + at.getMinutes();
+  // 0 = Monday, matching OSM's Mo-Su order rather than JavaScript's Su-Sa. Read
+  // in British time: a pub in Brighton is shut or open by London's clock, not by
+  // the clock on the phone of someone in another timezone.
+  const { dayIdx, minutes: minutesNow } = britishDayAndMinute(at);
 
   // One rule per semicolon. The first rule whose days include today wins, which
   // is how OSM orders them ("Mo-Fr 09:00-17:00; Sa 10:00-14:00; Su off").
@@ -108,6 +125,21 @@ function toMinutes(hhmm: string): number | null {
   const m = /^(\d{1,2}):(\d{2})$/.exec(hhmm.trim());
   if (!m) return null;
   return Number(m[1]) * 60 + Number(m[2]);
+}
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/**
+ * "2023-10-16" -> "16 Oct 2023". Parsed as text, never through `Date`: a date-only
+ * string read as UTC midnight is the previous day in the Americas, and this is
+ * the one date on the site that must not move.
+ */
+export function formatCheckedDate(iso: string | null | undefined): string | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso ?? "");
+  if (!m) return null;
+  const month = Number(m[2]);
+  if (month < 1 || month > 12) return null;
+  return `${Number(m[3])} ${MONTHS[month - 1]} ${m[1]}`;
 }
 
 /** A two-line address. Postcode is the useful half and goes second so it is never truncated. */

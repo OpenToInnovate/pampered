@@ -58,7 +58,7 @@ selections:
     osm:
       tags:
         amenity: [restaurant]
-        dog: [yes, permitted, designated, inside, outside]
+        dog: [yes, permitted, designated, inside]
 
   - id: cafes
     label: Cafés that welcome dogs
@@ -72,7 +72,7 @@ selections:
     osm:
       tags:
         amenity: [cafe]
-        dog: [yes, permitted, designated, inside, outside]
+        dog: [yes, permitted, designated, inside]
 
   - id: pubs
     label: Pubs that welcome dogs
@@ -85,7 +85,7 @@ selections:
     osm:
       tags:
         amenity: [pub, biergarten]
-        dog: [yes, permitted, designated, inside, outside]
+        dog: [yes, permitted, designated, inside]
 
   - id: bars
     label: Bars that welcome dogs
@@ -98,7 +98,7 @@ selections:
     osm:
       tags:
         amenity: [bar]
-        dog: [yes, permitted, designated, inside, outside]
+        dog: [yes, permitted, designated, inside]
 
   - id: ice-cream
     label: Ice cream and gelato
@@ -111,7 +111,7 @@ selections:
     osm:
       tags:
         amenity: [ice_cream]
-        dog: [yes, permitted, designated, inside, outside]
+        dog: [yes, permitted, designated, inside]
 
   # -------------------------------------------------------------- care supplies
   - id: groomers
@@ -135,31 +135,22 @@ selections:
             shop: [beauty]
             dog: [yes, permitted, designated]
 
-  - id: vets
-    label: Vets
-    short: Vets
-    group: care
-    icon: cross
-    colour: "#21768B"
-    minzoom: 11
-    blurb: Veterinary practices, from OpenStreetMap.
-    osm:
-      # Both tags are in use. `vet` is the documented value; `veterinary` is
-      # what most UK mappers actually write.
-      tags:
-        amenity: [vet, veterinary]
+  # Vets are not on the map. A vet practice is not a place that welcomes dogs,
+  # and OpenStreetMap almost never says whether it does, so the layer was
+  # thousands of pins with no answer to the only question this site asks.
 
   - id: pet-shops
-    label: Pet shops
+    label: Pet shops that welcome dogs
     short: Pet shops
     group: care
     icon: bag
     colour: "#5D5DD9"
     minzoom: 12
-    blurb: Food, toys and equipment, from OpenStreetMap.
+    blurb: Pet shops tagged in OpenStreetMap as allowing dogs inside.
     osm:
       tags:
         shop: [pet]
+        dog: [yes, permitted, designated]
 
   # ------------------------------------------------------------------- outside
   - id: dog-parks

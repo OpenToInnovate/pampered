@@ -124,6 +124,40 @@ describe("searchPlaces", () => {
     searchPlaces(ALL, { bbox: GB, selections: [], near: [0, 51] });
     expect(JSON.stringify(LONDON)).toBe(before);
   });
+
+  it("applies the open-now filter", () => {
+    // Only a venue we can prove is open survives; a closed one and a venue
+    // with no hours we cannot prove open fall away from the list.
+    const closed = { ...LONDON, id: "closed", openingHours: "Mo-Fr 09:00-17:00" };
+    const alwaysOpen = { ...SHOREDITCH, id: "open-24-7", openingHours: "24/7" };
+    const result = searchPlaces([closed, alwaysOpen, LONDON], {
+      bbox: GB,
+      selections: [],
+      openNow: true,
+    });
+    expect(result.places.map((p) => p.id)).toEqual(["open-24-7"]);
+  });
+
+  it("sorts by distance when order is near", () => {
+    const result = searchPlaces(ALL, {
+      bbox: GB,
+      selections: [],
+      near: [-0.1276, 51.5074],
+      order: "near",
+    });
+    expect(result.places[0]?.id).toBe("a");
+    expect(result.places[result.places.length - 1]?.id).toBe("c");
+  });
+
+  it("sorts alphabetically when order is name", () => {
+    const result = searchPlaces(ALL, {
+      bbox: GB,
+      selections: [],
+      order: "name",
+    });
+    const names = result.places.map((p) => p.name).sort();
+    expect(names).toEqual(ALL.map((p) => p.name).sort());
+  });
 });
 
 describe("mergeRecords", () => {

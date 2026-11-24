@@ -8,6 +8,8 @@
  * than serialising them, which is why `name` can be `null` but `notes` is
  * simply absent.
  */
+import { openState } from "./format";
+
 export interface PlaceRecord {
   id: string;
   name: string | null;
@@ -36,6 +38,8 @@ export interface PlaceRecord {
   wheelchair?: string;
   provenance?: string;
   osmUpdated?: string;
+  /** YYYY-MM-DD, the newest "last checked" date OpenStreetMap records. Absent when none is recorded. */
+  checkedOn?: string;
   /** Metres from the search centre. Present only after a search, never in the data files. */
   distance?: number | null;
 }
@@ -55,6 +59,16 @@ export interface SearchParams {
   near?: readonly [number, number] | null;
   radius?: number | null;
   limit?: number;
+  /** Only venues that are open right now. */
+  openNow?: boolean;
+  /** 'near' by metres from the search centre, 'name' alphabetically. */
+  order?: "near" | "name";
+}
+
+/** True only when we can prove the place is open at `at`. Records we cannot
+ *  prove open are left out — better silent silence than a wrong open door. */
+export function isOpenNow(hours: string | null | undefined, at: Date = new Date()): boolean {
+  return openState(hours, at)?.tone === "good";
 }
 
 export interface SearchResult {
@@ -117,6 +131,11 @@ export function searchPlaces(
     // Text first: it is the cheapest filter and the one that removes the most.
     if (terms.length && !matchesTerms(rec, terms)) continue;
 
+    // Open now: only venues we can prove are open make the list. A wrong door
+    // sign is worse than no sign at all, and an open-now filter that guesses is
+    // worse than silence.
+    if (params.openNow && !isOpenNow(rec.openingHours)) continue;
+
     let distance: number | null = null;
     if (centre) {
       distance = distMetres(centre[1], centre[0], rec.lat, rec.lon);
@@ -129,13 +148,20 @@ export function searchPlaces(
     scored.push({ rec, distance });
   }
 
+  const order = params.order ?? "name";
   scored.sort((a, b) => {
-    const da = a.distance ?? 0;
-    const db = b.distance ?? 0;
-    if (da !== db) return da - db;
-    // Equal distance means "alphabetical" beats "whatever the file order was",
-    // which is what makes the list stable while panning.
-    return (a.rec.name ?? "").localeCompare(b.rec.name ?? "");
+    let cmp: number;
+    if (order === "near" && centre) {
+      const da = a.distance ?? Infinity;
+      const db = b.distance ?? Infinity;
+      cmp = da - db;
+    } else {
+      cmp = (a.rec.name ?? "").localeCompare(b.rec.name ?? "");
+    }
+    if (cmp !== 0) return cmp;
+    // The dataset is a public directory and must not reorder by id; the id is
+    // the only stable key that ties records exactly equal on distance or name.
+    return (a.rec.id ?? "").localeCompare(b.rec.id ?? "");
   });
 
   return {

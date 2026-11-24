@@ -3,9 +3,10 @@
 A dog-friendly business finder with a map, at
 [pampered.korg-e.com](https://pampered.korg-e.com).
 
-Find cafés, pubs and restaurants that welcome dogs, plus groomers, vets, pet
-shops, dog parks, off-lead areas and water bowls — on a fast mobile-first map
-with no sign-in, no cookies and no tracking.
+Find cafés, pubs and restaurants that welcome dogs inside, plus groomers, pet
+shops that allow dogs, dog parks, off-lead areas and water bowls — on a fast
+mobile-first map with no sign-in, no cookies and no tracking. Every venue shows
+when its dog policy was last checked, and places with no dog tag are not listed.
 
 ## Run it
 

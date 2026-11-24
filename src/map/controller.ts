@@ -197,10 +197,12 @@ export async function createMap(
     return null;
   }
 
-  map.addControl(new ml.NavigationControl({ visualizePitch: false, showCompass: false }), "top-right");
+  // Bottom-right, above the sheet and clear of the search and chip rows. At the
+  // top they sat under the chips and hid the last chip on a phone.
+  map.addControl(new ml.NavigationControl({ visualizePitch: false, showCompass: false }), "bottom-right");
   map.addControl(
     new ml.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, showUserLocation: true }),
-    "top-right",
+    "bottom-right",
   );
 
   let destroyed = false;

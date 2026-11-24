@@ -26,6 +26,10 @@ export interface ViewState {
   near: LonLat | null;
   /** Radius in metres for the "near me" search, or null for no limit. */
   radius: number | null;
+  /** Only venues that are open right now. */
+  openNow: boolean;
+  /** "near" by metres from the search centre, "name" alphabetically. */
+  order: "near" | "name";
 }
 
 export const DEFAULT_VIEW: ViewState = {
@@ -38,6 +42,8 @@ export const DEFAULT_VIEW: ViewState = {
   place: null,
   near: null,
   radius: null,
+  openNow: false,
+  order: "name",
 };
 
 /** Where the map opens before anybody has moved it: London, then the largest curated region. */
@@ -98,6 +104,9 @@ export function parseView(search: string, knownIds: ReadonlySet<string>): ViewSt
 
   const radiusNum = numParam(p.get("radius"));
   const radius = radiusNum == null ? null : clamp(radiusNum, 100, 50_000);
+  const openNow = p.get("open") === "1";
+  const rawOrder = (p.get("order") ?? "name").trim().toLowerCase();
+  const order = rawOrder === "near" ? "near" : "name";
 
   return {
     q,
@@ -109,6 +118,8 @@ export function parseView(search: string, knownIds: ReadonlySet<string>): ViewSt
     place: p.get("p"),
     near,
     radius,
+    openNow,
+    order,
   };
 }
 
@@ -135,7 +146,29 @@ export function serialiseView(view: ViewState): string {
   if (view.place) p.set("p", view.place);
   if (view.near) p.set("near", `${round(view.near[0], 5)},${round(view.near[1], 5)}`);
   if (view.radius) p.set("radius", String(Math.round(view.radius)));
+  if (view.openNow) p.set("open", "1");
+  if (view.order !== "name") p.set("order", view.order);
   return `?${p.toString()}`;
+}
+
+/**
+ * Which camera a control should commit. The live map camera wins whenever the map
+ * has reported one, because the URL lags a pan by the write debounce. Committing
+ * the URL's camera from a chip tap is what snapped the map back to where it was
+ * a fraction of a second earlier.
+ */
+export function cameraForCommit(view: ViewState, live: { centre: LonLat; zoom: number; bearing: number } | null): ViewState {
+  if (!live) return view;
+  return { ...view, at: live.centre, zoom: live.zoom, bearing: live.bearing };
+}
+
+/**
+ * The set of selections after toggling one. Order is kept as the visitor first
+ * ordered them, so the URL does not reshuffle when a chip goes off and on again.
+ */
+export function toggleSelection(current: readonly string[], id: string, known: ReadonlySet<string>): string[] {
+  if (!known.has(id)) return [...current];
+  return current.includes(id) ? current.filter((s) => s !== id) : [...current, id];
 }
 
 export function viewFromBbox(bbox: Bbox): Partial<ViewState> {

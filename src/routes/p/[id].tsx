@@ -12,7 +12,7 @@ import { A, createAsync, query, useLocation, useParams } from "@solidjs/router";
 import { Match, Show, Switch } from "solid-js";
 import { SourceBadge } from "~/components/PlaceCard";
 import { dogPolicyLabel, dogPolicyTone, selection } from "~/content/selections";
-import { formatAddress, joinList, openState } from "~/lib/format";
+import { formatAddress, formatCheckedDate, joinList, openState } from "~/lib/format";
 import type { PlaceRecord } from "~/lib/search";
 
 /**
@@ -134,6 +134,8 @@ export default function PlacePage() {
                         </dd>
                       </>
                     )}
+                    <dt>Last checked</dt>
+                    <dd>{formatCheckedDate(p().checkedOn) ?? "No check date recorded"}</dd>
                     {p().cuisine && (
                       <>
                         <dt>Food</dt>

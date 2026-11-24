@@ -102,7 +102,7 @@ export function overpassQueryFor(selection, bbox, timeoutSec = 180) {
     return `  nwr${clauses.join("")}(${south},${west},${north},${east});`;
   });
 
-  return `[out:json][timeout:${timeoutSec}];\n(\n${lines.join("\n")}\n);\nout center tags qt;`;
+  return `[out:json][timeout:${timeoutSec}];\n(\n${lines.join("\n")}\n);\nout meta center qt;`;
 }
 
 function escapeQ(value) {
