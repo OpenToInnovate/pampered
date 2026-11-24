@@ -105,6 +105,37 @@ site returned HTTP 200 with an empty page and nothing said why, so nobody
 noticed for hours. Any new failure path has to say what went wrong; an empty
 list is never an acceptable error state.
 
+## The paw inbox
+
+Visitor reports are the one deliberate exception to "nothing at request time
+touches a database", and it is worth understanding exactly how far the
+exception goes. `POST /report` (`src/routes/report.ts`) writes one small JSON
+record to Workers KV (the `INBOX` binding) and returns an id. It never reads
+anything, never serves a page, and never touches D1 — the incident above was
+D1 **reads** per request, and one KV write per human who chose to report
+something cannot repeat it. The guard still passes, because the browser bundle
+carries no serving-tier strings; the form POSTs to `/report` and the route
+only writes.
+
+Abuse budget, in order: a honeypot field, a 5-per-hour per-device cap and a
+400-per-day global cap (KV counters, approximate by nature), hard length caps,
+text-only storage, 90-day TTL. No cookies, no sign-in, no third-party
+challenge widget.
+
+Reports reach two publication channels, both moderated:
+
+- a prefilled **OpenStreetMap note** — OSM volunteers review it, every OSM
+  consumer benefits, and the fix arrives here on the weekly refresh;
+- the **inbox**, drained by `npm run inbox` into yaml drafts for
+  `content/places/`, which then go through the normal check → verify →
+  build:index → sync flow. A report is not a check; nothing is published
+  unchecked.
+
+Note for the test rig: wrangler dev emulates `cf-connecting-ip`, so the caps
+apply locally too, and local KV state persists between runs. Wipe
+`.wrangler/state` before serving a preview for e2e, or a rerun within the hour
+will rate-limit its own happy path.
+
 ## The pipeline, in order
 
 ```

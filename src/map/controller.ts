@@ -28,8 +28,12 @@ import type {
   ExpressionSpecification,
   SymbolLayerSpecification,
 } from "maplibre-gl";
+import { sepiaise } from "./sepia";
 
-export const MAP_STYLE = "https://tiles.openfreemap.org/styles/positron";
+// Liberty, not positron: liberty carries the OpenMapTiles `poi` layer, which is
+// where railway stations live. Positron has no POIs at all, so on it a station
+// is unrenderable — sepia.ts leans on that layer for landmarks.
+export const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
 export interface Camera {
   centre: LonLat;
@@ -297,6 +301,7 @@ export async function createMap(
     map.once("load", async () => {
       clearTimeout(timer);
       try {
+        sepiaise(map);
         const before = firstLabelLayer(map);
 
         map.addSource(CLUSTER_SOURCE_ID, {

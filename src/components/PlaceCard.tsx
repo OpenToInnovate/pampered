@@ -9,6 +9,7 @@
  * nothing, because an unnamed pin that opens an unnamed card is a dead end.
  */
 import { A } from "@solidjs/router";
+import FurryPaw from "~/components/FurryPaw";
 import { SelectionIcon } from "~/map/icons";
 import { dogPolicyLabel, dogPolicyTone, selection } from "~/content/selections";
 import { formatDistance, openState } from "~/lib/format";
@@ -91,6 +92,7 @@ export default function PlaceCard(props: {
 export function EmptyList(props: { q: string; selectionCount: number; openNow: boolean }) {
   return (
     <div class="empty-list">
+      <FurryPaw size={30} class="empty-paw" />
       <p>
         <strong>Nothing here{props.q ? ` for “${props.q}”` : ""}.</strong>
       </p>

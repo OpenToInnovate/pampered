@@ -33,7 +33,10 @@ import {
 import { NoHydration } from "solid-js/web";
 import BottomSheet from "~/components/BottomSheet";
 import MiniCard from "~/components/MiniCard";
+import PawBar from "~/components/PawBar";
+import type { PawAction } from "~/components/PawBar";
 import PlaceCard, { EmptyList } from "~/components/PlaceCard";
+import ReportSheet from "~/components/ReportSheet";
 import SearchBar from "~/components/SearchBar";
 import SelectionChips from "~/components/SelectionChips";
 import type { ChipSelection } from "~/components/SelectionChips";
@@ -206,6 +209,10 @@ export default function Home() {
     () => places().find((p) => p.id === selectedId()) ?? null,
   );
 
+  // The paw report sheet, opened from the mini-card. The place snapshot is
+  // taken on open, so closing the mini-card does not mutate a form in flight.
+  const [reportPlace, setReportPlace] = createSignal<PlaceRecord | null>(null);
+
   const detailHref = createMemo(() => {
     const id = selectedId();
     if (!id) return "";
@@ -300,6 +307,54 @@ export default function Home() {
     commit({ ...currentView(), order, place: null }, false);
   };
 
+  // The paw bar: the thumb's row. Colours and labels come from selections.yaml
+  // through the same `selections` the chips read, so a rename in the yaml is a
+  // broken memo here, caught by check — never a mystery button in production.
+  const byId = (id: string) => selections.find((s) => s.id === id);
+  const pawActions = createMemo<PawAction[]>(() => {
+    const sel = new Set(view().sel);
+    const c = counts();
+    const quick: { id: string; label: string }[] = [
+      // "Food"/"Parks" rather than the yaml shorts: 63px of paw-bar column
+      // cannot fit "Restaurants", and a truncated label is no label at all.
+      // Colour still comes from selections.yaml — only the word is local.
+      { id: "restaurants", label: "Food" },
+      { id: "cafes", label: "Cafés" },
+      { id: "pubs", label: "Pubs" },
+      { id: "dog-parks", label: "Parks" },
+    ];
+    return [
+      {
+        id: "search",
+        // "Find", not "Search": the search bar's submit button is named
+        // Search, and a second button with the same name is both a strict-mode
+        // ambiguity in tests and a confusing echo for a screen reader.
+        label: "Find",
+        colour: "var(--accent)",
+        onPress: () => document.getElementById("site-search")?.focus(),
+      },
+      {
+        id: "near",
+        label: view().near ? "Clear" : "Near me",
+        colour: "var(--good)",
+        pressed: !!view().near,
+        disabled: locating(),
+        onPress: () => (view().near ? clearNear() : onNearMe()),
+      },
+      ...quick.map(({ id, label }) => {
+        const s = byId(id);
+        return {
+          id,
+          label,
+          colour: s?.colour ?? "var(--accent)",
+          pressed: sel.has(id),
+          count: sel.has(id) || c[id] ? (c[id] ?? 0) : null,
+          onPress: () => onToggle(id),
+        };
+      }),
+    ];
+  });
+
   const [shared, setShared] = createSignal(false);
   let sharedTimer: ReturnType<typeof setTimeout> | undefined;
   const onShare = async () => {
@@ -381,6 +436,7 @@ export default function Home() {
               onFailed={setMapFailed}
             />
           </Show>
+          <PawBar actions={pawActions()} />
         </div>
         <div class="finder-overlay">
           <SearchBar value={view().q} onSearch={onSearch} />
@@ -451,7 +507,20 @@ export default function Home() {
         </div>
         <Show when={selectedPlace()}>
           {(place) => (
-            <MiniCard place={place()} detailHref={detailHref()} onClose={() => onSelect(null)} />
+            <MiniCard
+              place={place()}
+              detailHref={detailHref()}
+              onClose={() => onSelect(null)}
+              onReport={() => setReportPlace(place())}
+            />
+          )}
+        </Show>
+        <Show when={reportPlace()}>
+          {(pl) => (
+            <ReportSheet
+              place={{ id: pl().id, name: pl().name, lat: pl().lat, lon: pl().lon }}
+              onClose={() => setReportPlace(null)}
+            />
           )}
         </Show>
       </div>

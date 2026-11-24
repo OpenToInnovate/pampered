@@ -739,3 +739,22 @@
     margin: 0;
   }
 }
+
+/* ---------------------------------------------------------------- paw bar ---
+   The paw bar docks over the bottom of the map on phones. MapLibre's own
+   chrome and the mini-card sit in that space, so they lift above the bar —
+   the attribution especially, which is a legal credit and must stay readable,
+   not be covered by the very toolbar that made the map useful. */
+@media (max-width: 719.98px) {
+  .map-container .maplibregl-ctrl-bottom-right {
+    bottom: calc(var(--pawbar-h) + 10px);
+  }
+
+  .map-container .maplibregl-ctrl-bottom-left {
+    bottom: calc(var(--pawbar-h) + 8px);
+  }
+
+  .mini-card {
+    bottom: calc(var(--pawbar-h) + 10px);
+  }
+}

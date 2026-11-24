@@ -148,3 +148,38 @@ test("a selection that fails to load says so, and never crashes", async ({ page 
   // The other selections are unaffected, which is the partial-failure contract.
   await expect(page.locator("#results > li").first()).toBeVisible();
 });
+
+test("a visitor can report a place in a couple of clicks", async ({ page }) => {
+  // The Waze-shaped path: tap a place, tap "Add a detail", pick what changed,
+  // one sentence, send. The inbox is the preview's local KV, so the happy path
+  // exercises the real endpoint, not a mock. The map has to come up first and
+  // software-GL does that slowly, so these tests get a longer budget than the
+  // default.
+  test.setTimeout(90_000);
+  await page.goto("/");
+  await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
+  await page.locator("#results > li").first().click();
+  await page.getByRole("button", { name: /Add a detail/ }).click();
+  await expect(page.getByRole("dialog", { name: /Report / })).toBeVisible();
+
+  await page.getByRole("button", { name: "Water bowl" }).click();
+  await page.getByLabel("What did you see?").fill("There is a water bowl by the door.");
+  await page.getByRole("button", { name: /Send it/ }).click();
+
+  await expect(page.getByText("Paw stamp received")).toBeVisible({ timeout: 15_000 });
+  await page.getByRole("button", { name: "Done" }).click();
+  await expect(page.getByRole("dialog", { name: /Report / })).toHaveCount(0);
+});
+
+test("a short report is told it is too short, never silently dropped", async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.goto("/");
+  await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
+  await page.locator("#results > li").first().click();
+  await page.getByRole("button", { name: /Add a detail/ }).click();
+
+  await page.getByLabel("What did you see?").fill("nice");
+  await page.getByRole("button", { name: /Send it/ }).click();
+  await expect(page.getByRole("alert")).toContainText(/at least 10 characters/);
+  await expect(page.getByText("Paw stamp received")).toHaveCount(0);
+});

@@ -23,6 +23,7 @@
     "refresh": "node scripts/refresh-osm.mjs",
     "build:index": "node scripts/build-index.mjs",
     "sync": "node scripts/sync-d1.mjs",
+    "inbox": "node scripts/inbox.mjs",
     "db:schema:local": "wrangler d1 execute pampered --local --file schema.sql",
     "db:schema:remote": "wrangler d1 execute pampered --remote --file schema.sql"
   },

@@ -14,6 +14,7 @@
  */
 import { createEffect, createSignal, onCleanup } from "solid-js";
 import type { JSX } from "solid-js";
+import FurryPaw from "~/components/FurryPaw";
 
 type Detent = "peek" | "half" | "full";
 const ORDER: Detent[] = ["peek", "half", "full"];
@@ -106,6 +107,7 @@ export default function BottomSheet(props: {
       >
         <span class="sheet-grip" aria-hidden="true" />
         <span class="sheet-title">
+          <FurryPaw size={15} class="sheet-paw" />
           <strong>{props.title}</strong>
           <span class="muted tiny">{props.count}</span>
         </span>

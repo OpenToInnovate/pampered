@@ -128,7 +128,25 @@ describe("searchPlaces", () => {
   it("applies the open-now filter", () => {
     // Only a venue we can prove is open survives; a closed one and a venue
     // with no hours we cannot prove open fall away from the list.
-    const closed = { ...LONDON, id: "closed", openingHours: "Mo-Fr 09:00-17:00" };
+    //
+    // The closed venue's hours cannot be fixed constants: "Mo-Fr 09:00-17:00"
+    // is genuinely open every weekday morning, so a suite holding it goes red
+    // at nine sharp and reads as a product bug. Instead the window is built
+    // from the clock — starting the hour after now, London time — so it is
+    // provably closed whenever this test runs, midnight rollovers included.
+    const londonHour = Number(
+      new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Europe/London",
+        hour: "2-digit",
+        hour12: false,
+      }).format(new Date()),
+    );
+    const hh = (h: number) => String(h % 24).padStart(2, "0");
+    const closed = {
+      ...LONDON,
+      id: "closed",
+      openingHours: `Mo-Su ${hh(londonHour + 1)}:00-${hh(londonHour + 3)}:00`,
+    };
     const alwaysOpen = { ...SHOREDITCH, id: "open-24-7", openingHours: "24/7" };
     const result = searchPlaces([closed, alwaysOpen, LONDON], {
       bbox: GB,

@@ -8,6 +8,7 @@
  */
 import { A } from "@solidjs/router";
 import { onCleanup, onMount } from "solid-js";
+import FurryPaw from "~/components/FurryPaw";
 import { dogPolicyLabel, dogPolicyTone } from "~/content/selections";
 import { formatAddress } from "~/lib/format";
 import type { PlaceRecord as SlimPlace } from "~/lib/search";
@@ -17,6 +18,7 @@ export default function MiniCard(props: {
   place: SlimPlace;
   detailHref: string;
   onClose: () => void;
+  onReport?: () => void;
   returnFocusTo?: HTMLElement | null;
 }) {
   let card: HTMLDivElement | undefined;
@@ -60,6 +62,17 @@ export default function MiniCard(props: {
         <A href={props.detailHref} class="btn btn-primary">
           Details
         </A>
+        {props.onReport && (
+          <button
+            type="button"
+            class="btn report-open"
+            aria-label={`Add a detail about ${name()}`}
+            onClick={props.onReport}
+          >
+            <FurryPaw size={16} />
+            Add a detail
+          </button>
+        )}
         {p().website && (
           <a href={p().website!} class="btn" rel="noopener" target="_blank">
             Website

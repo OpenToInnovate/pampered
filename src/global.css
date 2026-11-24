@@ -488,6 +488,239 @@ a {
   line-height: 1.5;
 }
 
+/* ------------------------------------------------------------------ paw bar */
+
+/* Height the map's docked chrome (attribution, zoom, mini-card) clears on a
+   phone. Zero from 720px up, where the bar does not exist. */
+:root {
+  --pawbar-h: 64px;
+}
+
+.pawbar {
+  display: none;
+}
+
+@media (max-width: 719.98px) {
+  .pawbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 25;
+    display: flex;
+    align-items: stretch;
+    padding: 4px 6px calc(4px + var(--safe-bottom));
+    background: color-mix(in srgb, var(--bg) 93%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line);
+    box-shadow: var(--shadow-1);
+  }
+}
+
+.pawbar-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px 2px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-2);
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.pawbar-paw {
+  color: var(--paw-colour, var(--accent));
+  flex: none;
+}
+
+.pawbar-label {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pawbar-count {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.pawbar-btn[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--paw-colour, var(--accent)) 16%, transparent);
+  color: var(--ink);
+}
+
+.pawbar-btn[aria-pressed="true"] .pawbar-count {
+  color: var(--ink-2);
+}
+
+.pawbar-btn:disabled {
+  opacity: 0.5;
+}
+
+.pawbar-btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+/* --------------------------------------------------------------- paw accents */
+
+/* The paw is the app's mascot, not a bullet list: one in the brand, one on the
+   sheet title, one when the list comes up empty. Same drawing everywhere. */
+.sheet-paw {
+  color: var(--accent);
+  flex: none;
+  align-self: center;
+}
+
+.sheet-title {
+  align-items: center;
+}
+
+.empty-paw {
+  color: color-mix(in srgb, var(--accent) 62%, var(--line));
+  margin: 0 auto 6px;
+}
+
+@media (min-width: 720px) {
+  :root {
+    --pawbar-h: 0px;
+  }
+}
+
+/* ----------------------------------------------------------- report sheet */
+
+/* The paw report: a card from the bottom on a phone (thumb territory), a
+   centred dialog on a desk. Same DOM, same a11y, two placements. */
+.report-open {
+  gap: 6px;
+}
+
+.report-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgb(28 22 14 / 0.45);
+}
+
+.report-sheet {
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius) var(--radius) 0 0;
+  border-bottom: 0;
+  box-shadow: var(--shadow-3);
+  padding: 14px 16px calc(16px + var(--safe-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.report-head {
+  gap: 8px;
+  font-size: 16px;
+}
+
+.report-paw {
+  color: var(--accent);
+  flex: none;
+}
+
+.report-paw-big {
+  color: var(--accent);
+  margin: 0 auto;
+}
+
+.report-kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.report-note-label {
+  gap: 4px;
+}
+
+.report-note-label textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 10px 12px;
+  font: inherit;
+  outline: none;
+}
+
+.report-note-label textarea:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.report-count {
+  align-self: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-error {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--bad) 12%, var(--surface));
+  color: var(--bad);
+  font-weight: 600;
+}
+
+.report-actions {
+  flex-wrap: wrap;
+}
+
+.report-done {
+  align-items: center;
+  text-align: center;
+}
+
+.report-done p {
+  max-width: 40ch;
+}
+
+@media (min-width: 720px) {
+  .report-backdrop {
+    align-items: center;
+  }
+
+  .report-sheet {
+    border-radius: var(--radius);
+    border-bottom: 1px solid var(--line-strong);
+    padding-bottom: 16px;
+  }
+}
+
 /* Narrow-phone overrides come last so they win over the base rules above. */
 /* Narrow phones (360px and up to 400px) have room for the brand or the city
    jump at full size, not both. The brand keeps its name; the select shrinks. */

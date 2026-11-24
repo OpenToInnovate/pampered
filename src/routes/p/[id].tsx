@@ -9,7 +9,9 @@
  */
 import { Meta, Title } from "@solidjs/meta";
 import { A, createAsync, query, useLocation, useParams } from "@solidjs/router";
-import { Match, Show, Switch } from "solid-js";
+import { createSignal, Match, Show, Switch } from "solid-js";
+import FurryPaw from "~/components/FurryPaw";
+import ReportSheet from "~/components/ReportSheet";
 import { SourceBadge } from "~/components/PlaceCard";
 import { dogPolicyLabel, dogPolicyTone, selection } from "~/content/selections";
 import { formatAddress, formatCheckedDate, joinList, openState } from "~/lib/format";
@@ -41,6 +43,7 @@ export default function PlacePage() {
   const params = useParams();
   const location = useLocation();
   const place = createAsync(() => findPlace(decodeURIComponent(params["id"] ?? "")));
+  const [reporting, setReporting] = createSignal(false);
 
   const backHref = () => `/${location.search}`;
   const displayName = () => {
@@ -151,6 +154,17 @@ export default function PlacePage() {
                   </dl>
                 </section>
 
+                <section aria-label="Improve this place">
+                  <button type="button" class="btn report-open" onClick={() => setReporting(true)}>
+                    <FurryPaw size={16} />
+                    Report a change
+                  </button>
+                  <p class="tiny muted">
+                    Two minutes, no account. Reports reach OpenStreetMap volunteers and our
+                    inbox; checked facts are published for everyone.
+                  </p>
+                </section>
+
                 {p().bookingUrl && (
                   <section aria-label="Booking">
                     <a href={p().bookingUrl} class="btn btn-primary" rel="noopener" target="_blank">
@@ -189,6 +203,14 @@ export default function PlacePage() {
           }}
         </Match>
       </Switch>
+      <Show when={reporting() && place()}>
+        {(p) => (
+          <ReportSheet
+            place={{ id: p().id, name: p().name, lat: p().lat, lon: p().lon }}
+            onClose={() => setReporting(false)}
+          />
+        )}
+      </Show>
     </main>
   );
 }

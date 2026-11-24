@@ -21,6 +21,15 @@
       "migrations_dir": "migrations"
     }
   ],
+  // The paw inbox. Visitor reports are WRITE-ONLY from the Worker: nothing
+  // ever reads KV to serve a page (see AGENTS.md, "The paw inbox"). Drained by
+  // a human with `npm run inbox`, which prints yaml drafts for content/places/.
+  "kv_namespaces": [
+    {
+      "binding": "INBOX",
+      "id": "6e6305b5845b488fa8b893df97e4a05e"
+    }
+  ],
   // A custom domain on a subdomain of the already-proxied korg-e.com zone.
   // Wrangler creates the DNS record itself, so there is nothing to add by hand.
   "routes": [

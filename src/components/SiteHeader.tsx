@@ -4,6 +4,7 @@
  * except About, because there is nowhere else to go.
  */
 import { A } from "@solidjs/router";
+import FurryPaw from "~/components/FurryPaw";
 import { regions } from "~/content/selections";
 
 export default function SiteHeader() {
@@ -22,16 +23,7 @@ export default function SiteHeader() {
   return (
     <header class="site-header">
       <A href="/" class="brand" aria-label="Pampered home">
-        <svg class="brand-mark" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" fill="#9a4a16" />
-          <g fill="#faf8f5">
-            <ellipse cx="12" cy="14.5" rx="3.4" ry="2.7" />
-            <circle cx="7.2" cy="10.6" r="1.5" />
-            <circle cx="10" cy="8.4" r="1.5" />
-            <circle cx="14" cy="8.4" r="1.5" />
-            <circle cx="16.8" cy="10.6" r="1.5" />
-          </g>
-        </svg>
+        <FurryPaw size={26} class="brand-mark" circle="#9a4a16" paw="#faf8f5" />
         <span class="brand-word">Pampered</span>
       </A>
       <div class="spacer" />
