@@ -13,16 +13,40 @@
  */
 import { expect, test } from "@playwright/test";
 
+/**
+ * The mobile rebuild moved two controls: filters live in the paw bar and
+ * search in the header pill (the map row is gone on a phone). Tests ask for
+ * whichever dock the viewport is showing, so one suite covers both.
+ */
+async function filterButton(page: import("@playwright/test").Page, name: RegExp) {
+  const group = page.getByRole("group", { name: /Show on the map/ });
+  if (await group.isVisible().catch(() => false)) {
+    return group.getByRole("button", { name });
+  }
+  return page.getByRole("navigation", { name: "Filter the map" }).getByRole("button", { name });
+}
+
+async function openSearch(page: import("@playwright/test").Page) {
+  const pill = page.getByRole("button", { name: "Search places" });
+  if (await pill.first().isVisible().catch(() => false)) await pill.first().click();
+}
+
 test("home loads with a list, chips and a map or fallback", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/Pampered/);
 
-  await expect(page.getByRole("search")).toBeVisible();
-  await expect(page.getByPlaceholder(/Search pubs/)).toBeVisible();
+  // Desktop shows the search bar over the map; a phone shows the header pill
+  // that opens the full-screen search. Either is the search affordance.
+  await expect(
+    page.getByRole("search").or(page.getByRole("button", { name: "Search places" })).first(),
+  ).toBeVisible();
 
-  // Ten chips, one per selection.
-  const chips = page.getByRole("group", { name: /Show on the map/ }).getByRole("button");
-  await expect(chips).toHaveCount(10);
+  // Ten filters, one per selection, in whichever dock this viewport shows.
+  const filterDock = page.getByRole("group", { name: /Show on the map/ });
+  const dock = (await filterDock.isVisible().catch(() => false))
+    ? filterDock
+    : page.getByRole("navigation", { name: "Filter the map" });
+  await expect(dock.getByRole("button")).toHaveCount(10);
 
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
 
@@ -64,8 +88,7 @@ test("toggling a chip changes the URL and the list", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
 
-  const chipGroup = page.getByRole("group", { name: /Show on the map/ });
-  const cafes = chipGroup.getByRole("button", { name: /Cafés/ });
+  const cafes = await filterButton(page, /Cafés/);
   await cafes.click();
   await expect(page).toHaveURL(/sel=/);
   await expect(cafes).toHaveAttribute("aria-pressed", "false");
@@ -79,7 +102,13 @@ test("search narrows the list and the URL", async ({ page }) => {
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
 
   const before = await page.locator("#results > li").count();
-  await page.getByPlaceholder(/Search pubs/).fill("park");
+  // On a phone the search box lives in a full-screen overlay opened from the
+  // header pill; on a desk it is the bar over the map. One test, both docks.
+  await openSearch(page);
+  // Two inputs carry the placeholder (the desktop bar is merely hidden on a
+  // phone); fill the one the overlay actually shows.
+  const box = page.locator(".search-overlay input");
+  await (await box.isVisible().catch(() => false) ? box : page.locator("#site-search")).fill("park");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page).toHaveURL(/q=park/);
   await expect(page.locator("#results > li")).not.toHaveCount(before);
@@ -136,10 +165,7 @@ test("a selection that fails to load says so, and never crashes", async ({ page 
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
 
   await page.route("**/data/**", (route) => route.abort());
-  await page
-    .getByRole("group", { name: /Show on the map/ })
-    .getByRole("button", { name: /Pet shops/ })
-    .click();
+  await (await filterButton(page, /Pet shops/)).click();
   await page.waitForTimeout(1500);
 
   // Whatever happened, the page must not have fallen into the error boundary.

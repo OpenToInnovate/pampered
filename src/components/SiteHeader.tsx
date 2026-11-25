@@ -27,6 +27,22 @@ export default function SiteHeader() {
         <span class="brand-word">Pampered</span>
       </A>
       <div class="spacer" />
+      {/* On a phone the search pill replaces the region jump: the thumb needs
+          search, and the cities move into the overlay where there is room for
+          all of them plus a search box. The header is mounted by App, so the
+          route listens for the event (see index.tsx). */}
+      <button
+        type="button"
+        class="btn header-search"
+        aria-label="Search places"
+        onClick={() => window.dispatchEvent(new CustomEvent("pampered:search"))}
+      >
+        <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M16.5 16.5L21 21" />
+        </svg>
+        <span>Search places…</span>
+      </button>
       <label class="region-jump">
         <span class="sr-only">Jump to a city</span>
         <select

@@ -34,10 +34,10 @@ import { NoHydration } from "solid-js/web";
 import BottomSheet from "~/components/BottomSheet";
 import MiniCard from "~/components/MiniCard";
 import PawBar from "~/components/PawBar";
-import type { PawAction } from "~/components/PawBar";
 import PlaceCard, { EmptyList } from "~/components/PlaceCard";
 import ReportSheet from "~/components/ReportSheet";
 import SearchBar from "~/components/SearchBar";
+import SearchOverlay from "~/components/SearchOverlay";
 import SelectionChips from "~/components/SelectionChips";
 import type { ChipSelection } from "~/components/SelectionChips";
 import { selections } from "~/content/selections";
@@ -213,6 +213,16 @@ export default function Home() {
   // taken on open, so closing the mini-card does not mutate a form in flight.
   const [reportPlace, setReportPlace] = createSignal<PlaceRecord | null>(null);
 
+  // The search overlay. The header pill and the paw bar both open it; the
+  // header is mounted by App, two levels above this route, so it asks with an
+  // event — the same channel the city jump already uses.
+  const [searchOpen, setSearchOpen] = createSignal(false);
+  createEffect(() => {
+    const handler = () => setSearchOpen(true);
+    window.addEventListener("pampered:search", handler);
+    onCleanup(() => window.removeEventListener("pampered:search", handler));
+  });
+
   const detailHref = createMemo(() => {
     const id = selectedId();
     if (!id) return "";
@@ -306,54 +316,6 @@ export default function Home() {
   const onOrder = (order: "near" | "name") => {
     commit({ ...currentView(), order, place: null }, false);
   };
-
-  // The paw bar: the thumb's row. Colours and labels come from selections.yaml
-  // through the same `selections` the chips read, so a rename in the yaml is a
-  // broken memo here, caught by check — never a mystery button in production.
-  const byId = (id: string) => selections.find((s) => s.id === id);
-  const pawActions = createMemo<PawAction[]>(() => {
-    const sel = new Set(view().sel);
-    const c = counts();
-    const quick: { id: string; label: string }[] = [
-      // "Food"/"Parks" rather than the yaml shorts: 63px of paw-bar column
-      // cannot fit "Restaurants", and a truncated label is no label at all.
-      // Colour still comes from selections.yaml — only the word is local.
-      { id: "restaurants", label: "Food" },
-      { id: "cafes", label: "Cafés" },
-      { id: "pubs", label: "Pubs" },
-      { id: "dog-parks", label: "Parks" },
-    ];
-    return [
-      {
-        id: "search",
-        // "Find", not "Search": the search bar's submit button is named
-        // Search, and a second button with the same name is both a strict-mode
-        // ambiguity in tests and a confusing echo for a screen reader.
-        label: "Find",
-        colour: "var(--accent)",
-        onPress: () => document.getElementById("site-search")?.focus(),
-      },
-      {
-        id: "near",
-        label: view().near ? "Clear" : "Near me",
-        colour: "var(--good)",
-        pressed: !!view().near,
-        disabled: locating(),
-        onPress: () => (view().near ? clearNear() : onNearMe()),
-      },
-      ...quick.map(({ id, label }) => {
-        const s = byId(id);
-        return {
-          id,
-          label,
-          colour: s?.colour ?? "var(--accent)",
-          pressed: sel.has(id),
-          count: sel.has(id) || c[id] ? (c[id] ?? 0) : null,
-          onPress: () => onToggle(id),
-        };
-      }),
-    ];
-  });
 
   const [shared, setShared] = createSignal(false);
   let sharedTimer: ReturnType<typeof setTimeout> | undefined;
@@ -490,7 +452,7 @@ export default function Home() {
               onFailed={setMapFailed}
             />
           </Show>
-          <PawBar actions={pawActions()} />
+          <PawBar chips={chips()} onToggle={onToggle} onSearch={() => setSearchOpen(true)} />
         </div>
         <div class="finder-overlay">
           <SearchBar value={view().q} onSearch={onSearch} />
@@ -508,14 +470,17 @@ export default function Home() {
             </button>
             {filterControls()}
           </div>
-          <Show when={locateError()}>
-            {(msg) => (
-              <p class="tiny finder-error" role="alert">
-                {msg()}
-              </p>
-            )}
-          </Show>
         </div>
+        {/* Outside the overlay: on a phone the overlay is hidden (the header
+            pill and the paw bar replace it), and a geolocation failure must
+            still be seen. */}
+        <Show when={locateError()}>
+          {(msg) => (
+            <p class="tiny finder-error" role="alert">
+              {msg()}
+            </p>
+          )}
+        </Show>
         <Show when={selectedPlace()}>
           {(place) => (
             <MiniCard
@@ -596,6 +561,16 @@ export default function Home() {
           </Show>
         </Show>
       </BottomSheet>
+      <SearchOverlay
+        open={searchOpen()}
+        chips={chips()}
+        near={!!view().near}
+        locating={locating()}
+        onClose={() => setSearchOpen(false)}
+        onToggle={(id) => onToggle(id)}
+        onSearch={(q) => onSearch(q)}
+        onNear={() => (view().near ? clearNear() : onNearMe())}
+      />
     </main>
   );
 }

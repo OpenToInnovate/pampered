@@ -45,7 +45,8 @@
 }
 
 .map-container .maplibregl-ctrl-attrib {
-  font-size: 10px;
+  /* 10px is a legal credit nobody can read; 11px is the floor. */
+  font-size: 11px;
   white-space: nowrap;
   max-width: calc(100% - 64px);
   overflow: hidden;
