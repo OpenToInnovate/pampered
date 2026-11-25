@@ -373,6 +373,60 @@ export default function Home() {
     sharedTimer = setTimeout(() => setShared(false), 2000);
   };
 
+  // The filter, sort and share cluster. It lives over the map on desktop and
+  // inside the sheet on a phone, because the paw bar already owns the map's
+  // bottom edge and two control rows competing for one thumb is not a design.
+  // The near-me button stays with the map (the paw bar covers it on phones);
+  // these three are what nothing else covers.
+  const filterControls = () => (
+    <>
+      <button
+        type="button"
+        class="btn open-toggle"
+        aria-pressed={view().openNow}
+        onClick={onToggleOpen}
+        title="Only places we can prove are open right now"
+      >
+        {view().openNow ? "● Open now" : "○ Open now"}
+      </button>
+      <div class="order-switch" role="group" aria-label="Sort the list">
+        <button
+          type="button"
+          class="btn btn-quiet order-btn"
+          aria-pressed={view().order === "name"}
+          onClick={() => onOrder("name")}
+        >
+          A–Z
+        </button>
+        <button
+          type="button"
+          class="btn btn-quiet order-btn"
+          aria-pressed={view().order === "near"}
+          onClick={() => onOrder("near")}
+        >
+          Nearest
+        </button>
+      </div>
+      <span class="spacer" />
+      <button
+        type="button"
+        class="btn btn-icon share-btn"
+        aria-label="Copy a link to this view"
+        title="Copy a link to this view"
+        onClick={onShare}
+      >
+        <Show
+          when={shared()}
+          fallback={
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+          }
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+        </Show>
+      </button>
+    </>
+  );
+
   // "/" focuses search from the keyboard, the one shortcut a directory earns.
   // Ignored while typing, and Escape always blurs back out.
   onMount(() => {
@@ -452,50 +506,7 @@ export default function Home() {
             >
               {locating() ? "…" : view().near ? "✕ Nearby" : "◎ Nearby"}
             </button>
-            <button
-              type="button"
-              class="btn open-toggle"
-              aria-pressed={view().openNow}
-              onClick={onToggleOpen}
-              title="Only places we can prove are open right now"
-            >
-              {view().openNow ? "● Open now" : "○ Open now"}
-            </button>
-            <div class="order-switch" role="group" aria-label="Sort the list">
-              <button
-                type="button"
-                class="btn btn-quiet order-btn"
-                aria-pressed={view().order === "name"}
-                onClick={() => onOrder("name")}
-              >
-                A–Z
-              </button>
-              <button
-                type="button"
-                class="btn btn-quiet order-btn"
-                aria-pressed={view().order === "near"}
-                onClick={() => onOrder("near")}
-              >
-                Nearest
-              </button>
-            </div>
-            <span class="spacer" />
-            <button
-              type="button"
-              class="btn btn-icon share-btn"
-              aria-label="Copy a link to this view"
-              title="Copy a link to this view"
-              onClick={onShare}
-            >
-              <Show
-                when={shared()}
-                fallback={
-                  <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
-                }
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
-              </Show>
-            </button>
+            {filterControls()}
           </div>
           <Show when={locateError()}>
             {(msg) => (
@@ -525,7 +536,12 @@ export default function Home() {
         </Show>
       </div>
 
-      <BottomSheet title={title()} count={countText()}>
+      <BottomSheet
+        title={title()}
+        count={countText()}
+        toolbar={filterControls()}
+        collapseWhen={!!selectedPlace()}
+      >
         <Show
           when={!loadFailed()}
           fallback={

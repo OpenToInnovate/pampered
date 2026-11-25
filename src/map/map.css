@@ -757,4 +757,10 @@
   .mini-card {
     bottom: calc(var(--pawbar-h) + 10px);
   }
+
+  /* The paw bar owns the map's bottom edge: the filter/sort/share row moves
+     into the sheet, so the map shows map, not buttons. */
+  .finder-tools {
+    display: none;
+  }
 }

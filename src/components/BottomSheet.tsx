@@ -12,7 +12,7 @@
  * but opening a place from the list moves focus to the mini-card, and closing
  * it returns focus to the card that opened it.
  */
-import { createEffect, createSignal, onCleanup } from "solid-js";
+import { createEffect, createSignal, on, onCleanup, Show } from "solid-js";
 import type { JSX } from "solid-js";
 import FurryPaw from "~/components/FurryPaw";
 
@@ -23,6 +23,11 @@ export default function BottomSheet(props: {
   title: string;
   count: string;
   children: JSX.Element;
+  /** A row docked under the handle — the phone home for map-row controls. */
+  toolbar?: JSX.Element;
+  /** When this turns true (a place card opened), the sheet yields the map and
+      drops to peek, so the card overlays a map worth looking at. */
+  collapseWhen?: boolean;
   onDetent?: (d: Detent) => void;
 }) {
   const [detent, setDetent] = createSignal<Detent>("peek");
@@ -31,6 +36,18 @@ export default function BottomSheet(props: {
   let startY = 0;
   let startDetent: Detent = "peek";
   let dragging = false;
+
+  createEffect(
+    on(
+      () => !!props.collapseWhen,
+      (open) => {
+        if (open && detent() !== "peek") {
+          setDetent("peek");
+          props.onDetent?.("peek");
+        }
+      },
+    ),
+  );
 
   const cycle = () => {
     const next = ORDER[(ORDER.indexOf(detent()) + 1) % ORDER.length]!;
@@ -112,6 +129,9 @@ export default function BottomSheet(props: {
           <span class="muted tiny">{props.count}</span>
         </span>
       </div>
+      <Show when={props.toolbar}>
+        <div class="sheet-tools">{props.toolbar}</div>
+      </Show>
       <div class="sheet-body">{props.children}</div>
     </section>
   );

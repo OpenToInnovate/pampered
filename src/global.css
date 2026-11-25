@@ -721,6 +721,59 @@ a {
   }
 }
 
+/* ------------------------------------------------------- sheet tools row */
+
+/* The open-now / sort / share cluster lives inside the sheet on a phone and
+   over the map on a desk. One DOM, two docks, neither duplicated on screen. */
+.sheet-tools {
+  display: none;
+}
+
+@media (max-width: 719.98px) {
+  .sheet-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 6px 12px;
+    padding-bottom: calc(6px + var(--safe-bottom) / 3);
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* The peek detent grows by the height of the tools row, so the count and
+     the filters are both visible without expanding. The row's spacer is a
+     desktop luxury; inline here, or the share button wraps out of view. */
+  .sheet-tools .spacer {
+    display: none;
+  }
+
+  :root {
+    --sheet-peek: 176px;
+  }
+}
+
+@media (min-width: 720px) {
+  .sheet-tools {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------- mini card bounds */
+
+/* The card overlays a map that the sheet and the paw bar both take from. It
+   may never run past either: a detail that scrolls out of view or hides behind
+   the toolbar is a detail that was not shown. */
+.mini-card {
+  max-height: calc(100dvh - var(--sheet-peek) - var(--pawbar-h) - 24px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.mini-card-actions {
+  flex-wrap: wrap;
+}
+
 /* Narrow-phone overrides come last so they win over the base rules above. */
 /* Narrow phones (360px and up to 400px) have room for the brand or the city
    jump at full size, not both. The brand keeps its name; the select shrinks. */
