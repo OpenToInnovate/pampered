@@ -419,7 +419,10 @@ export default function Home() {
       }
       if (e.key === "Escape" && document.activeElement instanceof HTMLElement) {
         if (typing) document.activeElement.blur();
-        else if (selectedId()) onSelect(null);
+        // With the drawer open, Escape belongs to the drawer (SideDrawer
+        // closes it); deselecting the place as well would make one keypress
+        // undo two things the reader only asked to undo one of.
+        else if (selectedId() && !drawerOpen()) onSelect(null);
       }
     };
     window.addEventListener("keydown", onKey);

@@ -93,8 +93,8 @@ data/index.json  ->  public/data/<selection>.json   served as a static asset
 
 The browser fetches the selections it is showing and filters them itself; a
 venue page is server-rendered from the bundled copy. Neither touches D1, so the
-quota cannot be spent by browsing at all. A first-time visitor downloads 47 kB
-of default data, and the whole directory is 187 kB, loaded only on demand.
+quota cannot be spent by browsing at all. A first-time visitor downloads 84 kB
+of default data, and the whole directory is 190 kB, loaded only on demand.
 
 `npm run build` fails if a database reference, an `/api/` route or `node:fs`
 appears in browser code — see `scripts/guard-no-request-db.mjs`. If you find

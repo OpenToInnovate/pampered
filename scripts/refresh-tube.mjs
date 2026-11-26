@@ -111,6 +111,19 @@ out body;
 >;
 out skel qt;`;
 
+// The route query's recursive `out skel` yields member nodes bare — ids and
+// coords, no tags — so a stop position's own name is invisible there. This
+// second query fetches the stop nodes with tags. London stops are tagged in
+// two schemes — the older `railway=stop` and the newer
+// `public_transport=stop_position`, often with no railway tag at all — and a
+// query for either alone silently misses half of them.
+const STOP_QUERY = `[out:json][timeout:280];
+(
+  node["railway"~"^stop"]${bbox};
+  node["public_transport"="stop_position"]${bbox};
+);
+out body;`;
+
 function normName(name) {
   return String(name ?? "")
     .toLowerCase()
@@ -174,11 +187,40 @@ function buildNodeCoords(routeJson) {
   return nodes;
 }
 
-function joinLines(routeJson, stationsByName) {
+/**
+ * Attach lines to stations, name first and distance second:
+ *
+ *   1. the stop member IS a station node — the strongest evidence there is;
+ *   2. the stop position is named and the name matches a station;
+ *   3. the stop position is named but unmatched — fall back to proximity,
+ *      because spellings drift ("King's Cross" vs "King's Cross St Pancras");
+ *   4. an unnamed stop position is skipped and counted, never joined by
+ *      distance alone: a node that asserts nothing cannot lend its position
+ *      to a line.
+ */
+function joinLines(routeJson, stationsByName, stopJson) {
   const nodeCoords = buildNodeCoords(routeJson);
+
+  // Station nodes, keyed by raw OSM id, for rule 1.
+  const stationNodeIds = new Set();
+  for (const station of stationsByName.values()) {
+    const match = /^osm:node\/(\d+)$/.exec(station.id);
+    if (match) stationNodeIds.add(Number(match[1]));
+  }
+
+  // Stop-position names, keyed by raw OSM id, for rules 2 and 3.
+  const stopNames = new Map();
+  for (const el of stopJson.elements ?? []) {
+    const key = normName(el.tags?.name);
+    if (key) stopNames.set(el.id, key);
+  }
+
   const stations = [...stationsByName.values()];
   let stops = 0;
-  let matched = 0;
+  let byStationNode = 0;
+  let byName = 0;
+  let byProximity = 0;
+  let skippedUnnamed = 0;
 
   for (const rel of routeJson.elements ?? []) {
     if (rel.type !== "relation") continue;
@@ -187,34 +229,60 @@ function joinLines(routeJson, stationsByName) {
     if (!line) continue;
     for (const member of rel.members ?? []) {
       if (member.type !== "node" || !String(member.role ?? "").startsWith("stop")) continue;
-      const coord = nodeCoords.get(member.ref);
-      if (!coord) continue;
       stops++;
+
+      const stationForNode = (ref) => {
+        if (stationNodeIds.has(ref)) return "station-node";
+        const nameKey = stopNames.get(ref);
+        if (nameKey == null) return null; // unnamed: never joined by distance
+        if (stationsByName.has(nameKey)) return "name";
+        return "proximity";
+      };
+      const rule = stationForNode(member.ref);
+
       let best = null;
-      let bestDistance = 400; // metres; a stop position can sit at the platform end
-      for (const station of stations) {
-        const d = haversine(coord, [station.lat, station.lon]);
-        if (d < bestDistance) {
-          bestDistance = d;
-          best = station;
+      if (rule === "station-node") {
+        best = stations.find((s) => {
+          const m = /^osm:node\/(\d+)$/.exec(s.id);
+          return m && Number(m[1]) === member.ref;
+        });
+        if (best) byStationNode++;
+      } else if (rule === "name") {
+        best = stationsByName.get(stopNames.get(member.ref)) ?? null;
+        if (best) byName++;
+      } else if (rule === "proximity") {
+        const coord = nodeCoords.get(member.ref);
+        if (!coord) continue;
+        let bestDistance = 400; // metres; a stop position can sit at the platform end
+        for (const station of stations) {
+          const d = haversine(coord, [station.lat, station.lon]);
+          if (d < bestDistance) {
+            bestDistance = d;
+            best = station;
+          }
         }
+        if (best) byProximity++;
+      } else {
+        skippedUnnamed++;
+        continue;
       }
-      if (best) {
-        best.lines.add(line.id);
-        matched++;
-      }
+      if (best) best.lines.add(line.id);
     }
   }
-  log(`  joined ${matched}/${stops} stop positions to a station`);
+  log(
+    `  ${stops} stop positions: ${byStationNode} via station node, ${byName} by name, ` +
+      `${byProximity} named by proximity, ${skippedUnnamed} unnamed skipped`,
+  );
   return stations;
 }
 
 async function main() {
   const stationJson = await run(STATION_QUERY, "stations");
+  const stopJson = await run(STOP_QUERY, "stop positions");
   const routeJson = await run(ROUTE_QUERY, "routes");
 
   const stationsByName = buildStations(stationJson);
-  const joined = joinLines(routeJson, stationsByName);
+  const joined = joinLines(routeJson, stationsByName, stopJson);
 
   const order = new Map(LINES.map((line, i) => [line.id, i]));
   const stations = joined

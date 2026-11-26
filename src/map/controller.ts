@@ -438,7 +438,10 @@ export async function createMap(
       if (destroyed) return;
       // Landmarks, not venues: added above the basemap's labels but below our
       // pins, so a roundel never hides the place the reader actually wants.
-      void addTubeLayers(map, data);
+      // The await inside can outlive the map if the page is torn down while
+      // the roundel images render, and a rejected promise nobody handles only
+      // writes console noise on a page that is already gone.
+      void addTubeLayers(map, data).catch(() => undefined);
     },
     flyToCamera: (camera, opts) => {
       if (destroyed) return;

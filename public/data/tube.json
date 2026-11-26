@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-11-26T19:44:41Z",
+  "builtAt": "2026-11-26T22:42:11Z",
   "source": "OpenStreetMap via Overpass (ODbL); colours from TfL",
   "bbox": [
     51.25,
@@ -480,8 +480,7 @@
       "lon": -0.09036,
       "lines": [
         "circle",
-        "district",
-        "northern"
+        "district"
       ],
       "primary": "circle"
     },
@@ -928,8 +927,8 @@
     {
       "id": "osm:node/5142610270",
       "name": "Fulham Broadway",
-      "lat": 51.48088,
-      "lon": -0.19435,
+      "lat": 51.48083,
+      "lon": -0.1945,
       "lines": [
         "district"
       ],
@@ -1869,20 +1868,10 @@
       "lines": [
         "bakerloo",
         "circle",
-        "district"
-      ],
-      "primary": "bakerloo"
-    },
-    {
-      "id": "osm:node/4635572117",
-      "name": "Paddington (Circle and Hammersmith & City lines)",
-      "lat": 51.51851,
-      "lon": -0.17875,
-      "lines": [
-        "circle",
+        "district",
         "hammersmith-city"
       ],
-      "primary": "circle"
+      "primary": "bakerloo"
     },
     {
       "id": "osm:node/5495828135",
