@@ -307,12 +307,24 @@ async function checkTube() {
     }
   }
 
-  const names = new Set();
+  // Some names are legitimately borne by two stations — Canary Wharf, Shadwell
+  // — so a duplicate name is only an error when the coordinates agree too,
+  // which means the join failed to split genuinely different stations.
+  const names = new Map(); // name -> lat/lon of the first entry
   for (const [i, station] of stations.entries()) {
     const at = `tube station ${i}`;
     if (!station || typeof station.name !== "string" || !station.name) fail(at, "needs a name");
-    else if (names.has(station.name)) fail(at, `duplicate station name ${JSON.stringify(station.name)}`);
-    else names.add(station.name);
+    else if (names.has(station.name)) {
+      const first = names.get(station.name);
+      const apart =
+        typeof station.lat === "number" &&
+        (Math.abs(first.lat - station.lat) > 0.0003 ||
+          Math.abs(first.lon - station.lon) > 0.0003);
+      if (!apart) fail(at, `duplicate station ${JSON.stringify(station.name)} at the same spot`);
+      else warn("public/data/tube.json", `station name ${JSON.stringify(station.name)} is shared by two stations`);
+    } else {
+      names.set(station.name, { lat: station.lat, lon: station.lon });
+    }
     if (typeof station?.lat !== "number" || station.lat < 51.2 || station.lat > 51.8) {
       fail(at, `lat ${JSON.stringify(station?.lat)} is outside London`);
     }

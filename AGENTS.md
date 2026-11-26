@@ -144,6 +144,10 @@ npm run build:index    # data/osm + content/places -> data/index.json
 npm run build          # runs build:data, then vite build, then the guard
 npm run sync           # data/index.json -> remote D1. An audit log, not a
                        # serving tier. Nothing reads it. Optional.
+npm run refresh:tube   # Overpass -> public/data/tube.json. Landmark stations
+                       # (Underground, Overground, Elizabeth line, DLR and the
+                       # National Rail termini), not venues: never in the
+                       # chips, the directory or the sync.
 ```
 
 `refresh` subdivides an area Overpass refuses and resumes tile by tile; killing

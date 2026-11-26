@@ -1,16 +1,23 @@
 /**
- * London Underground stations, drawn as TfL-style roundels in each line's
- * colour.
+ * London's railway stations as landmark symbols: Underground roundels in each
+ * line's colour, roundels in the network colour for Overground, the Elizabeth
+ * line and the DLR, and the National Rail double arrow for the central
+ * termini.
  *
  * These are landmarks, not venues. They never appear in the chips or the
  * published directory; they are context, so the reader can say "the pub is by
  * Angel" and see where Angel is. The data is a small static file built by
  * `npm run refresh:tube`, not a request-time query.
  *
- * One roundel per station, in its first line's colour. A segmented ring for
+ * The marks are simplified likenesses, not reproductions: the roundel has no
+ * lettering and the double arrow no serif, because at 20–48 px the text is
+ * unreadable noise. What carries the identity is the silhouette and the
+ * official colour.
+ *
+ * One mark per station, in its first line's colour. A segmented ring for
  * multi-line interchanges was tried and rejected: at phone size the segments
- * became mush, and every combination is another image to bake. The station name
- * underneath carries the rest.
+ * became mush, and every combination is another image to bake. The station
+ * name underneath carries the rest.
  */
 import type { GeoJSONSource, Map as MLMap, SymbolLayerSpecification } from "maplibre-gl";
 import { svgToImage } from "./raster";
@@ -57,10 +64,39 @@ export function roundelSvg(colour: string): string {
 </svg>`;
 }
 
-/** Where our layers go: below the pins, above the basemap. `pampered-clusters`
-    is created before the handle is handed out, so it is a reliable anchor. */
-function beforePins(map: MLMap): string | undefined {
-  return map.getLayer("pampered-clusters") ? "pampered-clusters" : undefined;
+/** The National Rail double arrow, simplified: two arrows in opposite
+    directions, the shape station signage uses for heavy rail. Drawn in the
+    network red on the same white disc as the roundels, so a terminus and a
+    tube station read as the same kind of thing from the same distance. */
+export function railIconSvg(colour: string): string {
+  const fill = HEX.test(colour) ? colour : "#6B7280";
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <circle cx="24" cy="24" r="22" fill="#fffaf0" stroke="rgba(60,45,20,0.18)" stroke-width="1"/>
+  <g fill="${fill}">
+    <rect x="17" y="15" width="20" height="5" rx="1"/>
+    <polygon points="17,11 17,24 8,17.5"/>
+    <rect x="11" y="28" width="20" height="5" rx="1"/>
+    <polygon points="31,24 31,37 40,30.5"/>
+  </g>
+  <circle cx="24" cy="24" r="22" fill="none" stroke="rgba(40,30,10,0.32)" stroke-width="0.8"/>
+</svg>`;
+}
+
+/** One icon per line: roundels for the Underground lines and the roundel
+    networks, the double arrow for National Rail. */
+export function iconSvgFor(line: { id: string; colour: string }): string {
+  return line.id === "rail" ? railIconSvg(line.colour) : roundelSvg(line.colour);
+}
+
+/** Where the landmark layers go: before the basemap's first symbol layer.
+    Symbol placement is granted in style order, so a layer added at the end
+    loses every collision and, in central London, gets suppressed entirely —
+    observed, not guessed. Placed this early, roundels claim their space and
+    the basemap's smaller labels work around them; the venue pins are circle
+    layers and never collide anyway. */
+function landmarkAnchor(map: MLMap): string | undefined {
+  const layers = map.getStyle()?.layers ?? [];
+  return layers.find((l) => l.type === "symbol" && !l.id.startsWith("pampered-"))?.id;
 }
 
 export async function addTubeLayers(map: MLMap, data: TubeData): Promise<void> {
@@ -117,22 +153,28 @@ export async function addTubeLayers(map: MLMap, data: TubeData): Promise<void> {
     return expr;
   };
 
-  const before = beforePins(map);
+  const before = landmarkAnchor(map);
 
   const icons: SymbolLayerSpecification = {
     id: ICONS,
     type: "symbol",
     source: SOURCE,
-    // Visible at the default London overview (z10.6), where collision leaves a
-    // readable subset and interchanges win the placement order. Zooming in
-    // reveals the rest.
-    minzoom: 10.5,
+    // Hidden at the city overview so the pins own it; landmarks surface as the
+    // reader zooms in.
+    //
+    // allow-overlap is on and that is deliberate: MapLibre places symbols in a
+    // single global pass (viewport y-order, every layer together), so with
+    // collision on the basemap's shop icons and street labels cull our
+    // roundels first — in the Docklands run, twelve DLR stations rendered as
+    // zero roundels. Two neighbouring roundels touching is the honest
+    // condition (the stations really are that close); a landmark that vanishes
+    // is not.
+    minzoom: 11.5,
     layout: {
       "icon-image": iconImage() as never,
-      "icon-size": ["interpolate", ["linear"], ["zoom"], 10.5, 0.55, 14, 0.8, 17, 1.05],
-      "icon-allow-overlap": false,
-      "icon-ignore-placement": false,
-      "icon-padding": 2,
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 11.5, 0.55, 14, 0.8, 17, 1.05],
+      "icon-allow-overlap": true,
+      "icon-ignore-placement": true,
       "symbol-sort-key": ["-", ["get", "count"]],
     },
   };
@@ -166,7 +208,7 @@ export async function addTubeLayers(map: MLMap, data: TubeData): Promise<void> {
     const id = `tube-${line.id}`;
     if (!map.hasImage(id)) {
       try {
-        map.addImage(id, await svgToImage(roundelSvg(line.colour), 48), { pixelRatio: 2 });
+        map.addImage(id, await svgToImage(iconSvgFor(line), 48), { pixelRatio: 2 });
       } catch {
         continue;
       }
