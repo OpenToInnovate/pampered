@@ -14,16 +14,23 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * The mobile rebuild moved two controls: filters live in the paw bar and
- * search in the header pill (the map row is gone on a phone). Tests ask for
- * whichever dock the viewport is showing, so one suite covers both.
+ * The results drawer is closed by default on a phone and always visible on a
+ * desk. Tests open it before touching a filter or a result row, and the helper
+ * is a no-op on desktop, so one suite covers both placements.
  */
-async function filterButton(page: import("@playwright/test").Page, name: RegExp) {
-  const group = page.getByRole("group", { name: /Show on the map/ });
-  if (await group.isVisible().catch(() => false)) {
-    return group.getByRole("button", { name });
+async function openDrawer(page: import("@playwright/test").Page) {
+  const panel = page.locator("#results-drawer");
+  if ((await panel.getAttribute("data-open")) === "true") return;
+  const tab = page.getByRole("button", { name: /Open results/i });
+  if (await tab.isVisible().catch(() => false)) {
+    await tab.click();
+    await expect(panel).toHaveAttribute("data-open", "true");
   }
-  return page.getByRole("navigation", { name: "Filter the map" }).getByRole("button", { name });
+}
+
+async function filterButton(page: import("@playwright/test").Page, name: RegExp) {
+  await openDrawer(page);
+  return page.getByRole("group", { name: /Show on the map/ }).getByRole("button", { name });
 }
 
 async function openSearch(page: import("@playwright/test").Page) {
@@ -41,12 +48,10 @@ test("home loads with a list, chips and a map or fallback", async ({ page }) => 
     page.getByRole("search").or(page.getByRole("button", { name: "Search places" })).first(),
   ).toBeVisible();
 
-  // Ten filters, one per selection, in whichever dock this viewport shows.
-  const filterDock = page.getByRole("group", { name: /Show on the map/ });
-  const dock = (await filterDock.isVisible().catch(() => false))
-    ? filterDock
-    : page.getByRole("navigation", { name: "Filter the map" });
-  await expect(dock.getByRole("button")).toHaveCount(10);
+  // Eight filters, one per selection. On a phone they live in the drawer.
+  await openDrawer(page);
+  const dock = page.getByRole("group", { name: /Show on the map/ });
+  await expect(dock.getByRole("button")).toHaveCount(8);
 
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
 
@@ -62,7 +67,7 @@ test("the published dataset is static and edge-cached", async ({ request, baseUR
   const body = await manifest.json();
   expect(body.total).toBeGreaterThan(1000);
   expect(body.builtAt).toBeTruthy();
-  expect(Object.keys(body.counts).length).toBe(10);
+  expect(Object.keys(body.counts).length).toBe(8);
 
   // Static assets are served by Workers Assets rather than the Worker, which is
   // what makes browsing free of database reads and free of request cost. The
@@ -116,15 +121,18 @@ test("search narrows the list and the URL", async ({ page }) => {
 
 test("a place card links to a venue page that renders", async ({ page }) => {
   await page.goto("/");
+  await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
+  await openDrawer(page);
   const first = page.locator("#results > li").first();
-  await expect(first).toBeVisible({ timeout: 20_000 });
 
   const href = await first.locator("a").first().getAttribute("href");
   expect(href).toMatch(/^\/p\//);
 
   await first.locator("a").first().click();
   await expect(page).toHaveURL(/\/p\//);
-  await expect(page.locator("h1")).toBeVisible();
+  // The venue page is server-rendered from the bundled dataset; a cold preview
+  // can take a beat longer than the default assertion timeout.
+  await expect(page.locator("h1")).toBeVisible({ timeout: 20_000 });
   await expect(page.getByRole("link", { name: /Back to the map/ })).toBeVisible();
   // A venue page must arrive complete, without waiting for JavaScript.
   await expect(page.locator("h1")).not.toBeEmpty();
@@ -184,6 +192,7 @@ test("a visitor can report a place in a couple of clicks", async ({ page }) => {
   test.setTimeout(90_000);
   await page.goto("/");
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
+  await openDrawer(page);
   await page.locator("#results > li").first().click();
   await page.getByRole("button", { name: /Add a detail/ }).click();
   await expect(page.getByRole("dialog", { name: /Report / })).toBeVisible();
@@ -201,6 +210,7 @@ test("a short report is told it is too short, never silently dropped", async ({ 
   test.setTimeout(90_000);
   await page.goto("/");
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
+  await openDrawer(page);
   await page.locator("#results > li").first().click();
   await page.getByRole("button", { name: /Add a detail/ }).click();
 

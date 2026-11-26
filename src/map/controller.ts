@@ -29,6 +29,8 @@ import type {
   SymbolLayerSpecification,
 } from "maplibre-gl";
 import { sepiaise } from "./sepia";
+import { svgToImage } from "./raster";
+import { addTubeLayers, type TubeData } from "./tube";
 
 // Liberty, not positron: liberty carries the OpenMapTiles `poi` layer, which is
 // where railway stations live. Positron has no POIs at all, so on it a station
@@ -98,21 +100,6 @@ function bboxOf(map: MLMap): Bbox {
   return [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
 }
 
-async function svgToImage(svg: string, size: number): Promise<ImageBitmap> {
-  const url = URL.createObjectURL(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }));
-  try {
-    const img = new Image(size, size);
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve();
-      img.onerror = () => reject(new Error("icon decode failed"));
-      img.src = url;
-    });
-    return await createImageBitmap(img);
-  } finally {
-    URL.revokeObjectURL(url);
-  }
-}
-
 /** Our layers go under the first label layer, so "Camden High Street" is never
     hidden behind a pin. This is `tuckGroundUnderBuildings` from OurBlock with
     the buildings taken out. */
@@ -136,6 +123,7 @@ export interface MapHandle {
   setAllFeatures: (features: PinFeature[]) => void;
   setActiveSelections: (ids: readonly string[]) => void;
   setSelected: (id: string | null) => void;
+  setTube: (data: TubeData) => void;
   flyToCamera: (camera: Camera, opts?: { duration?: number }) => void;
   getCamera: () => Camera | null;
   getBbox: () => Bbox | null;
@@ -201,7 +189,7 @@ export async function createMap(
     return null;
   }
 
-  // Bottom-right, above the sheet and clear of the search and chip rows. At the
+  // Bottom-right, clear of the search pill and the drawer's edge tab. At the
   // top they sat under the chips and hid the last chip on a phone.
   map.addControl(new ml.NavigationControl({ visualizePitch: false, showCompass: false }), "bottom-right");
   map.addControl(
@@ -210,6 +198,10 @@ export async function createMap(
   );
 
   let destroyed = false;
+  /** Set once the style's `load` fires. Before that, any style-level error is
+      fatal; after it, a glyph or tile 404 is routine and must not tear down a
+      working map (OpenFreeMap's font URLs 404 while it falls back locally). */
+  let styleReady = false;
   let allFeatures: PinFeature[] = [];
   let activeIds: readonly string[] = styles.map((s) => s.id);
   let selectedId: string | null = null;
@@ -240,10 +232,11 @@ export async function createMap(
 
   map.on("webglcontextlost", () => events.onFailed("webglcontextlost"));
   map.on("error", (e) => {
-    // A tile failing is routine (a tunnel, a tunnel's wifi). A style failing is
-    // the map failing, and the style failing is the only error we escalate.
+    // A tile or glyph failing after the style is up is routine (a tunnel, a
+    // tunnel's wifi, a font host with a 404). Only a failure before the style
+    // loads means the map cannot work at all.
     const src = (e as { sourceId?: string }).sourceId ?? "";
-    if (!src) events.onFailed("style failed");
+    if (!styleReady && !src) events.onFailed("style failed");
   });
 
   map.on("moveend", () => {
@@ -300,6 +293,7 @@ export async function createMap(
     }, 20_000);
     map.once("load", async () => {
       clearTimeout(timer);
+      styleReady = true;
       try {
         sepiaise(map);
         const before = firstLabelLayer(map);
@@ -439,6 +433,12 @@ export async function createMap(
     setSelected: (id) => {
       selectedId = id;
       applySelected();
+    },
+    setTube: (data) => {
+      if (destroyed) return;
+      // Landmarks, not venues: added above the basemap's labels but below our
+      // pins, so a roundel never hides the place the reader actually wants.
+      void addTubeLayers(map, data);
     },
     flyToCamera: (camera, opts) => {
       if (destroyed) return;

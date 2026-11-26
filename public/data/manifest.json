@@ -1,16 +1,14 @@
 {
-  "builtAt": "2026-11-25T13:59:13Z",
-  "total": 1563,
+  "builtAt": "2026-11-26T22:10:57Z",
+  "total": 1638,
   "counts": {
-    "restaurants": 91,
-    "cafes": 280,
-    "pubs": 266,
-    "bars": 33,
+    "food-drink": 407,
+    "cafes": 304,
     "ice-cream": 2,
     "groomers": 6,
     "pet-shops": 6,
-    "dog-parks": 592,
-    "off-lead": 277,
+    "dog-parks": 607,
+    "off-lead": 296,
     "water-bowls": 33
   },
   "fields": [

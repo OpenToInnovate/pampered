@@ -16,8 +16,14 @@ import {
 
 describe("selections", () => {
   it("loads every selection from the YAML", () => {
-    expect(selections.length).toBeGreaterThanOrEqual(10);
-    expect(selections.map((s) => s.id)).not.toContain("vets");
+    expect(selections.length).toBeGreaterThanOrEqual(8);
+    const ids = selections.map((s) => s.id);
+    expect(ids).not.toContain("vets");
+    // Pubs, bars and restaurants are one selection now.
+    expect(ids).toContain("food-drink");
+    expect(ids).not.toContain("restaurants");
+    expect(ids).not.toContain("pubs");
+    expect(ids).not.toContain("bars");
     for (const s of selections) {
       expect(s.id).toMatch(/^[a-z0-9-]+$/);
       expect(s.colour).toMatch(/^#[0-9A-Fa-f]{6}$/);

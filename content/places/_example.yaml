@@ -15,7 +15,7 @@ places:
     source: curated
     verified: true
 
-    selections: [pubs]
+    selections: [food-drink]
 
     lat: 51.5074
     lon: -0.1278

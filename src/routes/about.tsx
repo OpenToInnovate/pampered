@@ -10,8 +10,9 @@ export default function About() {
       <Title>About — Pampered</Title>
       <h1>About Pampered</h1>
       <p>
-        Pampered is a map of places that welcome dogs: cafés, pubs and restaurants that allow them
-        inside, groomers and pet shops that allow dogs, dog parks, off-lead areas and water bowls.
+        Pampered is a map of places that welcome dogs: cafés, pubs, bars and restaurants that allow
+        them inside, groomers and pet shops that allow dogs, dog parks, off-lead areas and water
+        bowls.
         A place only appears if someone has recorded that dogs are welcome there. Places with no
         dog information are left off rather than shown with a shrug.
       </p>

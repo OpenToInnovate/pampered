@@ -46,18 +46,23 @@ dog_policy:
 
 selections:
   # ---------------------------------------------------------------- eat & drink
-  - id: restaurants
-    label: Restaurants that welcome dogs
-    short: Restaurants
+  # Pubs, bars and restaurants share one chip. They answer the same question
+  # ("where can I eat or drink with the dog?") and three near-identical rows
+  # made the filter bar harder to scan without adding a distinction a visitor
+  # cares about. Cafés and ice cream stay separate: a coffee stop and a cone are
+  # different trips.
+  - id: food-drink
+    label: Pubs, bars and restaurants that welcome dogs
+    short: Food & drink
     group: eat-drink
     icon: fork
-    colour: "#CB3030"
+    colour: "#21768B"
     default: true
     minzoom: 11
     blurb: Tagged in OpenStreetMap as allowing dogs inside.
     osm:
       tags:
-        amenity: [restaurant]
+        amenity: [pub, bar, restaurant, biergarten]
         dog: [yes, permitted, designated, inside]
 
   - id: cafes
@@ -72,32 +77,6 @@ selections:
     osm:
       tags:
         amenity: [cafe]
-        dog: [yes, permitted, designated, inside]
-
-  - id: pubs
-    label: Pubs that welcome dogs
-    short: Pubs
-    group: eat-drink
-    icon: pint
-    colour: "#62741B"
-    minzoom: 11
-    blurb: Tagged in OpenStreetMap as allowing dogs inside.
-    osm:
-      tags:
-        amenity: [pub, biergarten]
-        dog: [yes, permitted, designated, inside]
-
-  - id: bars
-    label: Bars that welcome dogs
-    short: Bars
-    group: eat-drink
-    icon: glass
-    colour: "#B12DC0"
-    minzoom: 12
-    blurb: Tagged in OpenStreetMap as allowing dogs inside.
-    osm:
-      tags:
-        amenity: [bar]
         dog: [yes, permitted, designated, inside]
 
   - id: ice-cream

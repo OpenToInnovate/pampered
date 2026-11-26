@@ -18,6 +18,7 @@ import { primarySelectionId } from "~/content/selections";
 import type { Bbox } from "~/lib/geo";
 import { createMap, toPinFeatures } from "./controller";
 import type { Camera, MapHandle, PinFeature, SelectionStyle } from "./controller";
+import type { TubeData } from "./tube";
 import { sameCamera } from "./camera";
 import type { CameraLike } from "./camera";
 
@@ -90,6 +91,17 @@ export default function MapView(props: Props) {
       h.setAllFeatures(toPinFeatures(props.places, primarySelectionFallback));
       h.setActiveSelections(props.activeSelections);
       h.setSelected(props.selectedId);
+
+      // Landmarks, not venues: a small committed asset, fetched once. If it is
+      // missing or malformed the map is still a map, just without roundels —
+      // the one failure that needs no message, because nothing is claimed.
+      void fetch("/data/tube.json", { cache: "force-cache" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          const tube = data as TubeData | null;
+          if (!cancelled && tube && Array.isArray(tube.stations)) h.setTube(tube);
+        })
+        .catch(() => {});
     });
 
     ro = new ResizeObserver(() => handle?.resize());

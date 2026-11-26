@@ -2,9 +2,13 @@
  * The sepia map treatment, applied on top of the OpenFreeMap style.
  *
  * The base style is OpenFreeMap's `liberty` variant: unlike the old `positron`
- * it carries a `poi` source-layer, which is where railway stations, bus stops
- * and airports live. Without it, landmarks simply do not exist in the tiles and
- * no amount of styling summons them.
+ * it carries a `poi` source-layer, which is where landmarks live. Without it,
+ * they simply do not exist in the tiles and no amount of styling summons them.
+ *
+ * Transit is deliberately narrowed to airports here. The basemap draws bus
+ * stops and generic rail icons at every zoom, which is noise on a dog-friendly
+ * finder and competes with our own pins. London Underground stations are drawn
+ * separately, with per-line roundels, by `tube.ts`.
  *
  * Two things happen here, both safe by construction: every override is wrapped
  * so a missing layer id can never fail the map, and every colour that should
@@ -159,9 +163,10 @@ export function sepiaise(map: MLMap): void {
     });
   }
 
-  // Landmarks: bigger transit icons and labels that grow with zoom, over a
-  // warm glow disc so a station reads as a place, not a speck.
+  // Airports only: bus stops and the generic rail icon are noise, and the tube
+  // gets its own layer. Airport labels stay warm and grow with zoom.
   try {
+    map.setFilter(TRANSIT, ["match", ["get", "class"], ["airport"], true, false]);
     map.setLayerZoomRange(TRANSIT, 10, 22);
     map.setLayoutProperty(TRANSIT, "icon-size", [
       "interpolate",
@@ -198,7 +203,7 @@ export function sepiaise(map: MLMap): void {
           type: "circle",
           source: "openmaptiles",
           "source-layer": "poi",
-          filter: ["match", ["get", "class"], ["rail", "bus", "airport"], true, false],
+          filter: ["match", ["get", "class"], ["airport"], true, false],
           paint: {
             "circle-color": "#c98a3f",
             "circle-opacity": ["interpolate", ["linear"], ["zoom"], 10, 0.26, 16, 0.4],

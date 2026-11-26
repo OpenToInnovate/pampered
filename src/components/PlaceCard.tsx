@@ -40,7 +40,8 @@ export default function PlaceCard(props: {
 }) {
   const p = () => props.place;
   const displayName = () => {
-    if (p().name) return p().name;
+    const named = p().name;
+    if (named) return named;
     const primary = p().primary ?? p().selections[0];
     return selection(primary ?? "")?.label ?? "Place";
   };
@@ -50,14 +51,22 @@ export default function PlaceCard(props: {
 
   return (
     <li>
-      <A
-        href={props.href}
+      <div
         class="place-card"
         classList={{ "place-card-selected": props.selected }}
-        aria-current={props.selected ? "true" : undefined}
-        onClick={() => props.onSelect(p().id)}
+        role="group"
+        aria-label={displayName()}
       >
-        <span class="place-card-main">
+        {/* Tapping the row selects the pin and opens the mini-card; the
+            chevron is the only navigation, so a tap never does both at once.
+            Making the whole row a link meant the two happened together and
+            raced each other. */}
+        <button
+          type="button"
+          class="place-card-main place-card-select"
+          aria-pressed={props.selected}
+          onClick={() => props.onSelect(p().id)}
+        >
           <span class="row place-card-top">
             <SelectionIcon name={icon()} size={18} class="place-card-icon" />
             <strong class="place-card-name">{displayName()}</strong>
@@ -79,11 +88,11 @@ export default function PlaceCard(props: {
               {p().postcode ? ` ${p().postcode}` : ""}
             </span>
           )}
-        </span>
-        <span class="place-card-go" aria-hidden="true">
-          ›
-        </span>
-      </A>
+        </button>
+        <A href={props.href} class="place-card-go" aria-label={`Details for ${displayName()}`}>
+          <span aria-hidden="true">›</span>
+        </A>
+      </div>
     </li>
   );
 }

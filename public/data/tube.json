@@ -1,0 +1,2892 @@
+{
+  "builtAt": "2026-11-26T19:44:41Z",
+  "source": "OpenStreetMap via Overpass (ODbL); colours from TfL",
+  "bbox": [
+    51.25,
+    -0.7,
+    51.75,
+    0.36
+  ],
+  "lines": [
+    {
+      "id": "bakerloo",
+      "name": "Bakerloo",
+      "colour": "#B36305"
+    },
+    {
+      "id": "central",
+      "name": "Central",
+      "colour": "#E32017"
+    },
+    {
+      "id": "circle",
+      "name": "Circle",
+      "colour": "#FFD300"
+    },
+    {
+      "id": "district",
+      "name": "District",
+      "colour": "#00782A"
+    },
+    {
+      "id": "hammersmith-city",
+      "name": "Hammersmith & City",
+      "colour": "#F3A9BB"
+    },
+    {
+      "id": "jubilee",
+      "name": "Jubilee",
+      "colour": "#A0A5A9"
+    },
+    {
+      "id": "metropolitan",
+      "name": "Metropolitan",
+      "colour": "#9B0056"
+    },
+    {
+      "id": "northern",
+      "name": "Northern",
+      "colour": "#000000"
+    },
+    {
+      "id": "piccadilly",
+      "name": "Piccadilly",
+      "colour": "#003688"
+    },
+    {
+      "id": "victoria",
+      "name": "Victoria",
+      "colour": "#0098D4"
+    },
+    {
+      "id": "waterloo-city",
+      "name": "Waterloo & City",
+      "colour": "#95CDBA"
+    }
+  ],
+  "stations": [
+    {
+      "id": "osm:node/5183843299",
+      "name": "Acton Town",
+      "lat": 51.50271,
+      "lon": -0.27996,
+      "lines": [
+        "district",
+        "piccadilly"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/3788735981",
+      "name": "Aldgate",
+      "lat": 51.51425,
+      "lon": -0.07572,
+      "lines": [
+        "circle",
+        "metropolitan"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/4984999298",
+      "name": "Aldgate East",
+      "lat": 51.51562,
+      "lon": -0.07084,
+      "lines": [
+        "district",
+        "hammersmith-city"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6399598539",
+      "name": "Alperton",
+      "lat": 51.5408,
+      "lon": -0.3001,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/3501388948",
+      "name": "Amersham",
+      "lat": 51.67409,
+      "lon": -0.60736,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/1670707904",
+      "name": "Angel",
+      "lat": 51.53249,
+      "lon": -0.10604,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/1389887370",
+      "name": "Archway",
+      "lat": 51.56531,
+      "lon": -0.13482,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/1651504140",
+      "name": "Arnos Grove",
+      "lat": 51.61643,
+      "lon": -0.1331,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/186194628",
+      "name": "Arsenal",
+      "lat": 51.55838,
+      "lon": -0.10749,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/1264468143",
+      "name": "Baker Street",
+      "lat": 51.52259,
+      "lon": -0.15674,
+      "lines": [
+        "bakerloo",
+        "circle",
+        "hammersmith-city",
+        "jubilee",
+        "metropolitan"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/34007928",
+      "name": "Balham",
+      "lat": 51.44339,
+      "lon": -0.1529,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/1637578440",
+      "name": "Bank",
+      "lat": 51.5131,
+      "lon": -0.08937,
+      "lines": [
+        "central",
+        "northern",
+        "waterloo-city"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/3076573910",
+      "name": "Barbican",
+      "lat": 51.52018,
+      "lon": -0.09863,
+      "lines": [
+        "circle",
+        "hammersmith-city",
+        "metropolitan"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6452489646",
+      "name": "Barking",
+      "lat": 51.54027,
+      "lon": 0.07932,
+      "lines": [
+        "district",
+        "hammersmith-city"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/3076573911",
+      "name": "Barkingside",
+      "lat": 51.58582,
+      "lon": 0.08862,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/1651498764",
+      "name": "Barons Court",
+      "lat": 51.49035,
+      "lon": -0.21441,
+      "lines": [
+        "district",
+        "piccadilly"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/9097860108",
+      "name": "Battersea Power Station",
+      "lat": 51.47962,
+      "lon": -0.14297,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6411776703",
+      "name": "Bayswater",
+      "lat": 51.51228,
+      "lon": -0.18839,
+      "lines": [
+        "circle",
+        "district"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6340707455",
+      "name": "Becontree",
+      "lat": 51.54031,
+      "lon": 0.12652,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/5482891929",
+      "name": "Belsize Park",
+      "lat": 51.55031,
+      "lon": -0.16461,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6407565244",
+      "name": "Bermondsey",
+      "lat": 51.4977,
+      "lon": -0.06435,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/6932246807",
+      "name": "Bethnal Green",
+      "lat": 51.52724,
+      "lon": -0.05475,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/3763522921",
+      "name": "Blackfriars",
+      "lat": 51.51159,
+      "lon": -0.10377,
+      "lines": [
+        "circle",
+        "district"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/29859288",
+      "name": "Blackhorse Road",
+      "lat": 51.58672,
+      "lon": -0.04165,
+      "lines": [
+        "victoria"
+      ],
+      "primary": "victoria"
+    },
+    {
+      "id": "osm:node/3076573913",
+      "name": "Bond Street",
+      "lat": 51.51398,
+      "lon": -0.14942,
+      "lines": [
+        "central",
+        "jubilee"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6797794418",
+      "name": "Borough",
+      "lat": 51.50114,
+      "lon": -0.09329,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/5182384970",
+      "name": "Boston Manor",
+      "lat": 51.49534,
+      "lon": -0.32544,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5472303633",
+      "name": "Bounds Green",
+      "lat": 51.60738,
+      "lon": -0.1249,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5178413115",
+      "name": "Bow Road",
+      "lat": 51.52685,
+      "lon": -0.02479,
+      "lines": [
+        "district",
+        "hammersmith-city"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/1693158540",
+      "name": "Brent Cross",
+      "lat": 51.57682,
+      "lon": -0.21397,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/26652919",
+      "name": "Brixton",
+      "lat": 51.46261,
+      "lon": -0.11471,
+      "lines": [
+        "victoria"
+      ],
+      "primary": "victoria"
+    },
+    {
+      "id": "osm:node/6402176065",
+      "name": "Bromley-by-Bow",
+      "lat": 51.52463,
+      "lon": -0.01232,
+      "lines": [
+        "district",
+        "hammersmith-city"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/3076573914",
+      "name": "Buckhurst Hill",
+      "lat": 51.62594,
+      "lon": 0.04682,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/5182424568",
+      "name": "Burnt Oak",
+      "lat": 51.60281,
+      "lon": -0.26401,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/5585825355",
+      "name": "Caledonian Road",
+      "lat": 51.54848,
+      "lon": -0.11836,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/1670707917",
+      "name": "Camden Town",
+      "lat": 51.53944,
+      "lon": -0.1427,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/5700149213",
+      "name": "Canada Water",
+      "lat": 51.49793,
+      "lon": -0.04984,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/6402222390",
+      "name": "Canary Wharf",
+      "lat": 51.5035,
+      "lon": -0.01863,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/5585799426",
+      "name": "Canning Town",
+      "lat": 51.51399,
+      "lon": 0.0083,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/3637449659",
+      "name": "Cannon Street",
+      "lat": 51.51138,
+      "lon": -0.09036,
+      "lines": [
+        "circle",
+        "district",
+        "northern"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6361199503",
+      "name": "Canons Park",
+      "lat": 51.60801,
+      "lon": -0.29475,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/3517235821",
+      "name": "Chalfont & Latimer",
+      "lat": 51.6681,
+      "lon": -0.56117,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/5585857405",
+      "name": "Chalk Farm",
+      "lat": 51.54411,
+      "lon": -0.15348,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/3076573915",
+      "name": "Chancery Lane",
+      "lat": 51.51817,
+      "lon": -0.11176,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/3660442172",
+      "name": "Charing Cross",
+      "lat": 51.50797,
+      "lon": -0.12639,
+      "lines": [
+        "bakerloo",
+        "northern"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/4844666610",
+      "name": "Chesham",
+      "lat": 51.70501,
+      "lon": -0.61108,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/3076573916",
+      "name": "Chigwell",
+      "lat": 51.61764,
+      "lon": 0.07572,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6312813707",
+      "name": "Chiswick Park",
+      "lat": 51.49456,
+      "lon": -0.26787,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/5182456570",
+      "name": "Chorleywood",
+      "lat": 51.65422,
+      "lon": -0.51839,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/4503057074",
+      "name": "Clapham Common",
+      "lat": 51.46207,
+      "lon": -0.13736,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/21507731",
+      "name": "Clapham North",
+      "lat": 51.4653,
+      "lon": -0.12964,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/34006946",
+      "name": "Clapham South",
+      "lat": 51.45284,
+      "lon": -0.14755,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/5182424567",
+      "name": "Cockfosters",
+      "lat": 51.65137,
+      "lon": -0.14851,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/6306871525",
+      "name": "Colindale",
+      "lat": 51.59541,
+      "lon": -0.24993,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/34037750",
+      "name": "Colliers Wood",
+      "lat": 51.41827,
+      "lon": -0.17786,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6400752013",
+      "name": "Covent Garden",
+      "lat": 51.51309,
+      "lon": -0.12427,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5183760384",
+      "name": "Croxley",
+      "lat": 51.64758,
+      "lon": -0.44108,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/6358823742",
+      "name": "Dagenham East",
+      "lat": 51.54402,
+      "lon": 0.16495,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6358827604",
+      "name": "Dagenham Heathway",
+      "lat": 51.54155,
+      "lon": 0.14564,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/3076573917",
+      "name": "Debden",
+      "lat": 51.64528,
+      "lon": 0.08358,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6439741490",
+      "name": "Dollis Hill",
+      "lat": 51.55193,
+      "lon": -0.239,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/5585821560",
+      "name": "Ealing Broadway",
+      "lat": 51.51498,
+      "lon": -0.30041,
+      "lines": [
+        "central",
+        "district"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/5183350492",
+      "name": "Ealing Common",
+      "lat": 51.50971,
+      "lon": -0.28817,
+      "lines": [
+        "district",
+        "piccadilly"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6340616347",
+      "name": "Earl's Court",
+      "lat": 51.49161,
+      "lon": -0.1939,
+      "lines": [
+        "district",
+        "piccadilly"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/1525365505",
+      "name": "East Acton",
+      "lat": 51.51735,
+      "lon": -0.24814,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/1670707933",
+      "name": "East Finchley",
+      "lat": 51.58719,
+      "lon": -0.16481,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6402129352",
+      "name": "East Ham",
+      "lat": 51.5394,
+      "lon": 0.0526,
+      "lines": [
+        "district",
+        "hammersmith-city"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6367262958",
+      "name": "East Putney",
+      "lat": 51.45861,
+      "lon": -0.21124,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/5183760378",
+      "name": "Eastcote",
+      "lat": 51.57666,
+      "lon": -0.39651,
+      "lines": [
+        "metropolitan",
+        "piccadilly"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/5355174730",
+      "name": "Edgware",
+      "lat": 51.61366,
+      "lon": -0.27496,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/2314512860",
+      "name": "Edgware Road",
+      "lat": 51.52019,
+      "lon": -0.16676,
+      "lines": [
+        "bakerloo",
+        "circle",
+        "district",
+        "hammersmith-city"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/3660623413",
+      "name": "Elephant & Castle",
+      "lat": 51.49489,
+      "lon": -0.10057,
+      "lines": [
+        "bakerloo",
+        "northern"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/6365838769",
+      "name": "Elm Park",
+      "lat": 51.54958,
+      "lon": 0.19743,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/5207123395",
+      "name": "Embankment",
+      "lat": 51.50721,
+      "lon": -0.12224,
+      "lines": [
+        "bakerloo",
+        "circle",
+        "district",
+        "northern"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/1950186711",
+      "name": "Epping",
+      "lat": 51.69363,
+      "lon": 0.11399,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/3663368461",
+      "name": "Euston",
+      "lat": 51.52829,
+      "lon": -0.13387,
+      "lines": [
+        "northern",
+        "victoria"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6472516924",
+      "name": "Euston Square",
+      "lat": 51.52569,
+      "lon": -0.13557,
+      "lines": [
+        "circle",
+        "hammersmith-city",
+        "metropolitan"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/3076573924",
+      "name": "Fairlop",
+      "lat": 51.59595,
+      "lon": 0.09113,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/3284103165",
+      "name": "Farringdon",
+      "lat": 51.51996,
+      "lon": -0.10455,
+      "lines": [
+        "circle",
+        "hammersmith-city",
+        "metropolitan"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/2013971",
+      "name": "Finchley Central",
+      "lat": 51.60084,
+      "lon": -0.19232,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/5183760375",
+      "name": "Finchley Road",
+      "lat": 51.54723,
+      "lon": -0.1807,
+      "lines": [
+        "jubilee",
+        "metropolitan"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/561297695",
+      "name": "Finsbury Park",
+      "lat": 51.56483,
+      "lon": -0.10641,
+      "lines": [
+        "piccadilly",
+        "victoria"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5142610270",
+      "name": "Fulham Broadway",
+      "lat": 51.48088,
+      "lon": -0.19435,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/3076573925",
+      "name": "Gants Hill",
+      "lat": 51.57652,
+      "lon": 0.06488,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6411992668",
+      "name": "Gloucester Road",
+      "lat": 51.49453,
+      "lon": -0.18377,
+      "lines": [
+        "circle",
+        "district",
+        "piccadilly"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6306871529",
+      "name": "Golders Green",
+      "lat": 51.5723,
+      "lon": -0.19403,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6410165090",
+      "name": "Goldhawk Road",
+      "lat": 51.50176,
+      "lon": -0.22657,
+      "lines": [
+        "circle",
+        "hammersmith-city"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6414100096",
+      "name": "Goodge Street",
+      "lat": 51.5206,
+      "lon": -0.13436,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/3076573926",
+      "name": "Grange Hill",
+      "lat": 51.61313,
+      "lon": 0.0925,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6414039764",
+      "name": "Great Portland Street",
+      "lat": 51.52381,
+      "lon": -0.1437,
+      "lines": [
+        "circle",
+        "hammersmith-city",
+        "metropolitan"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6407577779",
+      "name": "Green Park",
+      "lat": 51.50662,
+      "lon": -0.14294,
+      "lines": [
+        "jubilee",
+        "piccadilly",
+        "victoria"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/1736548313",
+      "name": "Greenford",
+      "lat": 51.54212,
+      "lon": -0.3448,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6438904139",
+      "name": "Gunnersbury",
+      "lat": 51.49138,
+      "lon": -0.27552,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/3076573927",
+      "name": "Hainault",
+      "lat": 51.60331,
+      "lon": 0.09338,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/5474926328",
+      "name": "Hammersmith (Circle and Hammersmith & City lines)",
+      "lat": 51.49411,
+      "lon": -0.22506,
+      "lines": [
+        "circle",
+        "hammersmith-city"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6195731433",
+      "name": "Hammersmith (District and Piccadilly lines)",
+      "lat": 51.49216,
+      "lon": -0.22325,
+      "lines": [
+        "district",
+        "piccadilly"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/5482891928",
+      "name": "Hampstead",
+      "lat": 51.5566,
+      "lon": -0.17843,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6357988569",
+      "name": "Hanger Lane",
+      "lat": 51.53031,
+      "lon": -0.29365,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6404013964",
+      "name": "Harlesden",
+      "lat": 51.53636,
+      "lon": -0.25783,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/20455533",
+      "name": "Harrow & Wealdstone",
+      "lat": 51.59222,
+      "lon": -0.33487,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/5183810356",
+      "name": "Harrow-on-the-Hill",
+      "lat": 51.57914,
+      "lon": -0.33609,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/6312643867",
+      "name": "Hatton Cross",
+      "lat": 51.46654,
+      "lon": -0.42399,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/1645907858",
+      "name": "Heathrow Terminal 4",
+      "lat": 51.45881,
+      "lon": -0.44547,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5182384972",
+      "name": "Heathrow Terminal 5",
+      "lat": 51.47252,
+      "lon": -0.48773,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5182384971",
+      "name": "Heathrow Terminals 2 & 3",
+      "lat": 51.47134,
+      "lon": -0.45248,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/1678368302",
+      "name": "Hendon Central",
+      "lat": 51.5834,
+      "lon": -0.22655,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/1687814967",
+      "name": "High Barnet",
+      "lat": 51.6504,
+      "lon": -0.19388,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6411792033",
+      "name": "High Street Kensington",
+      "lat": 51.5003,
+      "lon": -0.19211,
+      "lines": [
+        "circle",
+        "district"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6414163635",
+      "name": "Highbury & Islington",
+      "lat": 51.54637,
+      "lon": -0.10365,
+      "lines": [
+        "victoria"
+      ],
+      "primary": "victoria"
+    },
+    {
+      "id": "osm:node/1670707949",
+      "name": "Highgate",
+      "lat": 51.57768,
+      "lon": -0.14583,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6410109228",
+      "name": "Hillingdon",
+      "lat": 51.5536,
+      "lon": -0.45046,
+      "lines": [
+        "metropolitan",
+        "piccadilly"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/3693265703",
+      "name": "Holborn",
+      "lat": 51.51711,
+      "lon": -0.12007,
+      "lines": [
+        "central",
+        "piccadilly"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6472438171",
+      "name": "Holland Park",
+      "lat": 51.50719,
+      "lon": -0.20546,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/5482915472",
+      "name": "Holloway Road",
+      "lat": 51.55287,
+      "lon": -0.11301,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/6358789875",
+      "name": "Hornchurch",
+      "lat": 51.55387,
+      "lon": 0.21811,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/5182424565",
+      "name": "Hounslow Central",
+      "lat": 51.47131,
+      "lon": -0.36623,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5182424564",
+      "name": "Hounslow East",
+      "lat": 51.47347,
+      "lon": -0.35589,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5182384974",
+      "name": "Hounslow West",
+      "lat": 51.47358,
+      "lon": -0.38582,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5182456574",
+      "name": "Hyde Park Corner",
+      "lat": 51.50273,
+      "lon": -0.15432,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5183760379",
+      "name": "Ickenham",
+      "lat": 51.56157,
+      "lon": -0.44235,
+      "lines": [
+        "metropolitan",
+        "piccadilly"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/21507827",
+      "name": "Kennington",
+      "lat": 51.48829,
+      "lon": -0.10588,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6403994178",
+      "name": "Kensal Green",
+      "lat": 51.53061,
+      "lon": -0.22444,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/6091112768",
+      "name": "Kensington (Olympia)",
+      "lat": 51.49744,
+      "lon": -0.2095,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/5359714471",
+      "name": "Kentish Town",
+      "lat": 51.55017,
+      "lon": -0.13887,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/89137908",
+      "name": "Kenton",
+      "lat": 51.58153,
+      "lon": -0.31664,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/6448645467",
+      "name": "Kew Gardens",
+      "lat": 51.47713,
+      "lon": -0.28496,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6436648511",
+      "name": "Kilburn",
+      "lat": 51.54699,
+      "lon": -0.20534,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/6411663490",
+      "name": "Kilburn Park",
+      "lat": 51.53502,
+      "lon": -0.19383,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/119274464",
+      "name": "King's Cross St Pancras",
+      "lat": 51.53061,
+      "lon": -0.12395,
+      "lines": [
+        "circle",
+        "hammersmith-city",
+        "metropolitan",
+        "northern",
+        "piccadilly",
+        "victoria"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/5183466819",
+      "name": "Kingsbury",
+      "lat": 51.58432,
+      "lon": -0.27871,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/5182384973",
+      "name": "Knightsbridge",
+      "lat": 51.5016,
+      "lon": -0.16094,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/6460794385",
+      "name": "Ladbroke Grove",
+      "lat": 51.51726,
+      "lon": -0.2111,
+      "lines": [
+        "circle",
+        "hammersmith-city"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/3773122118",
+      "name": "Lambeth North",
+      "lat": 51.49893,
+      "lon": -0.11201,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/5183350488",
+      "name": "Lancaster Gate",
+      "lat": 51.51184,
+      "lon": -0.17538,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6410209280",
+      "name": "Latimer Road",
+      "lat": 51.51347,
+      "lon": -0.21779,
+      "lines": [
+        "circle",
+        "hammersmith-city"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/3370671078",
+      "name": "Leicester Square",
+      "lat": 51.51146,
+      "lon": -0.12826,
+      "lines": [
+        "northern",
+        "piccadilly"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6367227349",
+      "name": "Leyton",
+      "lat": 51.55682,
+      "lon": -0.00513,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/5183791821",
+      "name": "Leytonstone",
+      "lat": 51.5688,
+      "lon": 0.00862,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/3637436407",
+      "name": "Liverpool Street",
+      "lat": 51.51768,
+      "lon": -0.08252,
+      "lines": [
+        "central",
+        "circle",
+        "hammersmith-city",
+        "metropolitan"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/5182456569",
+      "name": "London Bridge",
+      "lat": 51.50541,
+      "lon": -0.0887,
+      "lines": [
+        "jubilee",
+        "northern"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/6353329614",
+      "name": "Loughton",
+      "lat": 51.64123,
+      "lon": 0.05532,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6758474986",
+      "name": "Maida Vale",
+      "lat": 51.52987,
+      "lon": -0.18574,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/6761076726",
+      "name": "Manor House",
+      "lat": 51.57032,
+      "lon": -0.0964,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/18395696",
+      "name": "Mansion House",
+      "lat": 51.51189,
+      "lon": -0.09522,
+      "lines": [
+        "circle",
+        "district"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6414013291",
+      "name": "Marble Arch",
+      "lat": 51.51344,
+      "lon": -0.15825,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/5206785234",
+      "name": "Marylebone",
+      "lat": 51.52224,
+      "lon": -0.1635,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/3076574236",
+      "name": "Mile End",
+      "lat": 51.52534,
+      "lon": -0.03343,
+      "lines": [
+        "central",
+        "district",
+        "hammersmith-city"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/1825273032",
+      "name": "Mill Hill East",
+      "lat": 51.60827,
+      "lon": -0.21015,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/3076574237",
+      "name": "Monument",
+      "lat": 51.51063,
+      "lon": -0.08613,
+      "lines": [
+        "circle",
+        "district"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/5183350490",
+      "name": "Moor Park",
+      "lat": 51.62978,
+      "lon": -0.43216,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/5702714876",
+      "name": "Moorgate",
+      "lat": 51.51825,
+      "lon": -0.08906,
+      "lines": [
+        "circle",
+        "hammersmith-city",
+        "metropolitan",
+        "northern"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/5571724044",
+      "name": "Morden",
+      "lat": 51.40276,
+      "lon": -0.19476,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/5182424563",
+      "name": "Mornington Crescent",
+      "lat": 51.53406,
+      "lon": -0.13809,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6307174159",
+      "name": "Neasden",
+      "lat": 51.55434,
+      "lon": -0.25075,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/5183350489",
+      "name": "Newbury Park",
+      "lat": 51.5755,
+      "lon": 0.08997,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/9097860107",
+      "name": "Nine Elms",
+      "lat": 51.48018,
+      "lon": -0.12969,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6150502124",
+      "name": "North Acton",
+      "lat": 51.52358,
+      "lon": -0.25978,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/20698948",
+      "name": "North Ealing",
+      "lat": 51.51749,
+      "lon": -0.28875,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5700001161",
+      "name": "North Greenwich",
+      "lat": 51.50057,
+      "lon": 0.00432,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/19135534",
+      "name": "North Harrow",
+      "lat": 51.58516,
+      "lon": -0.36318,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/21141346",
+      "name": "North Wembley",
+      "lat": 51.5624,
+      "lon": -0.30387,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/5182424577",
+      "name": "Northfields",
+      "lat": 51.49966,
+      "lon": -0.31298,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/6343726718",
+      "name": "Northolt",
+      "lat": 51.54846,
+      "lon": -0.36952,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/5183760369",
+      "name": "Northwick Park",
+      "lat": 51.57849,
+      "lon": -0.3177,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/5183760383",
+      "name": "Northwood",
+      "lat": 51.6108,
+      "lon": -0.42371,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/5183760382",
+      "name": "Northwood Hills",
+      "lat": 51.60015,
+      "lon": -0.40846,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/5207201516",
+      "name": "Notting Hill Gate",
+      "lat": 51.50893,
+      "lon": -0.1962,
+      "lines": [
+        "central",
+        "circle",
+        "district"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/5182384967",
+      "name": "Oakwood",
+      "lat": 51.64733,
+      "lon": -0.13125,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/70804547",
+      "name": "Old Street",
+      "lat": 51.52563,
+      "lon": -0.08761,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6312645092",
+      "name": "Osterley",
+      "lat": 51.48155,
+      "lon": -0.35183,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/21507733",
+      "name": "Oval",
+      "lat": 51.48183,
+      "lon": -0.1124,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/5614077964",
+      "name": "Oxford Circus",
+      "lat": 51.51544,
+      "lon": -0.14196,
+      "lines": [
+        "bakerloo",
+        "central",
+        "victoria"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/1264482797",
+      "name": "Paddington",
+      "lat": 51.51548,
+      "lon": -0.17536,
+      "lines": [
+        "bakerloo",
+        "circle",
+        "district"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/4635572117",
+      "name": "Paddington (Circle and Hammersmith & City lines)",
+      "lat": 51.51851,
+      "lon": -0.17875,
+      "lines": [
+        "circle",
+        "hammersmith-city"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/5495828135",
+      "name": "Park Royal",
+      "lat": 51.52643,
+      "lon": -0.28393,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5107248193",
+      "name": "Parsons Green",
+      "lat": 51.47508,
+      "lon": -0.20155,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6346221304",
+      "name": "Perivale",
+      "lat": 51.5365,
+      "lon": -0.32259,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/3638779316",
+      "name": "Piccadilly Circus",
+      "lat": 51.50982,
+      "lon": -0.13455,
+      "lines": [
+        "bakerloo",
+        "piccadilly"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/273210309",
+      "name": "Pimlico",
+      "lat": 51.48916,
+      "lon": -0.13533,
+      "lines": [
+        "victoria"
+      ],
+      "primary": "victoria"
+    },
+    {
+      "id": "osm:node/5183760381",
+      "name": "Pinner",
+      "lat": 51.59266,
+      "lon": -0.38064,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/5178413114",
+      "name": "Plaistow",
+      "lat": 51.53115,
+      "lon": 0.01668,
+      "lines": [
+        "district",
+        "hammersmith-city"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/5183760370",
+      "name": "Preston Road",
+      "lat": 51.57227,
+      "lon": -0.29581,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/5182424569",
+      "name": "Putney Bridge",
+      "lat": 51.4683,
+      "lon": -0.20879,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6468357440",
+      "name": "Queen's Park",
+      "lat": 51.53387,
+      "lon": -0.2055,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/5183466921",
+      "name": "Queensbury",
+      "lat": 51.59419,
+      "lon": -0.28618,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/6486933493",
+      "name": "Queensway",
+      "lat": 51.51047,
+      "lon": -0.18723,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/3749079080",
+      "name": "Ravenscourt Park",
+      "lat": 51.49413,
+      "lon": -0.23579,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6307053733",
+      "name": "Rayners Lane",
+      "lat": 51.57521,
+      "lon": -0.37147,
+      "lines": [
+        "metropolitan",
+        "piccadilly"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/34595046",
+      "name": "Redbridge",
+      "lat": 51.57632,
+      "lon": 0.04541,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6758474985",
+      "name": "Regent's Park",
+      "lat": 51.52363,
+      "lon": -0.14664,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/6438780655",
+      "name": "Richmond",
+      "lat": 51.46321,
+      "lon": -0.30041,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/5183350491",
+      "name": "Rickmansworth",
+      "lat": 51.64023,
+      "lon": -0.47363,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/3076574238",
+      "name": "Roding Valley",
+      "lat": 51.61708,
+      "lon": 0.04376,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6411718929",
+      "name": "Royal Oak",
+      "lat": 51.51902,
+      "lon": -0.18744,
+      "lines": [
+        "circle",
+        "hammersmith-city"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6307053732",
+      "name": "Ruislip",
+      "lat": 51.5714,
+      "lon": -0.42134,
+      "lines": [
+        "metropolitan",
+        "piccadilly"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/21123677",
+      "name": "Ruislip Gardens",
+      "lat": 51.56066,
+      "lon": -0.41046,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6342098119",
+      "name": "Ruislip Manor",
+      "lat": 51.5734,
+      "lon": -0.4118,
+      "lines": [
+        "metropolitan",
+        "piccadilly"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/5585825335",
+      "name": "Russell Square",
+      "lat": 51.52305,
+      "lon": -0.12425,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/3803245041",
+      "name": "Seven Sisters",
+      "lat": 51.58247,
+      "lon": -0.07493,
+      "lines": [
+        "victoria"
+      ],
+      "primary": "victoria"
+    },
+    {
+      "id": "osm:node/6410181628",
+      "name": "Shepherd's Bush",
+      "lat": 51.50436,
+      "lon": -0.21833,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/780856",
+      "name": "Shepherd's Bush Market",
+      "lat": 51.50607,
+      "lon": -0.22631,
+      "lines": [
+        "circle",
+        "hammersmith-city"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/15026054",
+      "name": "Sloane Square",
+      "lat": 51.49223,
+      "lon": -0.15588,
+      "lines": [
+        "circle",
+        "district"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/1586683103",
+      "name": "Snaresbrook",
+      "lat": 51.5808,
+      "lon": 0.02159,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/3956577242",
+      "name": "South Ealing",
+      "lat": 51.50086,
+      "lon": -0.30768,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/2158280269",
+      "name": "South Harrow",
+      "lat": 51.56465,
+      "lon": -0.35222,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5183897519",
+      "name": "South Kensington",
+      "lat": 51.49408,
+      "lon": -0.17291,
+      "lines": [
+        "circle",
+        "district",
+        "piccadilly"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/21141345",
+      "name": "South Kenton",
+      "lat": 51.57008,
+      "lon": -0.30837,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/6095751323",
+      "name": "South Ruislip",
+      "lat": 51.55699,
+      "lon": -0.39906,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/34037860",
+      "name": "South Wimbledon",
+      "lat": 51.41538,
+      "lon": -0.19225,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/4860750355",
+      "name": "South Woodford",
+      "lat": 51.59178,
+      "lon": 0.02743,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/3808897466",
+      "name": "Southfields",
+      "lat": 51.44578,
+      "lon": -0.20661,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/5182424566",
+      "name": "Southgate",
+      "lat": 51.63232,
+      "lon": -0.12779,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5350830014",
+      "name": "Southwark",
+      "lat": 51.50393,
+      "lon": -0.10497,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/25524263",
+      "name": "St. James's Park",
+      "lat": 51.49928,
+      "lon": -0.13459,
+      "lines": [
+        "circle",
+        "district"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6401499742",
+      "name": "St. John's Wood",
+      "lat": 51.53535,
+      "lon": -0.17421,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/5475675298",
+      "name": "St. Paul's",
+      "lat": 51.51491,
+      "lon": -0.09759,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6312813705",
+      "name": "Stamford Brook",
+      "lat": 51.49497,
+      "lon": -0.24589,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6361189478",
+      "name": "Stanmore",
+      "lat": 51.61885,
+      "lon": -0.30263,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/5178413116",
+      "name": "Stepney Green",
+      "lat": 51.5217,
+      "lon": -0.04671,
+      "lines": [
+        "district",
+        "hammersmith-city"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/181662604",
+      "name": "Stockwell",
+      "lat": 51.47221,
+      "lon": -0.1225,
+      "lines": [
+        "northern",
+        "victoria"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6438945825",
+      "name": "Stonebridge Park",
+      "lat": 51.54411,
+      "lon": -0.27623,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/5257403774",
+      "name": "Stratford",
+      "lat": 51.54129,
+      "lon": -0.00355,
+      "lines": [
+        "central",
+        "jubilee"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/2288456779",
+      "name": "Sudbury Hill",
+      "lat": 51.55688,
+      "lon": -0.33625,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/2158280270",
+      "name": "Sudbury Town",
+      "lat": 51.55075,
+      "lon": -0.31562,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5489114067",
+      "name": "Swiss Cottage",
+      "lat": 51.54372,
+      "lon": -0.17498,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/6368951709",
+      "name": "Temple",
+      "lat": 51.51097,
+      "lon": -0.11433,
+      "lines": [
+        "circle",
+        "district"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6353325014",
+      "name": "Theydon Bois",
+      "lat": 51.67178,
+      "lon": 0.10332,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/21442171",
+      "name": "Tooting Bec",
+      "lat": 51.43562,
+      "lon": -0.15972,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/34037748",
+      "name": "Tooting Broadway",
+      "lat": 51.42774,
+      "lon": -0.16829,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/5462552522",
+      "name": "Tottenham Court Road",
+      "lat": 51.51597,
+      "lon": -0.13051,
+      "lines": [
+        "central",
+        "northern"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6468432388",
+      "name": "Tottenham Hale",
+      "lat": 51.58812,
+      "lon": -0.05994,
+      "lines": [
+        "victoria"
+      ],
+      "primary": "victoria"
+    },
+    {
+      "id": "osm:node/5585853828",
+      "name": "Totteridge & Whetstone",
+      "lat": 51.63072,
+      "lon": -0.17918,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6260922569",
+      "name": "Tower Hill",
+      "lat": 51.50985,
+      "lon": -0.0767,
+      "lines": [
+        "circle",
+        "district"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/1670707975",
+      "name": "Tufnell Park",
+      "lat": 51.5568,
+      "lon": -0.13846,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/6312813706",
+      "name": "Turnham Green",
+      "lat": 51.49513,
+      "lon": -0.25469,
+      "lines": [
+        "district",
+        "piccadilly"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/5507411660",
+      "name": "Turnpike Lane",
+      "lat": 51.59015,
+      "lon": -0.10274,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/443640800",
+      "name": "Upminster",
+      "lat": 51.55897,
+      "lon": 0.25168,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6358768337",
+      "name": "Upminster Bridge",
+      "lat": 51.55827,
+      "lon": 0.23477,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6466252813",
+      "name": "Upney",
+      "lat": 51.53827,
+      "lon": 0.09963,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/4451063672",
+      "name": "Upton Park",
+      "lat": 51.53511,
+      "lon": 0.03398,
+      "lines": [
+        "district",
+        "hammersmith-city"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6410085030",
+      "name": "Uxbridge",
+      "lat": 51.54666,
+      "lon": -0.47751,
+      "lines": [
+        "metropolitan",
+        "piccadilly"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/3817850257",
+      "name": "Vauxhall",
+      "lat": 51.48601,
+      "lon": -0.12486,
+      "lines": [
+        "victoria"
+      ],
+      "primary": "victoria"
+    },
+    {
+      "id": "osm:node/441947584",
+      "name": "Victoria",
+      "lat": 51.49637,
+      "lon": -0.14315,
+      "lines": [
+        "circle",
+        "district",
+        "victoria"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6391246144",
+      "name": "Walthamstow Central",
+      "lat": 51.58289,
+      "lon": -0.01999,
+      "lines": [
+        "victoria"
+      ],
+      "primary": "victoria"
+    },
+    {
+      "id": "osm:node/6486933492",
+      "name": "Wanstead",
+      "lat": 51.57565,
+      "lon": 0.02864,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6414086721",
+      "name": "Warren Street",
+      "lat": 51.52472,
+      "lon": -0.13853,
+      "lines": [
+        "northern",
+        "victoria"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/5457046602",
+      "name": "Warwick Avenue",
+      "lat": 51.52298,
+      "lon": -0.18331,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/3638795618",
+      "name": "Waterloo",
+      "lat": 51.503,
+      "lon": -0.11398,
+      "lines": [
+        "bakerloo",
+        "jubilee",
+        "northern",
+        "waterloo-city"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/5183760385",
+      "name": "Watford",
+      "lat": 51.657,
+      "lon": -0.41837,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/7175566127",
+      "name": "Wembley Central",
+      "lat": 51.55233,
+      "lon": -0.29668,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/469760990",
+      "name": "Wembley Park",
+      "lat": 51.56363,
+      "lon": -0.28005,
+      "lines": [
+        "jubilee",
+        "metropolitan"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/6436743186",
+      "name": "West Acton",
+      "lat": 51.51835,
+      "lon": -0.28041,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/5182384969",
+      "name": "West Brompton",
+      "lat": 51.48698,
+      "lon": -0.19519,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/1825273052",
+      "name": "West Finchley",
+      "lat": 51.60943,
+      "lon": -0.18833,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    },
+    {
+      "id": "osm:node/5252083983",
+      "name": "West Ham",
+      "lat": 51.5281,
+      "lon": 0.00457,
+      "lines": [
+        "district",
+        "hammersmith-city",
+        "jubilee"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6404031521",
+      "name": "West Hampstead",
+      "lat": 51.54682,
+      "lon": -0.18996,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/5183760376",
+      "name": "West Harrow",
+      "lat": 51.5796,
+      "lon": -0.35314,
+      "lines": [
+        "metropolitan"
+      ],
+      "primary": "metropolitan"
+    },
+    {
+      "id": "osm:node/5182384968",
+      "name": "West Kensington",
+      "lat": 51.4907,
+      "lon": -0.20594,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/4866262553",
+      "name": "West Ruislip",
+      "lat": 51.5695,
+      "lon": -0.43704,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/6440680616",
+      "name": "Westbourne Park",
+      "lat": 51.52093,
+      "lon": -0.20141,
+      "lines": [
+        "circle",
+        "hammersmith-city"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/25534427",
+      "name": "Westminster",
+      "lat": 51.50136,
+      "lon": -0.12493,
+      "lines": [
+        "circle",
+        "district",
+        "jubilee"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/4514968602",
+      "name": "White City",
+      "lat": 51.51193,
+      "lon": -0.22424,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/2426825788",
+      "name": "Whitechapel",
+      "lat": 51.51976,
+      "lon": -0.06009,
+      "lines": [
+        "district",
+        "hammersmith-city"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6436632903",
+      "name": "Willesden Green",
+      "lat": 51.54935,
+      "lon": -0.22222,
+      "lines": [
+        "jubilee"
+      ],
+      "primary": "jubilee"
+    },
+    {
+      "id": "osm:node/6438961931",
+      "name": "Willesden Junction",
+      "lat": 51.5322,
+      "lon": -0.2435,
+      "lines": [
+        "bakerloo"
+      ],
+      "primary": "bakerloo"
+    },
+    {
+      "id": "osm:node/18089211",
+      "name": "Wimbledon",
+      "lat": 51.42203,
+      "lon": -0.20521,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/3748134854",
+      "name": "Wimbledon Park",
+      "lat": 51.43406,
+      "lon": -0.19904,
+      "lines": [
+        "district"
+      ],
+      "primary": "district"
+    },
+    {
+      "id": "osm:node/6761071700",
+      "name": "Wood Green",
+      "lat": 51.59742,
+      "lon": -0.10978,
+      "lines": [
+        "piccadilly"
+      ],
+      "primary": "piccadilly"
+    },
+    {
+      "id": "osm:node/5504917479",
+      "name": "Wood Lane",
+      "lat": 51.51011,
+      "lon": -0.22376,
+      "lines": [
+        "circle",
+        "hammersmith-city"
+      ],
+      "primary": "circle"
+    },
+    {
+      "id": "osm:node/6353333968",
+      "name": "Woodford",
+      "lat": 51.60681,
+      "lon": 0.03402,
+      "lines": [
+        "central"
+      ],
+      "primary": "central"
+    },
+    {
+      "id": "osm:node/1825273066",
+      "name": "Woodside Park",
+      "lat": 51.61794,
+      "lon": -0.18552,
+      "lines": [
+        "northern"
+      ],
+      "primary": "northern"
+    }
+  ]
+}

@@ -21,6 +21,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { gzipSync } from "node:zlib";
 import { ROOT } from "./lib/content.mjs";
 
 const CLIENT_DIR = join(ROOT, ".output", "public", "_build", "assets");
@@ -99,21 +100,24 @@ async function checkPublishedData() {
   // record or a selection added to the defaults changes what a first-time
   // visitor downloads before anything appears.
   const DEFAULT_GZIP_BUDGET_KB = 120;
-  const defaults = ["restaurants", "cafes", "groomers", "dog-parks"];
-  let raw = 0;
+  const defaults = ["food-drink", "cafes", "groomers", "dog-parks"];
+  // Measure gzip, not raw: the budget is about bytes over the wire, and a raw
+  // size divided by four was a proxy that stopped matching once one selection
+  // grew and the others did not.
+  let gzipped = 0;
   for (const id of defaults) {
     try {
-      raw += (await readFile(join(ROOT, "public", "data", `${id}.json`))).length;
+      gzipped += gzipSync(await readFile(join(ROOT, "public", "data", `${id}.json`))).length;
     } catch {
       fail(`public/data/${id}.json is missing`);
       return;
     }
   }
-  const kb = raw / 1024;
-  notes.push(`default selections ${kb.toFixed(0)} kB raw before compression`);
-  if (kb > DEFAULT_GZIP_BUDGET_KB * 4) {
+  const kb = gzipped / 1024;
+  notes.push(`default selections ${kb.toFixed(0)} kB gzipped`);
+  if (kb > DEFAULT_GZIP_BUDGET_KB) {
     fail(
-      `default selections are ${kb.toFixed(0)} kB raw, which is over budget. ` +
+      `default selections are ${kb.toFixed(0)} kB gzipped, which is over budget. ` +
         `Prerendering the homepage means every first visit downloads this.`,
     );
   }

@@ -1,5 +1,5 @@
 /**
- * The card docked above the sheet when a pin or a list row is tapped.
+ * The card docked over the map when a pin or a list row is tapped.
  *
  * It is the same information as the list row, plus a Details link and a close
  * button, because the thing someone wants after tapping a pin is either "tell
@@ -9,7 +9,7 @@
 import { A } from "@solidjs/router";
 import { onCleanup, onMount } from "solid-js";
 import FurryPaw from "~/components/FurryPaw";
-import { dogPolicyLabel, dogPolicyTone } from "~/content/selections";
+import { dogPolicyLabel, dogPolicyTone, selection } from "~/content/selections";
 import { formatAddress } from "~/lib/format";
 import type { PlaceRecord as SlimPlace } from "~/lib/search";
 import { SourceBadge } from "./PlaceCard";
@@ -28,7 +28,14 @@ export default function MiniCard(props: {
   onCleanup(() => props.returnFocusTo?.focus({ preventScroll: true }));
 
   const p = () => props.place;
-  const name = () => p().name ?? "Place";
+  // The same fallback the list uses: an unnamed pin is still a dog park, not a
+  // blank card with a "Place" label.
+  const name = () => {
+    const named = p().name;
+    if (named) return named;
+    const primary = p().primary ?? p().selections[0];
+    return selection(primary ?? "")?.label ?? "Place";
+  };
 
   return (
     <div ref={card} class="mini-card" role="dialog" aria-label={name()}>

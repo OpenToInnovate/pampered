@@ -3,7 +3,7 @@
  * box floating over a map: the map is the product, and a search that covers it
  * is a search that has to end before the map can be used.
  *
- * Opened from the header pill (and from the paw bar's search paw), it gives
+ * Opened from the header pill, it gives
  * the thumb three things in one place: the input, every selection as a tappable
  * tile (the same yaml the chips read — adding a selection adds a tile), and the
  * city jump. Tapping a tile filters and closes, so the map answers immediately.
@@ -84,7 +84,7 @@ export default function SearchOverlay(props: {
 
         <div class="overlay-scroll">
           <h2 class="overlay-title">
-            <FurryPaw size={16} class="sheet-paw" />
+            <FurryPaw size={16} class="drawer-paw" />
             Browse
           </h2>
           <div class="overlay-grid" role="group" aria-label="Show on the map">

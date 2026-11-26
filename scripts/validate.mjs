@@ -265,6 +265,71 @@ async function checkPlaces(selectionIds, regionIds) {
   }
 }
 
+/* -------------------------------------------------------------------- tube */
+
+/**
+ * The tube file is a committed build output, so a stale or hand-edited copy is
+ * possible. It is a landmark layer, not the directory, but a half-joined tube
+ * map is still a lie about where stations are, so the same rules apply.
+ */
+async function checkTube() {
+  const path = join(ROOT, "public", "data", "tube.json");
+  let raw;
+  try {
+    raw = await readFile(path, "utf8");
+  } catch {
+    warn("public/data/tube.json", "missing; run npm run refresh:tube (map shows no roundels)");
+    return;
+  }
+
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    fail("public/data/tube.json", "not valid JSON");
+    return;
+  }
+
+  const lines = Array.isArray(data.lines) ? data.lines : [];
+  const stations = Array.isArray(data.stations) ? data.stations : [];
+  if (stations.length < 200) fail("public/data/tube.json", `only ${stations.length} stations (expected 200+)`);
+  if (lines.length < 10) fail("public/data/tube.json", `only ${lines.length} lines (expected 10+)`);
+
+  const lineIds = new Set();
+  for (const [i, line] of lines.entries()) {
+    const at = `tube line ${i}`;
+    if (!line || typeof line.id !== "string" || !line.id) fail(at, "needs an id");
+    else if (lineIds.has(line.id)) fail(at, `duplicate id ${JSON.stringify(line.id)}`);
+    else lineIds.add(line.id);
+    if (!line || typeof line.name !== "string" || !line.name) fail(at, "needs a name");
+    if (!line || typeof line.colour !== "string" || !/^#[0-9a-f]{6}$/i.test(line.colour)) {
+      fail(at, `colour must be #rrggbb, got ${JSON.stringify(line?.colour)}`);
+    }
+  }
+
+  const names = new Set();
+  for (const [i, station] of stations.entries()) {
+    const at = `tube station ${i}`;
+    if (!station || typeof station.name !== "string" || !station.name) fail(at, "needs a name");
+    else if (names.has(station.name)) fail(at, `duplicate station name ${JSON.stringify(station.name)}`);
+    else names.add(station.name);
+    if (typeof station?.lat !== "number" || station.lat < 51.2 || station.lat > 51.8) {
+      fail(at, `lat ${JSON.stringify(station?.lat)} is outside London`);
+    }
+    if (typeof station?.lon !== "number" || station.lon < -0.75 || station.lon > 0.4) {
+      fail(at, `lon ${JSON.stringify(station?.lon)} is outside London`);
+    }
+    const stationLines = Array.isArray(station?.lines) ? station.lines : [];
+    if (!stationLines.length) fail(at, "has no lines");
+    for (const id of stationLines) {
+      if (!lineIds.has(id)) fail(at, `unknown line ${JSON.stringify(id)}`);
+    }
+    if (station?.primary && !stationLines.includes(station.primary)) {
+      fail(at, `primary ${JSON.stringify(station.primary)} is not one of its lines`);
+    }
+  }
+}
+
 /* -------------------------------------------------------------------- main */
 
 async function main() {
@@ -273,6 +338,7 @@ async function main() {
   const { regions } = await loadRegions();
   const regionIds = await checkRegions({ version: 1, regions });
   await checkPlaces(selectionIds, regionIds);
+  await checkTube();
 
   for (const w of warnings) console.log(`warning: ${w}`);
   if (errors.length) {

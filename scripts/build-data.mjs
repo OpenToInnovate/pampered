@@ -26,7 +26,7 @@
  * no notes, no phone and no booking link, and an explicit null for each of those
  * is roughly a third of the bytes.
  */
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { gzipSync } from "node:zlib";
 import { join } from "node:path";
 import { ROOT, loadSelections } from "./lib/content.mjs";
@@ -205,6 +205,21 @@ async function main() {
     ],
   };
   await writeFile(join(OUT_DIR, "manifest.json"), JSON.stringify(manifest, null, 2));
+
+  // A selection that disappears from selections.yaml must take its data file
+  // with it: a stale file keeps serving old rows to anybody who still has the
+  // URL, and looks like a layer the site does not have. Rebuild mode owns the
+  // directory, so it prunes; assemble mode only reads, so it must not touch
+  // anything. tube.json is not a selection — the refresh:tube script owns it.
+  if (source.mode === "rebuild") {
+    const keep = new Set([...selections.map((s) => `${s.id}.json`), "manifest.json", "tube.json"]);
+    for (const entry of await readdir(OUT_DIR)) {
+      if (entry.endsWith(".json") && !keep.has(entry)) {
+        await unlink(join(OUT_DIR, entry));
+        log(`  pruned stale ${entry}`);
+      }
+    }
+  }
 
   // The full set, bundled into the Worker so a venue page can be server-rendered
   // without a database and without the client downloading a second dataset.

@@ -7,7 +7,7 @@ export default createHandler(() => (
       <html lang="en-GB">
         <head>
           <meta charset="utf-8" />
-          {/* viewport-fit=cover so the bottom sheet can sit under the home
+          {/* viewport-fit=cover so the drawer can sit under the home
               indicator, and safe-area insets can be spent rather than wasted. */}
           <meta
             name="viewport"

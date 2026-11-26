@@ -36,8 +36,8 @@
   --gap: 12px;
   --gap-lg: 20px;
 
-  --radius: 14px;
-  --radius-sm: 10px;
+  --radius: 18px;
+  --radius-sm: 12px;
   --radius-pill: 999px;
 
   --shadow-1: 0 1px 2px rgb(38 34 28 / 0.07), 0 1px 1px rgb(38 34 28 / 0.04);
@@ -52,10 +52,6 @@
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
 
-  /* Mobile sheet heights. */
-  --sheet-peek: 120px;
-  --sheet-half: 46dvh;
-  --sheet-full: calc(100dvh - 112px);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -488,164 +484,13 @@ a {
   line-height: 1.5;
 }
 
-/* ------------------------------------------------------------------ paw bar */
-
-/* Height the map's docked chrome (attribution, zoom, mini-card) clears on a
-   phone. Zero from 720px up, where the bar does not exist. */
-:root {
-  --pawbar-h: 64px;
-}
-
-.pawbar {
-  display: none;
-}
-
-@media (max-width: 719.98px) {
-  .pawbar {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 25;
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    padding: 4px 6px calc(4px + var(--safe-bottom));
-    background: color-mix(in srgb, var(--bg) 93%, transparent);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid var(--line);
-    box-shadow: var(--shadow-1);
-  }
-
-  /* The search paw is the fixed end of the row; the filters scroll past it. */
-  .pawbar-search {
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 52px;
-    border: 0;
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--accent);
-  }
-
-  .pawbar-search:active {
-    background: var(--accent-soft);
-  }
-
-  .pawbar-scroll {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .pawbar-scroll::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* The map row over the map is gone on a phone: the header pill owns search,
-     the paw bar owns filters, and the sheet owns open-now/sort/share. The
-     extra class beats map.css's own .finder-overlay{display:flex}, which is
-     imported later and would otherwise win the cascade. */
-  .finder .finder-overlay {
-    display: none;
-  }
-}
-
-.pawbar-btn {
-  flex: 0 0 auto;
-  min-width: 60px;
-  min-height: 52px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  padding: 4px 8px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--ink-2);
-  transition:
-    background var(--dur) var(--ease),
-    color var(--dur) var(--ease),
-    border-color var(--dur) var(--ease);
-}
-
-.pawbar-icon {
-  color: var(--paw-colour, var(--accent));
-  flex: none;
-}
-
-.pawbar-label {
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.2;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.pawbar-count {
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1;
-  color: var(--ink-3);
-  font-variant-numeric: tabular-nums;
-}
-
-.pawbar-on {
-  border-color: color-mix(in srgb, var(--paw-colour, var(--accent)) 45%, transparent);
-  background: color-mix(in srgb, var(--paw-colour, var(--accent)) 16%, transparent);
-  color: var(--ink);
-}
-
-.pawbar-on .pawbar-count {
-  color: var(--ink-2);
-}
-
-.pawbar-btn:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: -2px;
-}
-
-@media (min-width: 720px) {
-  :root {
-    --pawbar-h: 0px;
-  }
-}
-
 /* --------------------------------------------------------------- paw accents */
 
-/* The paw is the app's mascot, not a bullet list: one in the brand, one on the
-   sheet title, one when the list comes up empty. Same drawing everywhere. */
-.sheet-paw {
-  color: var(--accent);
-  flex: none;
-  align-self: center;
-}
-
-.sheet-title {
-  align-items: center;
-}
-
+/* The paw is the app's mascot, not a bullet list: one in the brand, one in the
+   drawer title, one when the list comes up empty. Same drawing everywhere. */
 .empty-paw {
   color: color-mix(in srgb, var(--accent) 62%, var(--line));
   margin: 0 auto 6px;
-}
-
-@media (min-width: 720px) {
-  :root {
-    --pawbar-h: 0px;
-  }
 }
 
 /* ----------------------------------------------------------- report sheet */
@@ -962,50 +807,21 @@ body:has(.finder) .site-footer {
   margin: 20px 0 0;
 }
 
-/* ------------------------------------------------------- sheet tools row */
-
-/* The open-now / sort / share cluster lives inside the sheet on a phone and
-   over the map on a desk. One DOM, two docks, neither duplicated on screen. */
-.sheet-tools {
-  display: none;
-}
-
+/* On a phone the map row is gone: search lives in the header pill and the
+   filters live in the drawer. Hide the desktop overlay entirely, or its chips
+   and search bar sit on top of the map again. */
 @media (max-width: 719.98px) {
-  .sheet-tools {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    padding: 6px 12px;
-    padding-bottom: calc(6px + var(--safe-bottom) / 3);
-    border-bottom: 1px solid var(--line);
-  }
-
-  /* The peek detent grows by the height of the tools row, so the count and
-     the filters are both visible without expanding. The row's spacer is a
-     desktop luxury; inline here, or the share button wraps out of view. */
-  .sheet-tools .spacer {
-    display: none;
-  }
-
-  :root {
-    --sheet-peek: 176px;
-  }
-}
-
-@media (min-width: 720px) {
-  .sheet-tools {
+  .finder .finder-overlay {
     display: none;
   }
 }
 
 /* ------------------------------------------------------- mini card bounds */
 
-/* The card overlays a map that the sheet and the paw bar both take from. It
-   may never run past either: a detail that scrolls out of view or hides behind
-   the toolbar is a detail that was not shown. */
+/* The card floats over a full-height map now. Keep it off the very edges and
+   let it scroll if a long address pushes it tall. */
 .mini-card {
-  max-height: calc(100dvh - var(--sheet-peek) - var(--pawbar-h) - 24px);
+  max-height: calc(100dvh - 24px);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;

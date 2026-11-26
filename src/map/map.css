@@ -353,75 +353,215 @@
   text-align: center;
 }
 
-/* --------------------------------------------------------------------- sheet */
+/* ------------------------------------------------------------------- drawer */
 
-.sheet {
-  flex: none;
+/* Closed by default on a phone: the map is the page, the list is one tap away.
+   On desktop the same element is the permanent right panel (see the media
+   query below), so there is one DOM and two placements, never two lists. */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  width: min(86vw, 380px);
   display: flex;
   flex-direction: column;
   min-height: 0;
   background: var(--bg);
-  border-top: 1px solid var(--line-strong);
+  border-left: 1px solid var(--line-strong);
   box-shadow: var(--shadow-3);
-  z-index: 30;
+  transform: translateX(100%);
+  transition: transform 260ms var(--ease);
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  will-change: transform;
 }
 
-.sheet[data-detent="peek"] {
-  height: calc(var(--sheet-peek) + var(--safe-bottom));
+.drawer[data-open="true"] {
+  transform: translateX(0);
 }
 
-.sheet[data-detent="half"] {
-  height: min(var(--sheet-half), calc(100dvh - 200px));
+/* A dimmed map behind the open drawer. Tap it to close; Escape and the close
+   button are the keyboard paths. */
+.drawer-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 39;
+  background: color-mix(in srgb, var(--ink) 30%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 260ms var(--ease);
 }
 
-.sheet[data-detent="full"] {
-  height: calc(100dvh - 200px);
-  height: calc(100svh - 200px);
+.drawer-scrim[data-open="true"] {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.sheet-handle {
-  min-height: var(--tap);
-  flex: none;
+/* The edge tab: the only thing on the map besides search. It carries the
+   count, so a closed drawer still answers "is there anything here?". */
+.drawer-tab {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 26;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 8px 16px calc(8px + var(--safe-bottom) / 3);
-  cursor: grab;
-  touch-action: pan-x;
-  user-select: none;
-  -webkit-user-select: none;
+  gap: 4px;
+  width: 44px;
+  padding: 10px 0;
+  border: 1px solid var(--line-strong);
+  border-right: 0;
+  border-radius: var(--radius) 0 0 var(--radius);
+  background: linear-gradient(160deg, var(--accent-soft) 0%, var(--surface) 78%);
+  color: var(--accent);
+  box-shadow: var(--shadow-2);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
 }
 
-.sheet-handle:active {
-  cursor: grabbing;
+.drawer-tab:hover {
+  transform: translateY(-50%) translateX(-2px);
+  box-shadow: var(--shadow-3);
 }
 
-.sheet-grip {
-  width: 40px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--line-strong);
+.drawer-tab:active {
+  transform: translateY(-50%) translateX(1px);
 }
 
-.sheet-title {
+.drawer-tab-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  max-width: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drawer-head {
+  position: relative;
+  flex: none;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
-  font-size: 15px;
+  padding: 12px 10px 10px 16px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(135deg, var(--accent-soft) 0%, var(--bg) 72%);
+  overflow: hidden;
 }
 
-.sheet-body {
+/* A big soft paw behind the title: the one piece of pure decoration, and the
+   thing that makes the panel feel like Pampered rather than a data table. */
+.drawer-ghost {
+  position: absolute;
+  right: -16px;
+  top: -22px;
+  color: var(--accent-soft-2);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.drawer-head > *:not(.drawer-ghost) {
+  position: relative;
+  z-index: 1;
+}
+
+.drawer-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 16px;
+}
+
+.drawer-title strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drawer-paw {
+  color: var(--accent);
+  flex: none;
+}
+
+.drawer-count {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.drawer-close {
+  flex: none;
+  width: var(--tap);
+  height: var(--tap);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-2);
+  font-size: 18px;
+}
+
+.drawer-close:hover,
+.drawer-close:focus-visible {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.drawer-filters {
+  flex: none;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.drawer-filters .chips {
+  flex-wrap: wrap;
+  overflow: visible;
+  padding-bottom: 0;
+  gap: 8px;
+}
+
+.drawer-tools {
+  flex: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.drawer-body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0 12px calc(12px + var(--safe-bottom));
+  padding: 0 12px 16px;
   -webkit-overflow-scrolling: touch;
 }
 
-.sheet[data-detent="peek"] .sheet-body {
-  overflow: hidden;
+/* The left edge is the drag target: drag it left to dismiss. It sits above the
+   content only by a few pixels, so it never steals a tap meant for a card. */
+.drawer-grip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 18px;
+  z-index: 1;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.drawer-grip:active {
+  cursor: grabbing;
 }
 
 /* ---------------------------------------------------------------------- list */
@@ -445,7 +585,7 @@
   align-items: center;
   gap: 10px;
   padding: 12px 12px 12px 14px;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 91%, var(--accent-soft));
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
   color: var(--ink);
@@ -468,7 +608,9 @@
 
 .place-card-selected {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
+  box-shadow:
+    inset 3px 0 var(--accent),
+    0 0 0 1px var(--accent);
 }
 
 .place-card-main {
@@ -477,6 +619,20 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+/* The row selects; only the chevron navigates. A button needs the span layout
+   back, because a browser gives it its own font, padding and centring. */
+.place-card-select {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
 .place-card-top {
@@ -526,9 +682,22 @@
 
 .place-card-go {
   flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: -6px -6px -6px 0;
+  border-radius: 999px;
   font-size: 26px;
   line-height: 1;
   color: var(--ink-3);
+  text-decoration: none;
+}
+
+.place-card-go:hover {
+  background: var(--surface-2);
+  color: var(--ink);
 }
 
 .empty-list {
@@ -692,30 +861,31 @@
     flex: none;
   }
 
-  .sheet {
-    flex: none;
+  .drawer {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
     width: 400px;
-    border-top: 0;
-    border-left: 1px solid var(--line-strong);
+    transform: none;
+    transition: none;
+    padding: 0;
     box-shadow: var(--shadow-2);
-    min-height: 0;
+    border-left: 1px solid var(--line-strong);
+    will-change: auto;
   }
 
-  .sheet[data-detent],
-  .sheet[data-detent="peek"],
-  .sheet[data-detent="half"],
-  .sheet[data-detent="full"] {
-    height: auto;
-  }
-
-  .sheet-handle {
-    cursor: default;
-    align-items: flex-start;
-    padding-left: 16px;
-  }
-
-  .sheet-grip {
+  .drawer-scrim,
+  .drawer-tab,
+  .drawer-grip,
+  .drawer-close,
+  .drawer-filters,
+  .drawer-tools {
     display: none;
+  }
+
+  .drawer-head {
+    padding: 16px;
   }
 
   .mini-card {
@@ -724,10 +894,6 @@
     right: 16px;
     bottom: 16px;
     width: 340px;
-  }
-
-  .sheet-body {
-    overflow-y: auto;
   }
 
   .site-footer {
@@ -741,27 +907,8 @@
   }
 }
 
-/* ---------------------------------------------------------------- paw bar ---
-   The paw bar docks over the bottom of the map on phones. MapLibre's own
-   chrome and the mini-card sit in that space, so they lift above the bar —
-   the attribution especially, which is a legal credit and must stay readable,
-   not be covered by the very toolbar that made the map useful. */
-@media (max-width: 719.98px) {
-  .map-container .maplibregl-ctrl-bottom-right {
-    bottom: calc(var(--pawbar-h) + 10px);
-  }
+/* ---------------------------------------------------------------- map chrome */
 
-  .map-container .maplibregl-ctrl-bottom-left {
-    bottom: calc(var(--pawbar-h) + 8px);
-  }
-
-  .mini-card {
-    bottom: calc(var(--pawbar-h) + 10px);
-  }
-
-  /* The paw bar owns the map's bottom edge: the filter/sort/share row moves
-     into the sheet, so the map shows map, not buttons. */
-  .finder-tools {
-    display: none;
-  }
-}
+/* The drawer overlays the map instead of docking under it, so the map keeps
+   its full height and MapLibre's own chrome sits at the bottom edge. The old
+   paw bar used to reserve space here; it is gone, and so is the reserve. */

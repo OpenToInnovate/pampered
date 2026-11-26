@@ -1,5 +1,6 @@
 /**
- * The finder. One page: a map behind, a sheet in front, and a URL holding it all.
+ * The finder. One page: a map behind, a results drawer beside it, and a URL
+ * holding it all.
  *
  * The data flow has no server in it:
  *
@@ -31,14 +32,13 @@ import {
   Show,
 } from "solid-js";
 import { NoHydration } from "solid-js/web";
-import BottomSheet from "~/components/BottomSheet";
 import MiniCard from "~/components/MiniCard";
-import PawBar from "~/components/PawBar";
 import PlaceCard, { EmptyList } from "~/components/PlaceCard";
 import ReportSheet from "~/components/ReportSheet";
 import SearchBar from "~/components/SearchBar";
 import SearchOverlay from "~/components/SearchOverlay";
 import SelectionChips from "~/components/SelectionChips";
+import SideDrawer from "~/components/SideDrawer";
 import type { ChipSelection } from "~/components/SelectionChips";
 import { selections } from "~/content/selections";
 import { loadSelections, seedFromDocument, serialiseSeed, SEED_ELEMENT_ID } from "~/lib/dataset";
@@ -83,10 +83,24 @@ export default function Home() {
   // and only controls read it, so it must not trigger renders or refetches.
   let live: { centre: LonLat; zoom: number; bearing: number } | null = null;
 
+  // The timer outlives the page: a map settle just before a link is followed
+  // would otherwise fire its navigate after the route has changed and yank the
+  // reader back to the finder. Worse, the map's teardown can deliver one last
+  // moveend after unmount, scheduling a timer nobody is left to clear — so
+  // every commit path checks a flag that dies with the component.
   let camTimer: ReturnType<typeof setTimeout> | undefined;
-  const commitCamera = (v: ViewState) => {
+  let alive = true;
+  onCleanup(() => {
+    alive = false;
     clearTimeout(camTimer);
-    camTimer = setTimeout(() => commit(v, true), 700);
+  });
+  const commitCamera = () => {
+    clearTimeout(camTimer);
+    // The view is read at fire time, not capture time: a chip tapped or a
+    // place chosen between the pan and this timer must survive the write.
+    camTimer = setTimeout(() => {
+      if (alive) commit(cameraForCommit(view(), live), true);
+    }, 700);
   };
 
   /** The view as it is right now, with the map's live camera rather than the URL's. */
@@ -107,6 +121,7 @@ export default function Home() {
       bboxTimer = setTimeout(() => setSettledBbox(b), 300);
     }),
   );
+  onCleanup(() => clearTimeout(bboxTimer));
 
   // The dataset, fetched per selection and then held in memory for the life of
   // the tab. Only the active selections are loaded, so a visitor who never taps
@@ -213,9 +228,13 @@ export default function Home() {
   // taken on open, so closing the mini-card does not mutate a form in flight.
   const [reportPlace, setReportPlace] = createSignal<PlaceRecord | null>(null);
 
-  // The search overlay. The header pill and the paw bar both open it; the
-  // header is mounted by App, two levels above this route, so it asks with an
-  // event — the same channel the city jump already uses.
+  // The results drawer is closed by default on a phone: the map is the page.
+  // The edge tab is the way in, and selecting a place closes it again.
+  const [drawerOpen, setDrawerOpen] = createSignal(false);
+
+  // The search overlay. The header pill opens it; the header is mounted by App,
+  // two levels above this route, so it asks with an event — the same channel
+  // the city jump already uses.
   const [searchOpen, setSearchOpen] = createSignal(false);
   createEffect(() => {
     const handler = () => setSearchOpen(true);
@@ -230,9 +249,10 @@ export default function Home() {
   });
 
   const onViewport = (b: Bbox, cam: Camera) => {
+    if (!alive) return;
     setBbox(b);
     live = { centre: cam.centre, zoom: cam.zoom, bearing: cam.bearing };
-    commitCamera(currentView());
+    commitCamera();
   };
 
   const onSelect = (id: string | null) => {
@@ -336,10 +356,8 @@ export default function Home() {
   };
 
   // The filter, sort and share cluster. It lives over the map on desktop and
-  // inside the sheet on a phone, because the paw bar already owns the map's
-  // bottom edge and two control rows competing for one thumb is not a design.
-  // The near-me button stays with the map (the paw bar covers it on phones);
-  // these three are what nothing else covers.
+  // inside the drawer on a phone. The drawer is the one place for controls, so
+  // the map itself carries no filter row at all.
   const filterControls = () => (
     <>
       <button
@@ -452,7 +470,6 @@ export default function Home() {
               onFailed={setMapFailed}
             />
           </Show>
-          <PawBar chips={chips()} onToggle={onToggle} onSearch={() => setSearchOpen(true)} />
         </div>
         <div class="finder-overlay">
           <SearchBar value={view().q} onSearch={onSearch} />
@@ -472,7 +489,7 @@ export default function Home() {
           </div>
         </div>
         {/* Outside the overlay: on a phone the overlay is hidden (the header
-            pill and the paw bar replace it), and a geolocation failure must
+            pill and the drawer replace it), and a geolocation failure must
             still be seen. */}
         <Show when={locateError()}>
           {(msg) => (
@@ -501,11 +518,15 @@ export default function Home() {
         </Show>
       </div>
 
-      <BottomSheet
+      <SideDrawer
         title={title()}
         count={countText()}
+        tabCount={result().total}
+        open={drawerOpen()}
+        onOpenChange={setDrawerOpen}
+        filters={<SelectionChips chips={chips()} onToggle={onToggle} />}
         toolbar={filterControls()}
-        collapseWhen={!!selectedPlace()}
+        closeWhen={!!selectedPlace()}
       >
         <Show
           when={!loadFailed()}
@@ -560,7 +581,7 @@ export default function Home() {
             </NoHydration>
           </Show>
         </Show>
-      </BottomSheet>
+      </SideDrawer>
       <SearchOverlay
         open={searchOpen()}
         chips={chips()}
