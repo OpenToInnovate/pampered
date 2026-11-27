@@ -7,15 +7,15 @@
 import { describe, expect, it } from "vitest";
 import { bboxForCamera, parseView, serialiseView } from "../src/lib/url-state";
 
-const IDS = new Set(["cafes", "pubs", "dog-parks"]);
+const IDS = new Set(["food-drink", "vet", "dog-parks"]);
 
 describe("parseView", () => {
   it("reads a full URL", () => {
-    const v = parseView("?q=pub&at=-0.12,51.5,14&sel=pubs,cafes&p=abc&near=-0.1,51.5&radius=2000", IDS);
+    const v = parseView("?q=pub&at=-0.12,51.5,14&sel=food-drink,taxi-scam&p=abc&near=-0.1,51.5&radius=2000", IDS);
     expect(v.q).toBe("pub");
     expect(v.at).toEqual([-0.12, 51.5]);
     expect(v.zoom).toBe(14);
-    expect(v.sel).toEqual(["pubs", "cafes"]);
+    expect(v.sel).toEqual(["food-drink"]);
     expect(v.place).toBe("abc");
     expect(v.near).toEqual([-0.1, 51.5]);
     expect(v.radius).toBe(2000);
@@ -30,8 +30,8 @@ describe("parseView", () => {
   });
 
   it("drops unknown selection ids rather than trusting them", () => {
-    const v = parseView("?sel=cafes,taxi-scam", IDS);
-    expect(v.sel).toEqual(["cafes"]);
+    const v = parseView("?sel=food-drink,taxi-scam", IDS);
+    expect(v.sel).toEqual(["food-drink"]);
   });
 
   it("falls back to defaults when every selection is unknown", () => {
@@ -67,12 +67,12 @@ describe("parseView", () => {
 
 describe("serialiseView", () => {
   it("round-trips", () => {
-    const original = "?q=pub&at=-0.12,51.5,14&sel=pubs,cafes&p=abc";
+    const original = "?q=pub&at=-0.12,51.5,14&sel=food-drink,vet&p=abc";
     const v = parseView(original, IDS);
     const back = parseView(serialiseView(v).slice(1), IDS);
     expect(back.q).toBe("pub");
     expect(back.at?.[0]).toBeCloseTo(-0.12, 4);
-    expect(back.sel).toEqual(["pubs", "cafes"]);
+    expect(back.sel).toEqual(["food-drink", "vet"]);
     expect(back.place).toBe("abc");
   });
 
@@ -94,12 +94,12 @@ describe("serialiseView", () => {
 
 describe("serialiseView", () => {
   it("round-trips", () => {
-    const original = "?q=pub&at=-0.12,51.5,14&sel=pubs,cafes&p=abc";
+    const original = "?q=pub&at=-0.12,51.5,14&sel=food-drink,vet&p=abc";
     const v = parseView(original, IDS);
     const back = parseView(serialiseView(v).slice(1), IDS);
     expect(back.q).toBe("pub");
     expect(back.at?.[0]).toBeCloseTo(-0.12, 4);
-    expect(back.sel).toEqual(["pubs", "cafes"]);
+    expect(back.sel).toEqual(["food-drink", "vet"]);
     expect(back.place).toBe("abc");
   });
 

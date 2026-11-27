@@ -48,10 +48,10 @@ test("home loads with a list, chips and a map or fallback", async ({ page }) => 
     page.getByRole("search").or(page.getByRole("button", { name: "Search places" })).first(),
   ).toBeVisible();
 
-  // Eight filters, one per selection. On a phone they live in the drawer.
+  // Seven filters, one per selection. On a phone they live in the drawer.
   await openDrawer(page);
   const dock = page.getByRole("group", { name: /Show on the map/ });
-  await expect(dock.getByRole("button")).toHaveCount(8);
+  await expect(dock.getByRole("button")).toHaveCount(7);
 
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
 
@@ -67,7 +67,7 @@ test("the published dataset is static and edge-cached", async ({ request, baseUR
   const body = await manifest.json();
   expect(body.total).toBeGreaterThan(1000);
   expect(body.builtAt).toBeTruthy();
-  expect(Object.keys(body.counts).length).toBe(8);
+  expect(Object.keys(body.counts).length).toBe(7);
 
   // Static assets are served by Workers Assets rather than the Worker, which is
   // what makes browsing free of database reads and free of request cost. The
@@ -93,13 +93,13 @@ test("toggling a chip changes the URL and the list", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
 
-  const cafes = await filterButton(page, /Cafés/);
-  await cafes.click();
+  const foodDrink = await filterButton(page, /Food \& drink/);
+  await foodDrink.click();
   await expect(page).toHaveURL(/sel=/);
-  await expect(cafes).toHaveAttribute("aria-pressed", "false");
+  await expect(foodDrink).toHaveAttribute("aria-pressed", "false");
 
-  await cafes.click();
-  await expect(cafes).toHaveAttribute("aria-pressed", "true");
+  await foodDrink.click();
+  await expect(foodDrink).toHaveAttribute("aria-pressed", "true");
 });
 
 test("search narrows the list and the URL", async ({ page }) => {

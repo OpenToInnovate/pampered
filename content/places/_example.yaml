@@ -55,7 +55,7 @@ places:
   - id: the-other-example
     name: The Other Example
     source: manual
-    selections: [cafes, ice-cream]
+    selections: [food-drink]
 
     lat: 51.5155
     lon: -0.0922

@@ -12,7 +12,7 @@ import { sameCamera, stored } from "../src/map/camera";
 import type { CameraLike } from "../src/map/camera";
 import { cameraForCommit, parseView, serialiseView, toggleSelection } from "../src/lib/url-state";
 
-const KNOWN = new Set(["cafes", "pubs", "dog-parks"]);
+const KNOWN = new Set(["food-drink", "dog-parks"]);
 
 describe("sameCamera (the snap-loop guard)", () => {
   it("treats a camera stored at URL precision as the same camera", () => {
@@ -65,24 +65,24 @@ describe("cameraForCommit (controls must not snap the map back)", () => {
 
 describe("toggleSelection", () => {
   it("adds a known selection at the end, keeping the visitor's order", () => {
-    expect(toggleSelection(["pubs", "cafes"], "dog-parks", KNOWN)).toEqual(["pubs", "cafes", "dog-parks"]);
+    expect(toggleSelection(["food-drink"], "dog-parks", KNOWN)).toEqual(["food-drink", "dog-parks"]);
   });
 
   it("removes a selection that is already on", () => {
-    expect(toggleSelection(["pubs", "cafes"], "pubs", KNOWN)).toEqual(["cafes"]);
+    expect(toggleSelection(["food-drink", "dog-parks"], "dog-parks", KNOWN)).toEqual(["food-drink"]);
   });
 
   it("ignores an unknown id rather than adding it to the URL", () => {
-    expect(toggleSelection(["pubs"], "taxi-scam", KNOWN)).toEqual(["pubs"]);
+    expect(toggleSelection(["food-drink"], "taxi-scam", KNOWN)).toEqual(["food-drink"]);
   });
 
   it("does not mutate its input", () => {
-    const input = ["pubs"];
-    toggleSelection(input, "cafes", KNOWN);
-    expect(input).toEqual(["pubs"]);
+    const input = ["food-drink"];
+    toggleSelection(input, "taxi-scam", KNOWN);
+    expect(input).toEqual(["food-drink"]);
   });
 
   it("allows switching every selection off, so the list can say why it is empty", () => {
-    expect(toggleSelection(["pubs"], "pubs", KNOWN)).toEqual([]);
+    expect(toggleSelection(["food-drink"], "food-drink", KNOWN)).toEqual([]);
   });
 });

@@ -151,11 +151,12 @@ function osmRow(el, selectionId, selections, osmTimestamp) {
   // enrichment, not invention: the row still carries its OSM identity and the
   // rule is written here, not hidden.
   let policy = dogPolicyOf(tags);
-  if (policy === "unknown") {
-    if (ids.includes("off-lead")) policy = "off_leash";
-    else if (ids.includes("dog-parks")) policy = "designated";
-    else if (ids.includes("water-bowls")) policy = "yes";
-  }
+    if (policy === "unknown") {
+      if (ids.includes("off-lead")) policy = "off_leash";
+      else if (ids.includes("dog-parks")) policy = "designated";
+      else if (ids.includes("water-bowls")) policy = "yes";
+      else if (ids.includes("vet")) policy = "yes";
+    }
 
   // This site is a list of places that welcome dogs. A row that still has no
   // dog answer after the rules above is not one of them, so it is dropped here

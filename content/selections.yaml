@@ -46,13 +46,12 @@ dog_policy:
 
 selections:
   # ---------------------------------------------------------------- eat & drink
-  # Pubs, bars and restaurants share one chip. They answer the same question
-  # ("where can I eat or drink with the dog?") and three near-identical rows
-  # made the filter bar harder to scan without adding a distinction a visitor
-  # cares about. Cafés and ice cream stay separate: a coffee stop and a cone are
-  # different trips.
+  # Pubs, cafés, bars and restaurants share one chip. They answer the same
+  # question ("where can I eat or drink with the dog?") and four near-identical
+  # rows made the filter bar harder to scan without adding a distinction a
+  # visitor cares about.
   - id: food-drink
-    label: Pubs, bars and restaurants that welcome dogs
+    label: Pubs, cafés, bars and restaurants that welcome dogs
     short: Food & drink
     group: eat-drink
     icon: fork
@@ -62,34 +61,7 @@ selections:
     blurb: Tagged in OpenStreetMap as allowing dogs inside.
     osm:
       tags:
-        amenity: [pub, bar, restaurant, biergarten]
-        dog: [yes, permitted, designated, inside]
-
-  - id: cafes
-    label: Cafés that welcome dogs
-    short: Cafés
-    group: eat-drink
-    icon: cup
-    colour: "#876820"
-    default: true
-    minzoom: 11
-    blurb: Tagged in OpenStreetMap as allowing dogs inside.
-    osm:
-      tags:
-        amenity: [cafe]
-        dog: [yes, permitted, designated, inside]
-
-  - id: ice-cream
-    label: Ice cream and gelato
-    short: Ice cream
-    group: eat-drink
-    icon: cone
-    colour: "#C22D86"
-    minzoom: 13
-    blurb: Tagged in OpenStreetMap as allowing dogs inside.
-    osm:
-      tags:
-        amenity: [ice_cream]
+        amenity: [pub, bar, restaurant, biergarten, cafe, ice_cream]
         dog: [yes, permitted, designated, inside]
 
   # -------------------------------------------------------------- care supplies
@@ -114,9 +86,18 @@ selections:
             shop: [beauty]
             dog: [yes, permitted, designated]
 
-  # Vets are not on the map. A vet practice is not a place that welcomes dogs,
-  # and OpenStreetMap almost never says whether it does, so the layer was
-  # thousands of pins with no answer to the only question this site asks.
+  - id: vet
+    label: Vets and animal hospitals that welcome dogs
+    short: Vet
+    group: care
+    icon: cross
+    colour: "#CB3030"
+    default: false
+    minzoom: 12
+    blurb: Veterinary practices and animal hospitals in OpenStreetMap.
+    osm:
+      tags:
+        amenity: [veterinary, animal_hospital]
 
   - id: pet-shops
     label: Pet shops that welcome dogs
