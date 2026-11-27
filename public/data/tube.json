@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-11-26T23:14:16Z",
+  "builtAt": "2026-11-27T00:11:54Z",
   "source": "OpenStreetMap via Overpass (ODbL); colours from TfL",
   "bbox": [
     51.25,
@@ -474,16 +474,6 @@
         "elizabeth"
       ],
       "primary": "central"
-    },
-    {
-      "id": "osm:node/9754536755",
-      "name": "Bond Street",
-      "lat": 51.51353,
-      "lon": -0.14709,
-      "lines": [
-        "elizabeth"
-      ],
-      "primary": "elizabeth"
     },
     {
       "id": "osm:node/6797794418",
@@ -1086,17 +1076,6 @@
       "name": "Custom House",
       "lat": 51.50963,
       "lon": 0.02596,
-      "lines": [
-        "elizabeth",
-        "dlr"
-      ],
-      "primary": "elizabeth"
-    },
-    {
-      "id": "osm:node/9754369244",
-      "name": "Custom House",
-      "lat": 51.5098,
-      "lon": 0.02723,
       "lines": [
         "elizabeth",
         "dlr"
@@ -2630,26 +2609,6 @@
       "primary": "rail"
     },
     {
-      "id": "osm:node/7132105210",
-      "name": "London Paddington",
-      "lat": 51.5171,
-      "lon": -0.17732,
-      "lines": [
-        "elizabeth"
-      ],
-      "primary": "elizabeth"
-    },
-    {
-      "id": "osm:node/3662847634",
-      "name": "London St. Pancras International",
-      "lat": 51.53272,
-      "lon": -0.127,
-      "lines": [
-        "rail"
-      ],
-      "primary": "rail"
-    },
-    {
       "id": "osm:node/3768010552",
       "name": "London Victoria",
       "lat": 51.49473,
@@ -3598,16 +3557,6 @@
       "primary": "overground"
     },
     {
-      "id": "osm:node/6476798601",
-      "name": "South Bermondsey",
-      "lat": 51.48795,
-      "lon": -0.05446,
-      "lines": [
-        "rail"
-      ],
-      "primary": "rail"
-    },
-    {
       "id": "osm:node/3956577242",
       "name": "South Ealing",
       "lat": 51.50086,
@@ -4047,17 +3996,6 @@
       "lines": [
         "central",
         "northern",
-        "elizabeth"
-      ],
-      "primary": "central"
-    },
-    {
-      "id": "osm:node/9754554222",
-      "name": "Tottenham Court Road",
-      "lat": 51.51534,
-      "lon": -0.13252,
-      "lines": [
-        "central",
         "elizabeth"
       ],
       "primary": "central"

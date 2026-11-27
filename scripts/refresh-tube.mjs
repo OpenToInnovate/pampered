@@ -41,8 +41,10 @@ import { ROOT, overpass, isoNow } from "./lib/content.mjs";
 const BBOX = [51.25, -0.7, 51.75, 0.36]; // south, west, north, east
 
 /** Where National Rail gets a landmark symbol. Zone 1 plus a little slack:
-    the termini, the Thameslink spine and Waterloo East, but not the suburbs. */
-const CENTRAL_BBOX = [51.486, -0.215, 51.535, 0.02];
+    the termini, the Thameslink spine and Waterloo East, but not the suburbs —
+    the southern floor sits just above South Bermondsey, which is a through
+    station on the outer edge of town however you spell it. */
+const CENTRAL_BBOX = [51.489, -0.215, 51.535, 0.02];
 
 const OUT = join(ROOT, "public", "data", "tube.json");
 const CACHE = join(ROOT, "data", "osm", "tube.json");
@@ -367,6 +369,77 @@ function joinRoutes(routeJson, stationIndex, stopJson, lineForRelation, label) {
   return stationIndex;
 }
 
+/** Normalised name with the "London " prefix dropped — the spelling OSM uses
+    for mainline termini ("London St. Pancras International") and the spelling
+    everybody else uses ("St Pancras International") become the same key. */
+function canonicalKey(name) {
+  return normName(name).replace(/^london /, "");
+}
+
+/** Do two line sets describe the same station? Equal sets are a dead
+    giveaway; a subset means the smaller entry is a view of the same place
+    (Tottenham Court Road's Northern/Central node and its Elizabeth node).
+    Overlapping-but-neither subsets (Paddington's two node placements) are
+    left alone: the evidence is not strong enough to say. */
+const sameOrSubset = (a, b) => {
+  if (a.size === b.size && [...a].every((x) => b.has(x))) return true;
+  const [small, big] = a.size <= b.size ? [a, b] : [b, a];
+  return [...small].every((x) => big.has(x));
+};
+
+/**
+ * Collapse entries that describe one station complex. Splitting by name and
+ * location earlier is deliberately loose, so after the join a duplicate
+ * shows itself: two entries within a couple of hundred metres whose line
+ * sets agree. Waterloo and Charing Cross keep their two marks — terminus
+ * plus tube station — because their line sets share nothing, and the map is
+ * right to show both.
+ */
+function mergeDuplicates(stations) {
+  const groups = new Map();
+  for (const station of stations) {
+    const key = canonicalKey(station.name);
+    const group = groups.get(key);
+    if (group) group.push(station);
+    else groups.set(key, [station]);
+  }
+
+  const keep = (a, b) => {
+    // The common name survives: "St Pancras International", not "London ...".
+    const aLondon = /^london /i.test(a.name);
+    const bLondon = /^london /i.test(b.name);
+    if (aLondon !== bLondon) return aLondon ? b : a;
+    return a.lines.size >= b.lines.size ? a : b;
+  };
+
+  let mergedCount = 0;
+  const survivors = [];
+  for (const group of groups.values()) {
+    for (const station of group) {
+      const twin = survivors.find(
+        (t) =>
+          canonicalKey(t.name) === canonicalKey(station.name) &&
+          haversine([t.lat, t.lon], [station.lat, station.lon]) <= 250 &&
+          sameOrSubset(t.lines, station.lines),
+      );
+      if (!twin) {
+        survivors.push(station);
+        continue;
+      }
+      const winner = keep(twin, station);
+      for (const line of station.lines) twin.lines.add(line);
+      for (const line of twin.lines) winner.lines.add(line);
+      winner.nr = twin.nr || station.nr;
+      if (winner !== twin) {
+        survivors.splice(survivors.indexOf(twin), 1, winner);
+      }
+      mergedCount++;
+    }
+  }
+  log(`  merged ${mergedCount} duplicate station entries`);
+  return survivors;
+}
+
 async function main() {
   const stationJson = await run(STATION_QUERY, "stations");
   const stopJson = await run(STOP_QUERY, "stop positions");
@@ -396,7 +469,7 @@ async function main() {
   }
 
   const order = new Map([...LINES, ...NETWORKS].map((line, i) => [line.id, i]));
-  const stations = stationIndex.stations
+  const stations = mergeDuplicates(stationIndex.stations)
     .filter((s) => s.lines.size > 0)
     .map((s) => {
       const lines = [...s.lines].sort((a, b) => (order.get(a) ?? 99) - (order.get(b) ?? 99));

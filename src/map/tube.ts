@@ -91,9 +91,10 @@ export function iconSvgFor(line: { id: string; colour: string }): string {
 /** Where the landmark layers go: before the basemap's first symbol layer.
     Symbol placement is granted in style order, so a layer added at the end
     loses every collision and, in central London, gets suppressed entirely —
-    observed, not guessed. Placed this early, roundels claim their space and
-    the basemap's smaller labels work around them; the venue pins are circle
-    layers and never collide anyway. */
+    observed, not guessed. Placed this early, both landmark layers claim
+    their space in the global placement pass — the roundels and, at higher
+    zooms, the station labels too; the basemap's smaller labels work around
+    them. The venue pins are circle layers and never collide anyway. */
 function landmarkAnchor(map: MLMap): string | undefined {
   const layers = map.getStyle()?.layers ?? [];
   return layers.find((l) => l.type === "symbol" && !l.id.startsWith("pampered-"))?.id;
@@ -175,7 +176,6 @@ export async function addTubeLayers(map: MLMap, data: TubeData): Promise<void> {
       "icon-size": ["interpolate", ["linear"], ["zoom"], 11.5, 0.55, 14, 0.8, 17, 1.05],
       "icon-allow-overlap": true,
       "icon-ignore-placement": true,
-      "symbol-sort-key": ["-", ["get", "count"]],
     },
   };
   if (before) map.addLayer(icons, before);
@@ -191,7 +191,6 @@ export async function addTubeLayers(map: MLMap, data: TubeData): Promise<void> {
       "text-size": ["interpolate", ["linear"], ["zoom"], 13, 10, 17, 13],
       "text-offset": [0, 1.35],
       "text-anchor": "top",
-      "text-optional": true,
       "text-allow-overlap": false,
       "text-padding": 3,
     },
