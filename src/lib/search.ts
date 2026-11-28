@@ -33,6 +33,15 @@ export interface PlaceRecord {
   bookingUrl?: string;
   bookingLabel?: string;
   image?: string;
+  /** Plain-text description contributed to OpenStreetMap. */
+  description?: string;
+  email?: string;
+  facebook?: string;
+  wikipedia?: string;
+  wikidata?: string;
+  mapillary?: string;
+  toilets?: string;
+  operator?: string;
   cuisine?: string;
   outdoorSeating?: string;
   wheelchair?: string;

@@ -125,4 +125,12 @@ export interface CuratedPlace {
   notes?: string;
   booking?: PlaceBooking;
   image?: string;
+  description?: string;
+  email?: string;
+  facebook?: string;
+  wikipedia?: string;
+  wikidata?: string;
+  mapillary?: string;
+  toilets?: string;
+  operator?: string;
 }

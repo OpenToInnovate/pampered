@@ -21,6 +21,7 @@ export const ICON_NAMES = [
   "cone",
   "scissors",
   "cross",
+  "hotel",
   "bag",
   "paw",
   "paw-off",
@@ -59,6 +60,10 @@ export const ICON_PATHS: Record<IconName, IconDef> = {
   },
   cross: {
     stroke: "M12 5.5v13 M5.5 12h13",
+  },
+  hotel: {
+    stroke:
+      "M4 20V9.5 M20 20V9.5 M4 14.5h16 M6.5 11.5h4.2a1.6 1.6 0 0 1 0 3H6.5z",
   },
   bag: {
     stroke: "M6 8.5h12l-.9 11a1 1 0 0 1-1 .9H7.9a1 1 0 0 1-1-.9L6 8.5z M9 8.5V6.8a3 3 0 0 1 6 0v1.7",

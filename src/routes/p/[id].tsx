@@ -44,6 +44,7 @@ export default function PlacePage() {
   const location = useLocation();
   const place = createAsync(() => findPlace(decodeURIComponent(params["id"] ?? "")));
   const [reporting, setReporting] = createSignal(false);
+  const [photoBroken, setPhotoBroken] = createSignal(false);
 
   const backHref = () => `/${location.search}`;
   const displayName = () => {
@@ -103,6 +104,32 @@ export default function PlacePage() {
                   )}
                 </header>
 
+                {p().image && !photoBroken() && (
+                  <figure class="place-photo">
+                    <img
+                      src={p().image}
+                      alt={`${displayName()}, photographed`}
+                      loading="lazy"
+                      decoding="async"
+                      onError={() => setPhotoBroken(true)}
+                    />
+                    <figcaption class="tiny muted">
+                      Photo linked from OpenStreetMap; its licence is set by the photographer.{" "}
+                      <a href={p().image} rel="noopener noreferrer" target="_blank">
+                        See the original
+                      </a>
+                      .
+                    </figcaption>
+                  </figure>
+                )}
+
+                {p().description && (
+                  <section aria-label="About">
+                    <h2>About</h2>
+                    <p>{p().description}</p>
+                  </section>
+                )}
+
                 {p().notes && (
                   <section aria-label="What to know">
                     <h2>What to know</h2>
@@ -143,6 +170,80 @@ export default function PlacePage() {
                       <>
                         <dt>Food</dt>
                         <dd>{p().cuisine}</dd>
+                      </>
+                    )}
+                    {p().operator && (
+                      <>
+                        <dt>Run by</dt>
+                        <dd>{p().operator}</dd>
+                      </>
+                    )}
+                    {p().toilets && (
+                      <>
+                        <dt>Toilets</dt>
+                        <dd>{p().toilets}</dd>
+                      </>
+                    )}
+                    {p().email && (
+                      <>
+                        <dt>Email</dt>
+                        <dd>
+                          <a href={`mailto:${p().email}`}>{p().email}</a>
+                        </dd>
+                      </>
+                    )}
+                    {p().facebook && (
+                      <>
+                        <dt>Facebook</dt>
+                        <dd>
+                          <a href={p().facebook} rel="noopener noreferrer" target="_blank">
+                            {(p().facebook ?? "").replace(/^https?:\/\/(www\.)?facebook\.com\//i, "facebook.com/")}
+                          </a>
+                        </dd>
+                      </>
+                    )}
+                    {p().wikipedia && (
+                      <>
+                        <dt>Wikipedia</dt>
+                        <dd>
+                          <a
+                            href={`https://en.wikipedia.org/wiki/${encodeURIComponent(
+                              (p().wikipedia ?? "").replace(/^[a-z-]+:/i, "").replace(/ /g, "_"),
+                            )}`}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            {(p().wikipedia ?? "").replace(/^[a-z-]+:/i, "")}
+                          </a>
+                        </dd>
+                      </>
+                    )}
+                    {p().wikidata && (
+                      <>
+                        <dt>Wikidata</dt>
+                        <dd>
+                          <a
+                            href={`https://www.wikidata.org/wiki/${encodeURIComponent(p().wikidata ?? "")}`}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            {p().wikidata}
+                          </a>
+                        </dd>
+                      </>
+                    )}
+                    {p().mapillary && (
+                      <>
+                        <dt>Street view</dt>
+                        <dd>
+                          <a
+                            href={`https://www.mapillary.com/app/?pKey=${encodeURIComponent(p().mapillary ?? "")}`}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            Photo on Mapillary
+                          </a>
+                        </dd>
                       </>
                     )}
                     {shownAs().length > 0 && (

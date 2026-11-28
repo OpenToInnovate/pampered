@@ -125,6 +125,22 @@ function lastCheckedOn(tags, todayIso) {
   return dates.sort().at(-1) ?? null;
 }
 
+/** A photo only when OpenStreetMap cites one. `image` is a direct URL;
+    `wikimedia_commons=File:...` names a Commons file, whose stable download
+    endpoint is Special:FilePath. A Commons category is not a photo, so it is
+    skipped rather than guessed at. Nothing here is ever constructed from a
+    name — a venue without a cited photo gets no photo. */
+function photoUrl(tags) {
+  const direct = tags.image;
+  if (direct && /^https?:\/\//i.test(direct)) return direct;
+  const commons = tags.wikimedia_commons;
+  if (commons && /^file:/i.test(commons)) {
+    const file = commons.slice(5).trim().replace(/ /g, "_");
+    if (file) return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(file)}?width=800`;
+  }
+  return null;
+}
+
 function osmRow(el, selectionId, selections, osmTimestamp) {
   const tags = el.tags ?? {};
   const point = elementPoint(el);
@@ -156,6 +172,7 @@ function osmRow(el, selectionId, selections, osmTimestamp) {
       else if (ids.includes("dog-parks")) policy = "designated";
       else if (ids.includes("water-bowls")) policy = "yes";
       else if (ids.includes("vet")) policy = "yes";
+      else if (ids.includes("dog-hotels")) policy = "yes";
     }
 
   // This site is a list of places that welcome dogs. A row that still has no
@@ -180,7 +197,15 @@ function osmRow(el, selectionId, selections, osmTimestamp) {
       phone: pick(tags["contact:phone"], tags.phone),
       website: pick(tags["contact:website"], tags.website),
       instagram: pick(tags["contact:instagram"], tags.instagram),
-      image: null,
+      image: photoUrl(tags),
+      description: pick(tags.description, tags["dog:description"]),
+      email: tags["contact:email"] ?? tags.email ?? null,
+      facebook: tags["contact:facebook"] ?? tags.facebook ?? null,
+      wikipedia: tags.wikipedia ?? null,
+      wikidata: tags.wikidata ?? null,
+      mapillary: tags.mapillary ?? null,
+      toilets: tags.toilets ?? null,
+      operator: tags.operator ?? null,
       opening_hours: tags.opening_hours ?? null,
       dog_policy: policy,
       outdoor_seating: tags.outdoor_seating ?? null,
@@ -240,6 +265,14 @@ function curatedRow(place, knownSelectionIds, knownRegionIds) {
       website: place.website ?? null,
       instagram: place.instagram ?? null,
       image: place.image ?? null,
+      description: place.description ?? null,
+      email: place.email ?? null,
+      facebook: place.facebook ?? null,
+      wikipedia: place.wikipedia ?? null,
+      wikidata: place.wikidata ?? null,
+      mapillary: place.mapillary ?? null,
+      toilets: place.toilets ?? null,
+      operator: place.operator ?? null,
       opening_hours: place.opening_hours ?? null,
       dog_policy: place.dog_policy ?? "unknown",
       outdoor_seating: place.outdoor_seating ?? null,

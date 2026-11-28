@@ -1,8 +1,13 @@
 /**
- * London's railway stations as landmark symbols: Underground roundels in each
- * line's colour, roundels in the network colour for Overground, the Elizabeth
- * line and the DLR, and the National Rail double arrow for the central
- * termini.
+ * London's railway stations as landmark symbols: one roundel colour per
+ * network — red for the Underground, orange for the Overground, purple for the
+ * Elizabeth line, teal for the DLR — and the National Rail double arrow for the
+ * central termini.
+ *
+ * One colour per network, not one per Underground line. Eleven line colours at
+ * 20–48 px read as noise, and the roundel's job is "a Tube station is here",
+ * not "the Piccadilly line is here". The data still records each station's
+ * lines; only the drawing collapses them.
  *
  * These are landmarks, not venues. They never appear in the chips or the
  * published directory; they are context, so the reader can say "the pub is by
@@ -82,22 +87,50 @@ export function railIconSvg(colour: string): string {
 </svg>`;
 }
 
-/** One icon per line: roundels for the Underground lines and the roundel
+/** One icon per network: roundels for the Underground and the roundel
     networks, the double arrow for National Rail. */
-export function iconSvgFor(line: { id: string; colour: string }): string {
-  return line.id === "rail" ? railIconSvg(line.colour) : roundelSvg(line.colour);
+export function iconSvgFor(type: string): string {
+  const colour = TYPE_COLOUR[type] ?? "#6B7280";
+  return type === "rail" ? railIconSvg(colour) : roundelSvg(colour);
 }
 
-/** Where the landmark layers go: before the basemap's first symbol layer.
-    Symbol placement is granted in style order, so a layer added at the end
-    loses every collision and, in central London, gets suppressed entirely —
-    observed, not guessed. Placed this early, both landmark layers claim
-    their space in the global placement pass — the roundels and, at higher
-    zooms, the station labels too; the basemap's smaller labels work around
-    them. The venue pins are circle layers and never collide anyway. */
-function landmarkAnchor(map: MLMap): string | undefined {
-  const layers = map.getStyle()?.layers ?? [];
-  return layers.find((l) => l.type === "symbol" && !l.id.startsWith("pampered-"))?.id;
+const UNDERGROUND_LINES = new Set([
+  "bakerloo",
+  "central",
+  "circle",
+  "district",
+  "hammersmith-city",
+  "jubilee",
+  "metropolitan",
+  "northern",
+  "piccadilly",
+  "victoria",
+  "waterloo-city",
+]);
+
+/** The colours the marks are drawn in. Underground red is the roundel's own
+    red, not any one line's; National Rail keeps its double-arrow red. */
+const TYPE_COLOUR: Record<string, string> = {
+  tube: "#DC241F",
+  overground: "#EE7C0E",
+  elizabeth: "#6950A1",
+  dlr: "#00AFAD",
+  rail: "#DC241F",
+};
+
+/** Collapse a line id to the network whose mark it shares. */
+export function typeOf(lineId: string): string {
+  return UNDERGROUND_LINES.has(lineId) ? "tube" : lineId;
+}
+
+/** Landmarks paint last. Because the icons and names allow overlap, style
+    order no longer decides whether they survive the placement pass — it only
+    decides what covers what. Placed on top, a roundel is never hidden by a
+    basemap shop icon or a street label when the reader has zoomed in to find
+    the station. */
+function raiseLandmarks(map: MLMap): void {
+  if (map.getLayer(ICONS)) map.moveLayer(ICONS);
+  if (map.getLayer(LABELS)) map.moveLayer(LABELS);
 }
 
 export async function addTubeLayers(map: MLMap, data: TubeData): Promise<void> {
@@ -123,13 +156,12 @@ export async function addTubeLayers(map: MLMap, data: TubeData): Promise<void> {
   const existing = map.getSource(SOURCE) as GeoJSONSource | undefined;
   if (existing) {
     existing.setData(collection as never);
+    raiseLandmarks(map);
     return;
   }
 
   // The grey fallback goes in first, so the layer can appear after a single
-  // rasterised image. Each line's colour is then added in turn: on a slow GPU
-  // the eleven uploads take seconds, and a blank layer until the last one is
-  // worse than grey roundels that gain their colour one line at a time.
+  // rasterised image; a mark with no colour is worse than a grey one.
   if (!map.hasImage(UNKNOWN)) {
     try {
       map.addImage(UNKNOWN, await svgToImage(roundelSvg("#6B7280"), 48), { pixelRatio: 2 });
@@ -140,21 +172,36 @@ export async function addTubeLayers(map: MLMap, data: TubeData): Promise<void> {
 
   map.addSource(SOURCE, { type: "geojson", data: collection });
 
-  const coloured = new Set<string>();
-  // A match expression needs at least one label/value pair; with none, it is
-  // invalid and MapLibre silently declines to add the layer. Start with the
-  // plain fallback image and only switch to `match` once a colour exists.
-  const iconImage = (): unknown => {
-    if (!coloured.size) return UNKNOWN;
-    const expr: unknown[] = ["match", ["get", "primary"]];
-    for (const line of data.lines) {
-      if (coloured.has(line.id)) expr.push(line.id, `tube-${line.id}`);
+  // Five marks, one per network — not eleven Underground line colours.
+  const types = new Set<string>(["tube", "overground", "elizabeth", "dlr", "rail"]);
+  for (const line of data.lines) types.add(typeOf(line.id));
+  for (const type of types) {
+    const id = `tube-${type}`;
+    if (map.hasImage(id)) continue;
+    try {
+      map.addImage(id, await svgToImage(iconSvgFor(type), 48), { pixelRatio: 2 });
+    } catch {
+      // Leave that network on the grey fallback.
     }
+  }
+
+  // A match expression needs at least one label/value pair; with none it is
+  // invalid and MapLibre silently declines to add the layer. Every line id
+  // needs its own pair, even though they share a type image: the expression
+  // keys on the station's primary line, not on its network.
+  const iconImage = (): unknown => {
+    const expr: unknown[] = ["match", ["get", "primary"]];
+    const seen = new Set<string>();
+    for (const line of data.lines) {
+      const image = `tube-${typeOf(line.id)}`;
+      if (seen.has(line.id) || !map.hasImage(image)) continue;
+      seen.add(line.id);
+      expr.push(line.id, image);
+    }
+    if (expr.length === 3) return UNKNOWN;
     expr.push(UNKNOWN);
     return expr;
   };
-
-  const before = landmarkAnchor(map);
 
   const icons: SymbolLayerSpecification = {
     id: ICONS,
@@ -173,13 +220,14 @@ export async function addTubeLayers(map: MLMap, data: TubeData): Promise<void> {
     minzoom: 11.5,
     layout: {
       "icon-image": iconImage() as never,
-      "icon-size": ["interpolate", ["linear"], ["zoom"], 11.5, 0.55, 14, 0.8, 17, 1.05],
+      // A touch larger than a basemap POI: the roundel is a landmark and the
+      // station name sits under it.
+      "icon-size": ["interpolate", ["linear"], ["zoom"], 11.5, 0.7, 14, 0.95, 17, 1.25],
       "icon-allow-overlap": true,
       "icon-ignore-placement": true,
     },
   };
-  if (before) map.addLayer(icons, before);
-  else map.addLayer(icons);
+  map.addLayer(icons);
 
   const labels: SymbolLayerSpecification = {
     id: LABELS,
@@ -188,36 +236,24 @@ export async function addTubeLayers(map: MLMap, data: TubeData): Promise<void> {
     minzoom: 13,
     layout: {
       "text-field": ["get", "name"],
-      "text-size": ["interpolate", ["linear"], ["zoom"], 13, 10, 17, 13],
+      "text-size": ["interpolate", ["linear"], ["zoom"], 13, 12, 17, 15],
       "text-offset": [0, 1.35],
       "text-anchor": "top",
-      "text-allow-overlap": false,
-      "text-padding": 3,
+      // The name is the point of the mark, so it always draws, even when two
+      // stations are close. The halo keeps overlapping names legible.
+      "text-allow-overlap": true,
+      "text-ignore-placement": true,
+      "text-padding": 2,
     },
     paint: {
       "text-color": "#3b2f1d",
       "text-halo-color": "#fff7e8",
-      "text-halo-width": 1.5,
+      "text-halo-width": 2,
     },
   };
-  if (before) map.addLayer(labels, before);
-  else map.addLayer(labels);
+  map.addLayer(labels);
 
-  for (const line of data.lines) {
-    const id = `tube-${line.id}`;
-    if (!map.hasImage(id)) {
-      try {
-        map.addImage(id, await svgToImage(iconSvgFor(line), 48), { pixelRatio: 2 });
-      } catch {
-        continue;
-      }
-    }
-    coloured.add(line.id);
-    try {
-      map.setLayoutProperty(ICONS, "icon-image", iconImage() as never);
-    } catch {
-      // The layer was removed under us (style reload); the rest is moot.
-      return;
-    }
-  }
+  // Paint above every basemap layer: zoomed in, the station mark and its name
+  // are the thing the reader is looking for.
+  raiseLandmarks(map);
 }

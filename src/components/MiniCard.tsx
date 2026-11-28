@@ -7,7 +7,7 @@
  * close; a mini-card that steals focus and never gives it back is a trap.
  */
 import { A } from "@solidjs/router";
-import { onCleanup, onMount } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 import FurryPaw from "~/components/FurryPaw";
 import { dogPolicyLabel, dogPolicyTone, selection } from "~/content/selections";
 import { formatAddress } from "~/lib/format";
@@ -23,6 +23,7 @@ export default function MiniCard(props: {
 }) {
   let card: HTMLDivElement | undefined;
   let closeBtn: HTMLButtonElement | undefined;
+  const [photoBroken, setPhotoBroken] = createSignal(false);
 
   onMount(() => closeBtn?.focus({ preventScroll: true }));
   onCleanup(() => props.returnFocusTo?.focus({ preventScroll: true }));
@@ -40,6 +41,16 @@ export default function MiniCard(props: {
   return (
     <div ref={card} class="mini-card" role="dialog" aria-label={name()}>
       <div class="row mini-card-top">
+        {p().image && !photoBroken() && (
+          <img
+            class="mini-card-thumb"
+            src={p().image}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            onError={() => setPhotoBroken(true)}
+          />
+        )}
         <strong class="mini-card-name">{name()}</strong>
         <span class="spacer" />
         <button

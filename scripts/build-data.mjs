@@ -72,6 +72,14 @@ function publish(place) {
     bookingUrl: place.booking_url,
     bookingLabel: place.booking_label,
     image: place.image,
+    description: place.description,
+    email: place.email,
+    facebook: place.facebook,
+    wikipedia: place.wikipedia,
+    wikidata: place.wikidata,
+    mapillary: place.mapillary,
+    toilets: place.toilets,
+    operator: place.operator,
     cuisine: place.cuisine,
     outdoorSeating: place.outdoor_seating,
     wheelchair: place.wheelchair,
@@ -200,8 +208,9 @@ async function main() {
     fields: [
       "id", "name", "lat", "lon", "primary", "selections", "dogPolicy", "source", "verified",
       "city", "street", "postcode", "openingHours", "phone", "website", "instagram",
-      "notes", "bookingUrl", "bookingLabel", "image", "cuisine", "outdoorSeating",
-      "wheelchair", "provenance", "osmUpdated", "checkedOn",
+      "notes", "bookingUrl", "bookingLabel", "image", "description", "email",
+      "facebook", "wikipedia", "wikidata", "mapillary", "toilets", "operator",
+      "cuisine", "outdoorSeating", "wheelchair", "provenance", "osmUpdated", "checkedOn",
     ],
   };
   await writeFile(join(OUT_DIR, "manifest.json"), JSON.stringify(manifest, null, 2));

@@ -299,6 +299,16 @@
   gap: 8px;
 }
 
+.mini-card-thumb {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+}
+
 .mini-card-name {
   font-size: 16px;
   overflow: hidden;

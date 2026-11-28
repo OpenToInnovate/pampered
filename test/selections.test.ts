@@ -20,6 +20,7 @@ describe("selections", () => {
     const ids = selections.map((s) => s.id);
     expect(ids).toContain("food-drink");
     expect(ids).toContain("vet");
+    expect(ids).toContain("dog-hotels");
     expect(ids).not.toContain("restaurants");
     expect(ids).not.toContain("pubs");
     expect(ids).not.toContain("bars");

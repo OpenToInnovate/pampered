@@ -99,6 +99,19 @@ selections:
       tags:
         amenity: [veterinary, animal_hospital]
 
+  - id: dog-hotels
+    label: Dog hotels, boarding and kennels
+    short: Dog hotels
+    group: care
+    icon: hotel
+    colour: "#876820"
+    default: false
+    minzoom: 11
+    blurb: Boarding kennels, dog hotels and animal shelters in OpenStreetMap.
+    osm:
+      tags:
+        amenity: [animal_boarding, animal_shelter]
+
   - id: pet-shops
     label: Pet shops that welcome dogs
     short: Pet shops

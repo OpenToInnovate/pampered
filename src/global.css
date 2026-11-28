@@ -376,6 +376,24 @@ a {
   text-align: center;
 }
 
+.place-photo {
+  margin: 0;
+}
+
+.place-photo img {
+  display: block;
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--line-strong);
+  background: var(--surface-2);
+}
+
+.place-photo figcaption {
+  margin-top: 6px;
+}
+
 .facts {
   display: grid;
   grid-template-columns: auto 1fr;

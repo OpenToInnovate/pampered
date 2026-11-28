@@ -48,10 +48,10 @@ test("home loads with a list, chips and a map or fallback", async ({ page }) => 
     page.getByRole("search").or(page.getByRole("button", { name: "Search places" })).first(),
   ).toBeVisible();
 
-  // Seven filters, one per selection. On a phone they live in the drawer.
+  // Eight filters, one per selection. On a phone they live in the drawer.
   await openDrawer(page);
   const dock = page.getByRole("group", { name: /Show on the map/ });
-  await expect(dock.getByRole("button")).toHaveCount(7);
+  await expect(dock.getByRole("button")).toHaveCount(8);
 
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
 
@@ -67,7 +67,7 @@ test("the published dataset is static and edge-cached", async ({ request, baseUR
   const body = await manifest.json();
   expect(body.total).toBeGreaterThan(1000);
   expect(body.builtAt).toBeTruthy();
-  expect(Object.keys(body.counts).length).toBe(7);
+  expect(Object.keys(body.counts).length).toBe(8);
 
   // Static assets are served by Workers Assets rather than the Worker, which is
   // what makes browsing free of database reads and free of request cost. The
