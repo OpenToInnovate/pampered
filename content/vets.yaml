@@ -26,6 +26,29 @@ policy:
   ranking: Sponsor practices never rank above non-sponsors in search or lists.
 
 vets:
+  # ------------------------------------------------------------ our own vet
+  # The provider Pampered's team uses, and the first sponsor. The colour is the
+  # brand's own theme colour (#F3E9FD); the card derives a readable ink from it
+  # rather than darkening the brand into something it is not.
+  - id: creature-comforts
+    name: Creature Comforts Vets
+    colour: "#F3E9FD"
+    logo: null
+    plan_url: https://www.creaturecomforts.co.uk/memberships
+    website: https://www.creaturecomforts.co.uk/
+    match: [creature comforts]
+    # Their group's branches all carry operator=Creature Comforts. A bare name
+    # is not enough: another practice called "Creature Comforts" exists that is
+    # not one of theirs.
+    match_names: false
+    sponsor: true
+    confirmed: false
+    # A rating from the team that runs this site, not from a review site. The UI
+    # labels it "Rated by Pampered" so it is never mistaken for the details score.
+    rating: 5
+    rating_note: Rated by Pampered — our own vet
+    note: Light purple brand; membership plans are on their site.
+
   # ---------------------------------------------------------------- the majors
   - id: medivet
     name: Medivet

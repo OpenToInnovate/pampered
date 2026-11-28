@@ -8,6 +8,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { vetProviderOf, vetRating } from "../scripts/lib/vet-match.mjs";
+import { contrastRatio, readableInk, textOn } from "../src/lib/colour";
 import { searchPlaces } from "../src/lib/search";
 import type { PlaceRecord } from "../src/lib/search";
 
@@ -159,5 +160,25 @@ describe("searchPlaces with a chosen vet", () => {
   it("shows every vet when no provider is chosen", () => {
     const r = searchPlaces(records, { bbox, selections: ["vet"], vetProvider: null });
     expect(r.places).toHaveLength(2);
+  });
+});
+
+describe("provider branding colour", () => {
+  it("keeps a light brand colour and finds readable ink for it", () => {
+    // Creature Comforts' lilac is #F3E9FD: white text on it is unreadable, so
+    // the card keeps the tint and derives a darker purple for the button.
+    const ink = readableInk("#F3E9FD");
+    expect(ink).not.toBe("#F3E9FD");
+    expect(contrastRatio(ink, "#ffffff")).toBeGreaterThanOrEqual(4.5);
+    // Still purple, not grey: the red and blue channels stay above green.
+    const n = parseInt(ink.slice(1), 16);
+    const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    expect(b).toBeGreaterThan(g);
+    expect(r).toBeGreaterThan(g);
+  });
+
+  it("chooses dark ink for a light tint and white for a dark one", () => {
+    expect(textOn("#F3E9FD")).toBe("#1b1b1b");
+    expect(textOn("#005EB8")).toBe("#ffffff");
   });
 });

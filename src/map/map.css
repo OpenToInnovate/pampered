@@ -1015,7 +1015,8 @@
   justify-content: center;
   border-radius: 7px;
   background: var(--vet-colour, #6b7280);
-  color: #fff;
+  color: var(--vet-ink, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.12);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -1033,10 +1034,10 @@
 .sponsor-card {
   margin: 10px 0 4px;
   padding: 10px 12px;
-  border: 1px solid var(--vet-colour, var(--line-strong));
-  border-left-width: 4px;
+  border: 1px solid var(--line-strong);
+  border-left: 4px solid var(--vet-ink, var(--line-strong));
   border-radius: var(--radius);
-  background: var(--surface);
+  background: color-mix(in srgb, var(--vet-colour, #ffffff) 22%, var(--surface));
 }
 
 .sponsor-card-top {
@@ -1059,9 +1060,7 @@
 
 .sponsor-card-name {
   font-size: 16px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.25;
 }
 
 .sponsor-card-draft {

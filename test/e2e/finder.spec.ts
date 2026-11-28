@@ -25,6 +25,9 @@ async function openDrawer(page: import("@playwright/test").Page) {
   if (await tab.isVisible().catch(() => false)) {
     await tab.click();
     await expect(panel).toHaveAttribute("data-open", "true");
+    // The drawer slides in over 260ms. Clicking into it mid-transition makes
+    // Playwright's stability check fight the animation, so wait it out.
+    await expect(panel).toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 0)");
   }
 }
 
@@ -160,6 +163,9 @@ test("the first page view needs no data request at all", async ({ page }) => {
 });
 
 test("a visitor can say which vet they are with, and the card says who pays", async ({ page }) => {
+  // The map initialises on SwiftShader here, which is slow; this test is about
+  // the picker, not the map, so give it room under load.
+  test.setTimeout(90_000);
   await page.goto("/");
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
   await openDrawer(page);
@@ -170,10 +176,11 @@ test("a visitor can say which vet they are with, and the card says who pays", as
   await page.getByRole("button", { name: /Which vet are you with/i }).click();
   const provider = page.getByRole("button", { name: /^Medivet/ }).first();
   await expect(provider).toBeVisible({ timeout: 15_000 });
-  await provider.click();
+  await provider.scrollIntoViewIfNeeded();
+  await provider.click({ timeout: 15_000 });
 
   const card = page.locator(".sponsor-card");
-  await expect(card).toBeVisible();
+  await expect(card).toBeVisible({ timeout: 15_000 });
   await expect(card).toContainText("Medivet");
   // Unconfirmed entries are labelled as drafts, never passed off as approved.
   await expect(card).toContainText(/Draft preview/);

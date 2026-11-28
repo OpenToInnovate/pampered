@@ -10,6 +10,7 @@
 import { A } from "@solidjs/router";
 import { Show } from "solid-js";
 import { ProviderMark } from "~/components/VetPicker";
+import { readableInk } from "~/lib/colour";
 import type { VetProvider, VetRegistry } from "~/content/vets";
 
 export default function SponsorCard(props: {
@@ -26,7 +27,7 @@ export default function SponsorCard(props: {
   return (
     <section
       class="sponsor-card"
-      style={{ "--vet-colour": p().colour }}
+      style={{ "--vet-colour": p().colour, "--vet-ink": readableInk(p().colour) }}
       aria-label={`${p().name}${p().sponsor ? ", sponsor" : ""}`}
     >
       <div class="row sponsor-card-top">
@@ -63,7 +64,7 @@ export default function SponsorCard(props: {
               href={url()}
               rel="noopener noreferrer"
               target="_blank"
-              style={{ "background-color": p().colour, "border-color": p().colour }}
+              style={{ "background-color": readableInk(p().colour), "border-color": readableInk(p().colour) }}
             >
               {label()} ↗
             </a>

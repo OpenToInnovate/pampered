@@ -45,8 +45,10 @@ export interface PlaceRecord {
   brand?: string;
   /** Provider id from content/vets.yaml, for vet rows only. */
   vetProvider?: string;
-  /** 1–5, built from proven details only. Never a review score. */
+  /** 1–5. Either the verified-details score or a rating from the Pampered team. */
   rating?: number;
+  /** "details" (built from provable facts) or "pampered" (the team's own rating). */
+  ratingBasis?: string;
   cuisine?: string;
   outdoorSeating?: string;
   wheelchair?: string;

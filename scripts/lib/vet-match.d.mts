@@ -18,6 +18,8 @@ export interface VetMatchRow {
 export interface VetProviderLike {
   id: string;
   match?: string[];
+  /** Default true. False refuses a name-only match. */
+  match_names?: boolean;
 }
 
 export function vetProviderOf(row: VetMatchRow, vets: VetProviderLike[]): string | null;

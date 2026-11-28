@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-11-28T10:21:11Z",
+  "builtAt": "2026-11-28T11:06:05Z",
   "total": 5970,
   "counts": {
     "food-drink": 716,
@@ -47,6 +47,7 @@
     "checkedOn",
     "brand",
     "vetProvider",
-    "rating"
+    "rating",
+    "ratingBasis"
   ]
 }

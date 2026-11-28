@@ -34,6 +34,11 @@ const luminance = (rgb) => {
 };
 /** WCAG contrast of a colour against the map land. The map is the background
     the pins sit on, so a colour that passes here is visible where it matters. */
+const contrastVs = (a, b) => {
+  const [hi, lo] = [luminance(hexToRgb(a)), luminance(hexToRgb(b))].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+};
+
 const contrastVsMap = (hex) => {
   const map = luminance(hexToRgb("#f2f0ec"));
   const ink = luminance(hexToRgb(hex));
@@ -362,11 +367,17 @@ async function checkVets() {
     if (!/^#[0-9a-f]{6}$/i.test(vet.colour ?? "")) {
       fail(at, "colour must be a 6-digit hex");
     } else {
-      // The sponsor colour is text (the wordmark), so it must clear 4.5:1
-      // against the surface it sits on. Unlike map selections, two providers
-      // may share a near-identical blue — they are never drawn side by side.
-      const ratio = contrastVsMap(vet.colour);
-      if (ratio < 4.5) fail(at, `colour ${vet.colour} is ${ratio.toFixed(2)}:1 against the map, needs 4.5:1`);
+      // The colour is a surface: the wordmark sits on it, and the card derives
+      // its button from it. It must be able to carry readable text — white or
+      // near-black, whichever wins — so a very light lilac is allowed.
+      const onWhite = contrastVs(vet.colour, "#ffffff");
+      const onInk = contrastVs(vet.colour, "#1b1b1b");
+      if (Math.max(onWhite, onInk) < 4.5) {
+        fail(at, `colour ${vet.colour} cannot carry readable text (${Math.max(onWhite, onInk).toFixed(2)}:1)`);
+      }
+      if (vet.rating != null && !(Number.isInteger(vet.rating) && vet.rating >= 1 && vet.rating <= 5)) {
+        fail(at, "rating must be an integer 1-5");
+      }
     }
 
     for (const key of ["plan_url", "website"]) {
@@ -375,6 +386,9 @@ async function checkVets() {
     }
     if (vet.logo != null && !/^\//.test(vet.logo)) fail(at, "logo must be a path under public/");
     if (!Array.isArray(vet.match) || !vet.match.length) fail(at, "match must list at least one fragment");
+    if (vet.match_names != null && typeof vet.match_names !== "boolean") {
+      fail(at, "match_names must be true or false");
+    }
     if (vet.confirmed !== true) {
       warn(at, "unconfirmed: colour, links and logo need sign-off before this sponsor card is published");
     }

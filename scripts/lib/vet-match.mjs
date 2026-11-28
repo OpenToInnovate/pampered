@@ -13,11 +13,17 @@
  */
 export function vetProviderOf(row, vets) {
   if (!row.selections?.includes("vet")) return null;
-  const haystacks = [row.brand, row.name, row.operator]
-    .filter(Boolean)
-    .map((v) => String(v).toLowerCase());
-  if (!haystacks.length) return null;
   for (const provider of vets) {
+    // A provider may require a brand or operator match and refuse a bare name:
+    // "Creature Comforts" in Blackheath is a veterinary practice, but it is not
+    // one of the branches the group publishes, so the name alone is not proof.
+    const haystacks = (provider.match_names === false
+      ? [row.brand, row.operator]
+      : [row.brand, row.name, row.operator]
+    )
+      .filter(Boolean)
+      .map((v) => String(v).toLowerCase());
+    if (!haystacks.length) continue;
     for (const fragment of provider.match ?? []) {
       const needle = String(fragment).toLowerCase();
       if (needle && haystacks.some((h) => h.includes(needle))) return provider.id;

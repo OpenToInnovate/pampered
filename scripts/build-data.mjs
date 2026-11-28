@@ -83,6 +83,7 @@ function publish(place) {
     brand: place.brand,
     vetProvider: place.vet_provider,
     rating: place.rating,
+    ratingBasis: place.rating_basis,
     cuisine: place.cuisine,
     outdoorSeating: place.outdoor_seating,
     wheelchair: place.wheelchair,
@@ -214,7 +215,7 @@ async function main() {
       "notes", "bookingUrl", "bookingLabel", "image", "description", "email",
       "facebook", "wikipedia", "wikidata", "mapillary", "toilets", "operator",
       "cuisine", "outdoorSeating", "wheelchair", "provenance", "osmUpdated", "checkedOn",
-      "brand", "vetProvider", "rating",
+      "brand", "vetProvider", "rating", "ratingBasis",
     ],
   };
   await writeFile(join(OUT_DIR, "manifest.json"), JSON.stringify(manifest, null, 2));

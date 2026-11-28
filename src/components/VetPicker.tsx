@@ -11,6 +11,7 @@
  */
 import { createResource, createSignal, For, Show } from "solid-js";
 import { loadVets } from "~/content/vets";
+import { textOn } from "~/lib/colour";
 import type { VetProvider, VetRegistry } from "~/content/vets";
 
 function initials(name: string): string {
@@ -31,6 +32,7 @@ export function ProviderMark(props: { provider: VetProvider; size?: number }) {
           class="vet-mark"
           style={{
             "--vet-colour": props.provider.colour,
+            "--vet-ink": textOn(props.provider.colour),
             width: `${props.size ?? 28}px`,
             height: `${props.size ?? 28}px`,
           }}

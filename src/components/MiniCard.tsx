@@ -70,7 +70,7 @@ export default function MiniCard(props: {
         >
           {dogPolicyLabel(p().dogPolicy)}
         </span>
-        {p().selections.includes("vet") && p().rating != null && <Stars value={p().rating!} />}
+        {p().selections.includes("vet") && p().rating != null && <Stars value={p().rating!} basis={p().ratingBasis} />}
         <SourceBadge source={p().source} verified={p().verified} />
       </div>
       {(p().street || p().city || p().postcode) && (

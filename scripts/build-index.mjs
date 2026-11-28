@@ -375,10 +375,20 @@ async function main() {
 
   const places = [...byIdentity.values()];
   const { vets } = await loadVets();
+  const byId = new Map(vets.map((v) => [v.id, v]));
   for (const row of places) {
     row.brand ??= null;
     row.vet_provider = vetProviderOf(row, vets);
     row.rating = row.selections.includes("vet") ? vetRating(row) : null;
+    row.rating_basis = row.rating == null ? null : "details";
+    // A provider may carry a rating from the team that runs this site (the
+    // provider we actually use). It replaces the details score for that
+    // provider's practices and is labelled as ours, never as a review.
+    const override = row.vet_provider ? byId.get(row.vet_provider)?.rating : null;
+    if (row.rating != null && Number.isInteger(override) && override >= 1 && override <= 5) {
+      row.rating = override;
+      row.rating_basis = "pampered";
+    }
   }
   await mkdir(join(ROOT, "data"), { recursive: true });
   await writeFile(

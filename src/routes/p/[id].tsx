@@ -97,7 +97,7 @@ export default function PlacePage() {
                     </span>
                     {open() && <span class={`pill ${toneClass(open()!.tone)}`}>{open()!.label}</span>}
                     {p().selections.includes("vet") && p().rating != null && (
-                      <Stars value={p().rating!} />
+                      <Stars value={p().rating!} basis={p().ratingBasis} />
                     )}
                     <SourceBadge source={p().source} verified={p().verified === 1} />
                   </div>
@@ -172,9 +172,11 @@ export default function PlacePage() {
                       <>
                         <dt>Details</dt>
                         <dd>
-                          <Stars value={p().rating!} />{" "}
+                          <Stars value={p().rating!} basis={p().ratingBasis} />{" "}
                           <span class="tiny muted">
-                            Built from the verified details we hold — not a review score.
+                            {p().ratingBasis === "pampered"
+                              ? "Rated by the Pampered team — the vet we use ourselves."
+                              : "Built from the verified details we hold — not a review score."}
                           </span>
                         </dd>
                       </>

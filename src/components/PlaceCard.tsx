@@ -81,7 +81,7 @@ export default function PlaceCard(props: {
               {dogPolicyLabel(policy())}
             </span>
             {open() && <span class={`pill ${toneClass(open()!.tone)}`}>{open()!.label}</span>}
-            {p().selections.includes("vet") && p().rating != null && <Stars value={p().rating!} />}
+            {p().selections.includes("vet") && p().rating != null && <Stars value={p().rating!} basis={p().ratingBasis} />}
             <SourceBadge source={p().source} verified={p().verified} />
           </span>
           {(p().street || p().city || p().postcode) && (

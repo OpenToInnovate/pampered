@@ -180,6 +180,11 @@ operator, a description, a recorded survey date. It is **not** a review score
 and must never be presented as one; the UI says "verified details, not a review"
 wherever the stars appear. Do not import ratings from review sites.
 
+One exception is allowed, and only this one: a provider we use ourselves may
+carry `rating:` in `content/vets.yaml`, which replaces the details score for its
+practices and is labelled "Rated by Pampered" in every place the stars appear.
+It is our own claim, attributed to us, never dressed up as a review.
+
 The visitor's chosen vet is the only thing the site stores on a device:
 `localStorage["pampered.vet"]`, read after hydration, never sent anywhere.
 `/about#sponsorship` explains it. Adding a cookie or an account here would
