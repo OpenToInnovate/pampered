@@ -1,0 +1,173 @@
+# Veterinary providers, and the sponsorship promise.
+#
+# One entry per brand a visitor might be registered with. `match` is the list of
+# case-insensitive fragments looked for in an OpenStreetMap vet's brand, name or
+# operator. A practice is assigned to the first provider whose fragment matches,
+# in this file's order, so keep the more specific fragments above the general
+# ones (Companion Care before Vets4Pets, for example).
+#
+# Every entry is `confirmed: false` until the provider (or the sponsor) has
+# signed off the name, the colour, the links and the logo. `npm run check`
+# warns about unconfirmed entries rather than failing, so the site can be built
+# and reviewed; do not publish a sponsor card for an unconfirmed entry.
+#
+# `colour` is used only for the sponsor card's wordmark and accent — never for
+# the map, the chips or the rest of the interface. It must reach 4.5:1 against
+# white, because the wordmark is text. `logo` is a path under `public/` and is
+# null until the provider supplies a file we may use.
+#
+# Sponsorship policy, enforced by the build and stated on /about:
+#   - the card always says "Sponsored by {name}";
+#   - a sponsor's practices are never ranked above anyone else's.
+
+version: 1
+policy:
+  disclosure: Sponsored by
+  ranking: Sponsor practices never rank above non-sponsors in search or lists.
+
+vets:
+  # ---------------------------------------------------------------- the majors
+  - id: medivet
+    name: Medivet
+    colour: "#005EB8"
+    logo: null
+    plan_url: https://www.medivetgroup.com/medivet-healthcare-plan/
+    website: https://www.medivetgroup.com/
+    match: [medivet]
+    sponsor: false
+    confirmed: false
+    note: Healthcare plan; joining is arranged in practice, not online.
+
+  - id: vets4pets
+    name: Vets4Pets
+    colour: "#003B71"
+    logo: null
+    plan_url: https://www.vets4pets.com/pet-health-plans/complete-care/dogs/
+    website: https://www.vets4pets.com/
+    match: [vets4pets, vets for pets]
+    sponsor: false
+    confirmed: false
+    note: Complete Care plan; some practices sit inside Pets at Home stores.
+
+  - id: companion-care
+    name: Companion Care
+    colour: "#0072A8"
+    logo: null
+    plan_url: null
+    website: https://www.companioncare.co.uk/
+    match: [companion care]
+    sponsor: false
+    confirmed: false
+    note: Vets4Pets' sister brand; plan availability varies by practice.
+
+  - id: goddard
+    name: Goddard Veterinary Group
+    colour: "#00693E"
+    logo: null
+    plan_url: https://www.goddardvetgroup.co.uk/pet-health-plan/
+    website: https://www.goddardvetgroup.co.uk/
+    match: [goddard veterinary, goddard vets]
+    sponsor: false
+    confirmed: false
+    note: London-wide group; 44 practices and 3 hospitals.
+
+  - id: village-vet
+    name: Village Vet
+    colour: "#5C2D91"
+    logo: null
+    plan_url: https://www.villagevet.co.uk/pet-health-for-life-plan/london
+    website: https://www.villagevet.co.uk/
+    match: [village vet]
+    sponsor: false
+    confirmed: false
+    note: Pet Health for Life plan, London branches.
+
+  # ------------------------------------------------------------- charities
+  - id: pdsa
+    name: PDSA
+    colour: "#005EB8"
+    logo: null
+    plan_url: null
+    website: https://www.pdsa.org.uk/
+    match: [pdsa]
+    sponsor: false
+    confirmed: false
+    note: Veterinary charity. No subscription plan; eligibility rules apply.
+
+  - id: blue-cross
+    name: Blue Cross
+    colour: "#0057B8"
+    logo: null
+    plan_url: null
+    website: https://www.bluecross.org.uk/
+    match: [blue cross]
+    sponsor: false
+    confirmed: false
+    note: Veterinary charity. No subscription plan; eligibility rules apply.
+
+  - id: rspca
+    name: RSPCA
+    colour: "#005EB8"
+    logo: null
+    plan_url: null
+    website: https://www.rspca.org.uk/
+    match: [rspca]
+    sponsor: false
+    confirmed: false
+    note: Animal welfare charity; some branches run clinics.
+
+  - id: beaumont
+    name: Beaumont Sainsbury Animal Hospital
+    colour: "#6A2C91"
+    logo: null
+    plan_url: null
+    website: https://www.rvc.ac.uk/beaumont
+    match: [beaumont sainsbury, beaumont animal hospital]
+    sponsor: false
+    confirmed: false
+    note: Royal Veterinary College teaching hospital, Camden.
+
+  # ------------------------------------------------------- smaller London groups
+  - id: pet-doctors
+    name: Pet Doctors
+    colour: "#006C99"
+    logo: null
+    plan_url: null
+    website: https://www.petdoctors.co.uk/
+    match: [pet doctors]
+    sponsor: false
+    confirmed: false
+    note: Practice group; plan details are set per practice.
+
+  - id: neighbourhood-vet
+    name: The Neighbourhood Vet
+    colour: "#276B4E"
+    logo: null
+    plan_url: null
+    website: null
+    match: [neighbourhood vet]
+    sponsor: false
+    confirmed: false
+    note: Independent London group; website not yet confirmed.
+
+  - id: thameswood
+    name: Thameswood Vets
+    colour: "#1B6CA8"
+    logo: null
+    plan_url: null
+    website: null
+    match: [thameswood]
+    sponsor: false
+    confirmed: false
+    note: Independent group; website not yet confirmed.
+
+  - id: the-vet-collection
+    name: The Vet Collection
+    colour: "#8A2BE2"
+    logo: null
+    plan_url: null
+    website: https://www.thevetcollection.co.uk/
+    match: [the vet collection]
+    sponsor: false
+    confirmed: false
+    note: Practice group; website not yet confirmed.

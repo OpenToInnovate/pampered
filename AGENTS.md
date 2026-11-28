@@ -13,6 +13,12 @@ command that writes to the database.
 - `content/regions.yaml` — the city jump list. A convenience, not a limit.
 - `content/places/*.yaml` — venues checked or reported by hand. Files starting
   with `_` are documentation and never load.
+- `content/vets.yaml` — veterinary providers, their health-plan links, and the
+  sponsorship policy. A practice is matched to a provider by the brand, name or
+  operator OpenStreetMap records. Every entry is `confirmed: false` until the
+  provider signs off the name, colour, links and logo; `check` warns, and the
+  sponsor card is labelled a draft until then. The build publishes the registry
+  at `public/data/vets.json`; the picker fetches it only when opened.
 - `data/osm/` — raw OpenStreetMap responses. Gitignored, regenerable, never
   edited by hand.
 - `data/index.json` — the merged build input. Gitignored, regenerated.
@@ -161,6 +167,23 @@ because the site needs it.
 `data/published.json` are build outputs of `npm run build:data` and are also
 gitignored — CI regenerates them from the OSM cache, so a fresh clone needs
 `npm run refresh && npm run build:index` before it can build.
+
+## Sponsorship and vet ratings
+
+Sponsorship is allowed and is disclosed, but it never buys placement. The card
+says "Sponsored by {name}", the provider's colour stays inside that card, and a
+sponsor's practices are never ranked above anyone else's in search or lists.
+
+The star readout on a vet practice is built only from details we can prove — an
+address, a phone number, a website, opening hours, step-free access, a named
+operator, a description, a recorded survey date. It is **not** a review score
+and must never be presented as one; the UI says "verified details, not a review"
+wherever the stars appear. Do not import ratings from review sites.
+
+The visitor's chosen vet is the only thing the site stores on a device:
+`localStorage["pampered.vet"]`, read after hydration, never sent anywhere.
+`/about#sponsorship` explains it. Adding a cookie or an account here would
+break the "no analytics, no cookies, no sign-in" rule.
 
 ## Non-negotiables
 

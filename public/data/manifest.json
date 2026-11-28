@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-11-28T09:00:12Z",
+  "builtAt": "2026-11-28T10:21:11Z",
   "total": 5970,
   "counts": {
     "food-drink": 716,
@@ -7,8 +7,7 @@
     "vet": 3206,
     "dog-hotels": 1123,
     "pet-shops": 6,
-    "dog-parks": 607,
-    "off-lead": 296,
+    "dog-parks": 887,
     "water-bowls": 33
   },
   "fields": [
@@ -45,6 +44,9 @@
     "wheelchair",
     "provenance",
     "osmUpdated",
-    "checkedOn"
+    "checkedOn",
+    "brand",
+    "vetProvider",
+    "rating"
   ]
 }

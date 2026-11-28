@@ -11,6 +11,7 @@ import { Meta, Title } from "@solidjs/meta";
 import { A, createAsync, query, useLocation, useParams } from "@solidjs/router";
 import { createSignal, Match, Show, Switch } from "solid-js";
 import FurryPaw from "~/components/FurryPaw";
+import Stars from "~/components/Stars";
 import ReportSheet from "~/components/ReportSheet";
 import { SourceBadge } from "~/components/PlaceCard";
 import { dogPolicyLabel, dogPolicyTone, selection } from "~/content/selections";
@@ -52,7 +53,7 @@ export default function PlacePage() {
     if (!p) return "Place";
     if (p.name) return p.name;
     const primary = p.primary ?? p.selections[0];
-    return selection(primary ?? "")?.label ?? "Place";
+    return selection(primary ?? "")?.short ?? selection(primary ?? "")?.label ?? "Place";
   };
 
   return (
@@ -95,6 +96,9 @@ export default function PlacePage() {
                       {dogPolicyLabel(p().dogPolicy)}
                     </span>
                     {open() && <span class={`pill ${toneClass(open()!.tone)}`}>{open()!.label}</span>}
+                    {p().selections.includes("vet") && p().rating != null && (
+                      <Stars value={p().rating!} />
+                    )}
                     <SourceBadge source={p().source} verified={p().verified === 1} />
                   </div>
                   {(p().street || p().city || p().postcode) && (
@@ -161,6 +165,17 @@ export default function PlacePage() {
                           <a href={p().website} rel="noopener" target="_blank">
                             {(p().website ?? "").replace(/^https?:\/\//, "").replace(/\/$/, "")}
                           </a>
+                        </dd>
+                      </>
+                    )}
+                    {p().selections.includes("vet") && p().rating != null && (
+                      <>
+                        <dt>Details</dt>
+                        <dd>
+                          <Stars value={p().rating!} />{" "}
+                          <span class="tiny muted">
+                            Built from the verified details we hold — not a review score.
+                          </span>
                         </dd>
                       </>
                     )}

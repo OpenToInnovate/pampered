@@ -9,6 +9,7 @@
 import { A } from "@solidjs/router";
 import { createSignal, onCleanup, onMount } from "solid-js";
 import FurryPaw from "~/components/FurryPaw";
+import Stars from "~/components/Stars";
 import { dogPolicyLabel, dogPolicyTone, selection } from "~/content/selections";
 import { formatAddress } from "~/lib/format";
 import type { PlaceRecord as SlimPlace } from "~/lib/search";
@@ -35,7 +36,7 @@ export default function MiniCard(props: {
     const named = p().name;
     if (named) return named;
     const primary = p().primary ?? p().selections[0];
-    return selection(primary ?? "")?.label ?? "Place";
+    return selection(primary ?? "")?.short ?? selection(primary ?? "")?.label ?? "Place";
   };
 
   return (
@@ -69,6 +70,7 @@ export default function MiniCard(props: {
         >
           {dogPolicyLabel(p().dogPolicy)}
         </span>
+        {p().selections.includes("vet") && p().rating != null && <Stars value={p().rating!} />}
         <SourceBadge source={p().source} verified={p().verified} />
       </div>
       {(p().street || p().city || p().postcode) && (

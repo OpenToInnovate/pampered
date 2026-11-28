@@ -14,7 +14,7 @@
  */
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { ROOT, loadCuratedPlaces, loadRegions, loadSelections } from "./lib/content.mjs";
+import { ROOT, loadCuratedPlaces, loadRegions, loadSelections, loadVets } from "./lib/content.mjs";
 
 const errors = [];
 const warnings = [];
@@ -342,6 +342,49 @@ async function checkTube() {
   }
 }
 
+/* --------------------------------------------------------------------- vets */
+
+async function checkVets() {
+  const { policy, vets } = await loadVets();
+  if (!policy?.disclosure) fail("content/vets.yaml", "policy.disclosure is required");
+  if (!policy?.ranking) fail("content/vets.yaml", "policy.ranking is required");
+  if (!vets.length) warn("content/vets.yaml", "no providers listed");
+
+  const ids = new Set();
+  const colours = new Map();
+  for (const vet of vets) {
+    const at = `content/vets.yaml: ${vet.id ?? "(no id)"}`;
+    if (!vet.id || !/^[a-z0-9-]+$/.test(vet.id)) fail(at, "id must be a lowercase slug");
+    else if (ids.has(vet.id)) fail(at, "duplicate id");
+    else ids.add(vet.id);
+    if (!vet.name) fail(at, "name is required");
+
+    if (!/^#[0-9a-f]{6}$/i.test(vet.colour ?? "")) {
+      fail(at, "colour must be a 6-digit hex");
+    } else {
+      // The sponsor colour is text (the wordmark), so it must clear 4.5:1
+      // against the surface it sits on. Unlike map selections, two providers
+      // may share a near-identical blue — they are never drawn side by side.
+      const ratio = contrastVsMap(vet.colour);
+      if (ratio < 4.5) fail(at, `colour ${vet.colour} is ${ratio.toFixed(2)}:1 against the map, needs 4.5:1`);
+    }
+
+    for (const key of ["plan_url", "website"]) {
+      const url = vet[key];
+      if (url != null && !/^https:\/\//.test(url)) fail(at, `${key} must be an https URL`);
+    }
+    if (vet.logo != null && !/^\//.test(vet.logo)) fail(at, "logo must be a path under public/");
+    if (!Array.isArray(vet.match) || !vet.match.length) fail(at, "match must list at least one fragment");
+    if (vet.confirmed !== true) {
+      warn(at, "unconfirmed: colour, links and logo need sign-off before this sponsor card is published");
+    }
+  }
+  if (!vets.some((v) => v.sponsor === true)) {
+    warn("content/vets.yaml", "no provider is marked sponsor: true yet");
+  }
+  return ids;
+}
+
 /* -------------------------------------------------------------------- main */
 
 async function main() {
@@ -351,6 +394,7 @@ async function main() {
   const regionIds = await checkRegions({ version: 1, regions });
   await checkPlaces(selectionIds, regionIds);
   await checkTube();
+  await checkVets();
 
   for (const w of warnings) console.log(`warning: ${w}`);
   if (errors.length) {

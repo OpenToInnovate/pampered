@@ -10,6 +10,7 @@
  */
 import { A } from "@solidjs/router";
 import FurryPaw from "~/components/FurryPaw";
+import Stars from "~/components/Stars";
 import { SelectionIcon } from "~/map/icons";
 import { dogPolicyLabel, dogPolicyTone, selection } from "~/content/selections";
 import { formatDistance, openState } from "~/lib/format";
@@ -43,7 +44,7 @@ export default function PlaceCard(props: {
     const named = p().name;
     if (named) return named;
     const primary = p().primary ?? p().selections[0];
-    return selection(primary ?? "")?.label ?? "Place";
+    return selection(primary ?? "")?.short ?? selection(primary ?? "")?.label ?? "Place";
   };
   const open = () => openState(p().openingHours);
   const policy = () => p().dogPolicy ?? "unknown";
@@ -80,6 +81,7 @@ export default function PlaceCard(props: {
               {dogPolicyLabel(policy())}
             </span>
             {open() && <span class={`pill ${toneClass(open()!.tone)}`}>{open()!.label}</span>}
+            {p().selections.includes("vet") && p().rating != null && <Stars value={p().rating!} />}
             <SourceBadge source={p().source} verified={p().verified} />
           </span>
           {(p().street || p().city || p().postcode) && (

@@ -26,6 +26,7 @@ describe("selections", () => {
     expect(ids).not.toContain("bars");
     expect(ids).not.toContain("cafes");
     expect(ids).not.toContain("ice-cream");
+    expect(ids).not.toContain("off-lead");
     for (const s of selections) {
       expect(s.id).toMatch(/^[a-z0-9-]+$/);
       expect(s.colour).toMatch(/^#[0-9A-Fa-f]{6}$/);

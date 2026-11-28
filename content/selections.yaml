@@ -126,29 +126,22 @@ selections:
         dog: [yes, permitted, designated]
 
   # ------------------------------------------------------------------- outside
+  # Dog parks and off-lead areas answer the same question — "where can the dog
+  # run?" — so they share one chip. The two OSM tagging schemes stay distinct in
+  # the data; the branch that matched decides the dog policy.
   - id: dog-parks
-    label: Dog parks
+    label: Dog parks and off-lead areas
     short: Dog parks
     group: outside
     icon: paw
     colour: "#1D7A5E"
     default: true
     minzoom: 10
-    blurb: Fenced or unfenced areas set aside for dogs.
-    osm:
-      tags:
-        leisure: [dog_park]
-
-  - id: off-lead
-    label: Off-lead areas
-    short: Off-lead
-    group: outside
-    icon: paw-off
-    colour: "#1D7D1D"
-    minzoom: 13
-    blurb: Parks, commons and fields where dogs may run free.
+    blurb: Fenced dog parks, plus parks, commons and fields where dogs may run free.
     osm:
       any:
+        - tags:
+            leisure: [dog_park]
         - tags:
             dog: [off_leash, unleashed]
         - tags:

@@ -39,6 +39,15 @@ export async function loadSelections() {
   };
 }
 
+export async function loadVets() {
+  const doc = await readYaml(join(CONTENT_DIR, "vets.yaml"));
+  return {
+    version: doc.version,
+    policy: doc.policy ?? {},
+    vets: doc.vets ?? [],
+  };
+}
+
 export async function loadRegions() {
   const doc = await readYaml(join(CONTENT_DIR, "regions.yaml"));
   return { version: doc.version, regions: doc.regions ?? [] };

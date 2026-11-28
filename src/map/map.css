@@ -922,3 +922,174 @@
 /* The drawer overlays the map instead of docking under it, so the map keeps
    its full height and MapLibre's own chrome sits at the bottom edge. The old
    paw bar used to reserve space here; it is gone, and so is the reserve. */
+
+/* -------------------------------------------------------------- your vet */
+
+.drawer-vet {
+  padding: 8px 12px 0;
+}
+
+.vet-picker {
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.vet-picker-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 8px 12px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.vet-picker-current {
+  gap: 8px;
+  min-width: 0;
+}
+
+.vet-picker-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vet-picker-body {
+  border-top: 1px solid var(--line);
+  padding: 8px;
+}
+
+.vet-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.vet-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.vet-option:hover,
+.vet-option-active {
+  background: var(--surface-2);
+}
+
+.vet-option-name {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vet-picker-note {
+  margin: 8px 4px 0;
+}
+
+.vet-mark {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: var(--vet-colour, #6b7280);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.vet-logo {
+  flex: none;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #fff;
+}
+
+/* ----------------------------------------------------------- sponsor card */
+
+.sponsor-card {
+  margin: 10px 0 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--vet-colour, var(--line-strong));
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.sponsor-card-top {
+  gap: 10px;
+  align-items: center;
+}
+
+.sponsor-card-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sponsor-card-kicker {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.sponsor-card-name {
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sponsor-card-draft {
+  margin: 8px 0 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: #fff4d6;
+  color: #6b4e00;
+}
+
+.sponsor-card-actions {
+  margin-top: 10px;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.sponsor-card-actions .btn-primary {
+  color: #fff;
+}
+
+.sponsor-card-policy {
+  text-decoration: underline;
+}
+
+.stars {
+  color: #b8860b;
+  letter-spacing: 0.06em;
+  font-size: 13px;
+  white-space: nowrap;
+}

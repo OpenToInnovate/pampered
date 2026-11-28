@@ -100,7 +100,7 @@ async function checkPublishedData() {
   // record or a selection added to the defaults changes what a first-time
   // visitor downloads before anything appears.
   const DEFAULT_GZIP_BUDGET_KB = 120;
-  const defaults = ["food-drink", "groomers", "pet-shops", "dog-parks", "off-lead", "water-bowls"];
+  const defaults = ["food-drink", "groomers", "pet-shops", "dog-parks", "water-bowls"];
   // Measure gzip, not raw: the budget is about bytes over the wire, and a raw
   // size divided by four was a proxy that stopped matching once one selection
   // grew and the others did not.

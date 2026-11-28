@@ -42,6 +42,11 @@ export interface PlaceRecord {
   mapillary?: string;
   toilets?: string;
   operator?: string;
+  brand?: string;
+  /** Provider id from content/vets.yaml, for vet rows only. */
+  vetProvider?: string;
+  /** 1–5, built from proven details only. Never a review score. */
+  rating?: number;
   cuisine?: string;
   outdoorSeating?: string;
   wheelchair?: string;
@@ -70,6 +75,8 @@ export interface SearchParams {
   limit?: number;
   /** Only venues that are open right now. */
   openNow?: boolean;
+  /** Restrict vet rows to one provider id (the visitor's own vet). */
+  vetProvider?: string | null;
   /** 'near' by metres from the search centre, 'name' alphabetically. */
   order?: "near" | "name";
 }
@@ -149,6 +156,12 @@ export function searchPlaces(
     if (centre) {
       distance = distMetres(centre[1], centre[0], rec.lat, rec.lon);
       if (radius != null && distance > radius) continue;
+    }
+
+    // The visitor's own vet narrows the vet layer only. Other layers are left
+    // alone: choosing a vet must not hide the pub you are standing outside.
+    if (params.vetProvider && rec.selections.includes("vet") && rec.vetProvider !== params.vetProvider) {
+      continue;
     }
 
     for (const id of rec.selections) counts[id] = (counts[id] ?? 0) + 1;

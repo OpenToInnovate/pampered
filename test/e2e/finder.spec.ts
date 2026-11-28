@@ -48,10 +48,10 @@ test("home loads with a list, chips and a map or fallback", async ({ page }) => 
     page.getByRole("search").or(page.getByRole("button", { name: "Search places" })).first(),
   ).toBeVisible();
 
-  // Eight filters, one per selection. On a phone they live in the drawer.
+  // Seven filters, one per selection. On a phone they live in the drawer.
   await openDrawer(page);
   const dock = page.getByRole("group", { name: /Show on the map/ });
-  await expect(dock.getByRole("button")).toHaveCount(8);
+  await expect(dock.getByRole("button")).toHaveCount(7);
 
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
 
@@ -67,7 +67,7 @@ test("the published dataset is static and edge-cached", async ({ request, baseUR
   const body = await manifest.json();
   expect(body.total).toBeGreaterThan(1000);
   expect(body.builtAt).toBeTruthy();
-  expect(Object.keys(body.counts).length).toBe(8);
+  expect(Object.keys(body.counts).length).toBe(7);
 
   // Static assets are served by Workers Assets rather than the Worker, which is
   // what makes browsing free of database reads and free of request cost. The
@@ -157,6 +157,38 @@ test("the first page view needs no data request at all", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
   expect(requests, "the first view should not fetch anything").toHaveLength(0);
+});
+
+test("a visitor can say which vet they are with, and the card says who pays", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("#results > li").first()).toBeVisible({ timeout: 20_000 });
+  await openDrawer(page);
+
+  // Nothing is stored and nothing is fetched until the picker is opened.
+  expect(await page.evaluate(() => localStorage.getItem("pampered.vet"))).toBeNull();
+
+  await page.getByRole("button", { name: /Which vet are you with/i }).click();
+  const provider = page.getByRole("button", { name: /^Medivet/ }).first();
+  await expect(provider).toBeVisible({ timeout: 15_000 });
+  await provider.click();
+
+  const card = page.locator(".sponsor-card");
+  await expect(card).toBeVisible();
+  await expect(card).toContainText("Medivet");
+  // Unconfirmed entries are labelled as drafts, never passed off as approved.
+  await expect(card).toContainText(/Draft preview/);
+  // The disclosure is present, and the plan link opens the provider's own page.
+  await expect(card.locator("a.btn-primary")).toHaveAttribute("href", /medivetgroup\.com/);
+
+  expect(await page.evaluate(() => localStorage.getItem("pampered.vet"))).toBe("medivet");
+
+  // The vet layer is switched on by the choice.
+  const vetChip = (await filterButton(page, /Vet/));
+  await expect(vetChip).toHaveAttribute("aria-pressed", "true");
+
+  await card.getByRole("button", { name: "Change" }).click();
+  await expect(page.locator(".sponsor-card")).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem("pampered.vet"))).toBeNull();
 });
 
 test("a selection that fails to load says so, and never crashes", async ({ page }) => {

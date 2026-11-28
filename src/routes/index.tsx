@@ -38,9 +38,12 @@ import ReportSheet from "~/components/ReportSheet";
 import SearchBar from "~/components/SearchBar";
 import SearchOverlay from "~/components/SearchOverlay";
 import SelectionChips from "~/components/SelectionChips";
+import SponsorCard from "~/components/SponsorCard";
+import VetPicker, { createVetRegistry } from "~/components/VetPicker";
 import SideDrawer from "~/components/SideDrawer";
 import type { ChipSelection } from "~/components/SelectionChips";
 import { selections } from "~/content/selections";
+import { hydrateMyVet, myVet, providerById, setMyVet } from "~/content/vets";
 import { loadSelections, seedFromDocument, serialiseSeed, SEED_ELEMENT_ID } from "~/lib/dataset";
 import type { Bbox, LonLat } from "~/lib/geo";
 import { searchPlaces } from "~/lib/search";
@@ -156,7 +159,10 @@ export default function Home() {
    * graceful path actually graceful.
    */
   const [hydrated, setHydrated] = createSignal(false);
-  onMount(() => setHydrated(true));
+  onMount(() => {
+    setHydrated(true);
+    hydrateMyVet();
+  });
 
   /** True only when we are past hydration and the data genuinely did not load. */
   const loadFailed = () => hydrated() && !!records.error;
@@ -174,6 +180,7 @@ export default function Home() {
       near: v.near,
       radius: v.radius,
       openNow: v.openNow,
+      vetProvider: myVet(),
       order: v.order,
       limit: 200,
     });
@@ -257,6 +264,19 @@ export default function Home() {
 
   const onSelect = (id: string | null) => {
     commit({ ...currentView(), place: id }, false);
+  };
+
+  // The registry is fetched only when a vet is stored or the picker is opened,
+  // so a first visit with no preference still makes no data request.
+  const vetRegistry = createVetRegistry(() => !!myVet());
+  const vetProvider = createMemo(() => providerById(vetRegistry.registry(), myVet()));
+
+  const chooseVet = (id: string | null) => {
+    setMyVet(id);
+    // Choosing a vet is only useful if the vet layer is on.
+    if (id && !view().sel.includes("vet")) {
+      commit({ ...currentView(), sel: toggleSelection(view().sel, "vet", KNOWN_IDS), place: null }, false);
+    }
   };
 
   const onToggle = (id: string) => {
@@ -529,6 +549,16 @@ export default function Home() {
         onOpenChange={setDrawerOpen}
         filters={<SelectionChips chips={chips()} onToggle={onToggle} />}
         toolbar={filterControls()}
+        vetPicker={
+          <VetPicker
+            registry={vetRegistry.registry()}
+            loading={vetRegistry.registry.loading}
+            failed={!!vetRegistry.registry.error}
+            selected={myVet()}
+            onChoose={chooseVet}
+            onOpen={vetRegistry.open}
+          />
+        }
         closeWhen={!!selectedPlace()}
       >
         <Show
@@ -552,6 +582,16 @@ export default function Home() {
             </div>
           }
         >
+          <Show when={hydrated() && vetProvider()}>
+            {(p) => (
+              <SponsorCard
+                provider={p()}
+                policy={vetRegistry.registry()?.policy}
+                onClear={() => setMyVet(null)}
+                placeWebsite={places().find((x) => x.vetProvider === p().id)?.website ?? null}
+              />
+            )}
+          </Show>
           <Show
             when={places().length > 0 || (hydrated() && records.loading)}
             fallback={<EmptyList q={view().q} selectionCount={view().sel.length} openNow={view().openNow} />}

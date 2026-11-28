@@ -29,7 +29,7 @@
 import { mkdir, readdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { gzipSync } from "node:zlib";
 import { join } from "node:path";
-import { ROOT, loadSelections } from "./lib/content.mjs";
+import { ROOT, loadSelections, loadVets } from "./lib/content.mjs";
 
 const OUT_DIR = join(ROOT, "public", "data");
 const log = (...args) => console.log(...args);
@@ -80,6 +80,9 @@ function publish(place) {
     mapillary: place.mapillary,
     toilets: place.toilets,
     operator: place.operator,
+    brand: place.brand,
+    vetProvider: place.vet_provider,
+    rating: place.rating,
     cuisine: place.cuisine,
     outdoorSeating: place.outdoor_seating,
     wheelchair: place.wheelchair,
@@ -211,9 +214,43 @@ async function main() {
       "notes", "bookingUrl", "bookingLabel", "image", "description", "email",
       "facebook", "wikipedia", "wikidata", "mapillary", "toilets", "operator",
       "cuisine", "outdoorSeating", "wheelchair", "provenance", "osmUpdated", "checkedOn",
+      "brand", "vetProvider", "rating",
     ],
   };
   await writeFile(join(OUT_DIR, "manifest.json"), JSON.stringify(manifest, null, 2));
+
+  // The provider registry the picker and the sponsor card read. Counts come from
+  // the same rows as the vet layer, so the chip and the list cannot disagree.
+  // Only vet rows with a matched provider are counted; unmatched practices are
+  // simply not attributed to a brand.
+  const { vets, policy } = await loadVets();
+  const vetRows = records.filter((r) => r.selections?.includes("vet"));
+  const providerCounts = {};
+  for (const row of vetRows) {
+    if (!row.vetProvider) continue;
+    providerCounts[row.vetProvider] = (providerCounts[row.vetProvider] ?? 0) + 1;
+  }
+  const providers = vets.map((v) => ({
+    id: v.id,
+    name: v.name,
+    colour: v.colour,
+    logo: v.logo ?? null,
+    planUrl: v.plan_url ?? null,
+    website: v.website ?? null,
+    sponsor: v.sponsor === true,
+    confirmed: v.confirmed === true,
+    count: providerCounts[v.id] ?? 0,
+  }));
+  await writeFile(
+    join(OUT_DIR, "vets.json"),
+    JSON.stringify({
+      builtAt,
+      policy,
+      providers,
+      attributed: Object.values(providerCounts).reduce((a, b) => a + b, 0),
+      total: vetRows.length,
+    }),
+  );
 
   // A selection that disappears from selections.yaml must take its data file
   // with it: a stale file keeps serving old rows to anybody who still has the
@@ -221,7 +258,7 @@ async function main() {
   // directory, so it prunes; assemble mode only reads, so it must not touch
   // anything. tube.json is not a selection — the refresh:tube script owns it.
   if (source.mode === "rebuild") {
-    const keep = new Set([...selections.map((s) => `${s.id}.json`), "manifest.json", "tube.json"]);
+    const keep = new Set([...selections.map((s) => `${s.id}.json`), "manifest.json", "tube.json", "vets.json"]);
     for (const entry of await readdir(OUT_DIR)) {
       if (entry.endsWith(".json") && !keep.has(entry)) {
         await unlink(join(OUT_DIR, entry));

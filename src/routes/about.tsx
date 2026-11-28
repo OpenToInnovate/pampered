@@ -11,7 +11,7 @@ export default function About() {
       <h1>About Pampered</h1>
       <p>
         Pampered is a map of places that welcome dogs: cafés, pubs, bars and restaurants that allow
-        them inside, groomers and pet shops that allow dogs, dog parks, off-lead areas and water
+        them inside, groomers and pet shops that allow dogs, dog parks and off-lead areas and water
         bowls.
         A place only appears if someone has recorded that dogs are welcome there. Places with no
         dog information are left off rather than shown with a shrug.
@@ -49,6 +49,24 @@ export default function About() {
         Where a venue takes bookings, the venue page links to whoever already takes them. Pampered
         never takes a booking, never holds a deposit and never charges a venue to appear. There is
         no account, no sign-in, and no tracking beyond what the map tiles need to load.
+      </p>
+
+      <h2 id="sponsorship">Sponsorship and your vet</h2>
+      <p>
+        You can tell Pampered which veterinary provider you are registered with. It filters the vet
+        layer to that provider's practices and shows their health-plan or booking link. The choice
+        is saved in your browser only — it is not a cookie, it never leaves your device, and there
+        is no account.
+      </p>
+      <p>
+        Where a provider sponsors Pampered, the card says so. Sponsorship never changes the map, the
+        chips or the order of results: a sponsor's practices are never ranked above anyone else's,
+        and a rating shown on a practice is built only from the details we can verify, never from
+        reviews or from whether the provider pays.
+      </p>
+      <p>
+        Vets on the map come from OpenStreetMap, like every other place. A provider being listed is
+        not an endorsement, and being absent is not a judgement.
       </p>
 
       <h2>Corrections</h2>

@@ -28,6 +28,8 @@ export default function SideDrawer(props: {
   filters?: JSX.Element;
   /** Open-now / sort / share. Hidden on desktop, where the overlay owns them. */
   toolbar?: JSX.Element;
+  /** "Which vet are you with?" Shown on both layouts: it is a preference, not a filter. */
+  vetPicker?: JSX.Element;
   /** True when a place card opened; the drawer gets out of the map's way. */
   closeWhen?: boolean;
 }) {
@@ -191,6 +193,9 @@ export default function SideDrawer(props: {
         </Show>
         <Show when={props.toolbar}>
           <div class="drawer-tools">{props.toolbar}</div>
+        </Show>
+        <Show when={props.vetPicker}>
+          <div class="drawer-vet">{props.vetPicker}</div>
         </Show>
         <div class="drawer-body">{props.children}</div>
       </aside>

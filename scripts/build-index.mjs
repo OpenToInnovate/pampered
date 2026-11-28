@@ -26,8 +26,10 @@ import {
   loadCuratedPlaces,
   loadRegions,
   loadSelections,
+  loadVets,
   slugify,
 } from "./lib/content.mjs";
+import { vetProviderOf, vetRating } from "./lib/vet-match.mjs";
 
 const log = (...args) => console.log(...args);
 
@@ -168,8 +170,13 @@ function osmRow(el, selectionId, selections, osmTimestamp) {
   // rule is written here, not hidden.
   let policy = dogPolicyOf(tags);
     if (policy === "unknown") {
-      if (ids.includes("off-lead")) policy = "off_leash";
-      else if (ids.includes("dog-parks")) policy = "designated";
+      if (ids.includes("dog-parks")) {
+        // One chip, two OSM schemes: an explicit off-lead tag means off the
+        // lead; a plain dog park means designated for dogs.
+        const offLead =
+          tags.dog === "unleashed" || tags.off_leash === "yes" || tags.off_leash === "true";
+        policy = offLead ? "off_leash" : "designated";
+      }
       else if (ids.includes("water-bowls")) policy = "yes";
       else if (ids.includes("vet")) policy = "yes";
       else if (ids.includes("dog-hotels")) policy = "yes";
@@ -206,6 +213,7 @@ function osmRow(el, selectionId, selections, osmTimestamp) {
       mapillary: tags.mapillary ?? null,
       toilets: tags.toilets ?? null,
       operator: tags.operator ?? null,
+      brand: tags.brand ?? null,
       opening_hours: tags.opening_hours ?? null,
       dog_policy: policy,
       outdoor_seating: tags.outdoor_seating ?? null,
@@ -273,6 +281,7 @@ function curatedRow(place, knownSelectionIds, knownRegionIds) {
       mapillary: place.mapillary ?? null,
       toilets: place.toilets ?? null,
       operator: place.operator ?? null,
+      brand: place.brand ?? null,
       opening_hours: place.opening_hours ?? null,
       dog_policy: place.dog_policy ?? "unknown",
       outdoor_seating: place.outdoor_seating ?? null,
@@ -365,6 +374,12 @@ async function main() {
   }
 
   const places = [...byIdentity.values()];
+  const { vets } = await loadVets();
+  for (const row of places) {
+    row.brand ??= null;
+    row.vet_provider = vetProviderOf(row, vets);
+    row.rating = row.selections.includes("vet") ? vetRating(row) : null;
+  }
   await mkdir(join(ROOT, "data"), { recursive: true });
   await writeFile(
     join(ROOT, "data", "index.json"),
